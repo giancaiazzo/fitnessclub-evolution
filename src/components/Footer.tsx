@@ -44,7 +44,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="text-white font-bold text-lg mb-4">Navigation</h3>
+            <h3 className="text-white font-bold text-lg mb-4">Navegacion</h3>
 
             <ul className="space-y-3">
               {navigation.map((item) => (
@@ -61,7 +61,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="text-white font-bold text-lg mb-4">Contact</h3>
+            <h3 className="text-white font-bold text-lg mb-4">Contacto</h3>
 
             <ul className="space-y-3 text-gray-400">
               <li className="flex items-start gap-3">
@@ -94,7 +94,7 @@ export default function Footer() {
 
         <div className="border-t border-slate-800 mt-10 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-gray-500 text-sm">
-            © {currentYear} {siteData.name}. All rights reserved.
+            © {currentYear} {siteData.name}. Derechos reservados.
           </p>
 
           <div className="flex items-center gap-6 text-sm">
@@ -102,14 +102,14 @@ export default function Footer() {
               href="/privacy"
               className="text-gray-500 hover:text-orange-500 transition-colors"
             >
-              Privacy Policy
+              Política de Privacidad
             </a>
 
             <a
               href="/terms"
               className="text-gray-500 hover:text-orange-500 transition-colors"
             >
-              Terms of Service
+              Terminos de servicio.
             </a>
           </div>
         </div>

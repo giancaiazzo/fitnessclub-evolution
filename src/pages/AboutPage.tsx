@@ -11,11 +11,10 @@ export default function AboutPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto">
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
-              About {siteData.name}
+              Sobre {siteData.name}
             </h1>
             <p className="text-xl text-gray-300">
-              We're dedicated to helping you achieve your fitness goals and live
-              a healthier life.
+             Nos dedicamos a mejorar tu vida de manera integral.
             </p>
           </div>
         </div>
@@ -25,7 +24,7 @@ export default function AboutPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-4xl font-bold text-white mb-8 text-center">
-              Our Mission
+              Nuestra mision
             </h2>
 
             <div className="max-w-none">

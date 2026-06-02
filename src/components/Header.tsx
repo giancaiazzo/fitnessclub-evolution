@@ -32,7 +32,7 @@ export default function Header() {
               href="/contact"
               className="inline-flex items-center justify-center gap-2 rounded-lg bg-orange-500 px-6 py-2.5 font-semibold text-white transition-all duration-200 hover:bg-orange-600"
             >
-              Join Now
+              Unirme ahora
               <i className="ri-arrow-right-line" />
             </a>
           </div>
@@ -73,7 +73,7 @@ export default function Header() {
             onClick={() => setIsMenuOpen(false)}
             className="mt-2 flex items-center justify-center gap-2 rounded-lg bg-orange-500 px-6 py-3 text-center font-semibold text-white shadow-md transition-all duration-200 hover:bg-orange-600 hover:shadow-lg"
           >
-            Join Now
+            Unete
             <i className="ri-arrow-right-line" />
           </a>
         </div>

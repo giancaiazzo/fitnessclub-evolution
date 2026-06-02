@@ -11,7 +11,7 @@ export default function PricingPlans({ showHeading = true }: PricingPlansProps) 
         {showHeading && (
           <div className="mb-16 text-center">
             <h2 className="mb-4 text-4xl font-bold text-white md:text-5xl">
-              Membership Plans
+              Planes de membresía
             </h2>
 
             <p className="mx-auto max-w-2xl text-xl text-gray-300">

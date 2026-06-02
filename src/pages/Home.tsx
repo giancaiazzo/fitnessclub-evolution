@@ -31,18 +31,18 @@ export default function HomePage() {
       <section className="py-20 bg-gradient-to-r from-orange-500 to-orange-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            Ready to Transform Your Life?
+            ¿Listo para transformar tu vida?
           </h2>
 
           <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-            Join hundreds of members who are already on their fitness journey
+            Únete a cientos de miembros que ya están en su viaje fitness
           </p>
 
           <a
             href="/contact"
             className="inline-flex items-center justify-center gap-3 bg-white text-orange-500 hover:bg-slate-100 px-8 py-4 rounded-lg font-bold text-lg transition-all transform hover:scale-105 shadow-lg"
           >
-            Get Started Today
+            Comienza hoy
             <i className="ri-arrow-right-line"></i>
           </a>
         </div>

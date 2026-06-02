@@ -6,11 +6,11 @@ export default function FAQ() {
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
         <div className="mb-16 text-center">
           <h2 className="mb-4 text-4xl font-bold text-white md:text-5xl">
-            Frequently Asked Questions
+            Preguntas frecuentes
           </h2>
 
           <p className="mx-auto max-w-2xl text-xl text-gray-300">
-            Everything you need to know about joining FitZone
+            Todo lo que necesitas saber sobre unirte a FitnessClubEvolution y comenzar tu viaje de fitness
           </p>
         </div>
 
@@ -36,13 +36,13 @@ export default function FAQ() {
         </div>
 
         <div className="mt-12 text-center">
-          <p className="mb-4 text-gray-400">Still have questions?</p>
+          <p className="mb-4 text-gray-400">¿Todavía tienes preguntas?</p>
 
           <a
             href="/contact"
             className="inline-flex items-center gap-3 rounded-lg bg-orange-500 px-8 py-4 text-lg font-bold text-white transition-all hover:scale-105 hover:bg-orange-600"
           >
-            Contact Us
+            Contactar
             <i className="ri-arrow-right-line" />
           </a>
         </div>

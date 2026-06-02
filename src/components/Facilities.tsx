@@ -6,11 +6,11 @@ export default function Facilities() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-16 text-center">
           <h2 className="mb-4 text-4xl font-bold text-white md:text-5xl">
-            Our Facilities
+            Nuestras instalaciones
           </h2>
 
           <p className="mx-auto max-w-2xl text-xl text-gray-300">
-            World-class equipment and spaces designed for your success
+            Equipamiento de clase mundial y espacios diseñados para tu éxito
           </p>
         </div>
 

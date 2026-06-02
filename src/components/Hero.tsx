@@ -34,7 +34,7 @@ export default function Hero() {
                 href="/contact"
                 className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 rounded-lg font-bold text-lg transition-all transform inline-flex items-center justify-center gap-3"
               >
-                Start Your Journey
+                Inicia tu viaje
                 <i className="ri-arrow-right-line"></i>
               </a>
 
@@ -42,7 +42,7 @@ export default function Hero() {
                 href="/about"
                 className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-slate-900 px-8 py-4 rounded-lg font-bold text-lg transition-all inline-flex items-center justify-center gap-3"
               >
-                Learn More
+                Aprende más
                 <i className="ri-information-line"></i>
               </a>
             </div>
@@ -51,19 +51,19 @@ export default function Hero() {
             <div className="grid grid-cols-3 gap-6 max-w-lg mx-auto lg:mx-0">
               <div className="text-center lg:text-left">
                 <div className="text-4xl md:text-5xl font-bold text-orange-500 mb-2">
-                  500+
+                  200+
                 </div>
                 <div className="text-gray-300 text-sm md:text-base">
-                  Active Members
+                  Miembros activos
                 </div>
               </div>
 
               <div className="text-center lg:text-left">
                 <div className="text-4xl md:text-5xl font-bold text-orange-500 mb-2">
-                  50+
+                  2+
                 </div>
                 <div className="text-gray-300 text-sm md:text-base">
-                  Expert Trainers
+                  Entrenadores expertos
                 </div>
               </div>
 
@@ -72,7 +72,7 @@ export default function Hero() {
                   24/7
                 </div>
                 <div className="text-gray-300 text-sm md:text-base">
-                  Open Access
+                  Acceso 24/7
                 </div>
               </div>
             </div>
@@ -100,9 +100,9 @@ export default function Hero() {
 
                   <div>
                     <div className="text-white font-bold text-lg">
-                      Award Winning
+                      Premios al culturismo
                     </div>
-                    <div className="text-white/80 text-sm">Best Gym 2024</div>
+                    <div className="text-white/80 text-sm">Tu gimnasio este 2027</div>
                   </div>
                 </div>
               </div>

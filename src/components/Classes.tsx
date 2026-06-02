@@ -6,11 +6,11 @@ export default function Classes() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-16 text-center">
           <h2 className="mb-4 text-4xl font-bold text-white md:text-5xl">
-            Our Classes
+            Nuestras clases
           </h2>
 
           <p className="mx-auto max-w-2xl text-xl text-gray-300">
-            Find the perfect workout for your fitness level and goals
+            Encuentra el entrenamiento perfecto para tu nivel de fitness y objetivos
           </p>
         </div>
 
@@ -44,7 +44,7 @@ export default function Classes() {
                   href="/contact"
                   className="flex items-center gap-2 font-semibold text-orange-500 hover:text-orange-400"
                 >
-                  Book Now
+                  Reservar Ahora
                   <i className="ri-arrow-right-line" />
                 </a>
               </div>
@@ -57,7 +57,7 @@ export default function Classes() {
             href="/classes"
             className="inline-flex items-center gap-3 rounded-lg bg-orange-500 px-8 py-4 text-lg font-bold text-white transition-all hover:scale-105 hover:bg-orange-600"
           >
-            View All Classes
+            Ver todas las clases
             <i className="ri-arrow-right-line" />
           </a>
         </div>

@@ -6,11 +6,11 @@ export default function ClassSchedule() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-16 text-center">
           <h2 className="mb-4 text-4xl font-bold text-white md:text-5xl">
-            Class Schedule
+            Horario de Clases   
           </h2>
 
           <p className="mx-auto max-w-2xl text-xl text-gray-300">
-            Plan your week with our popular classes
+            Planifica tu semana con nuestras clases dirigidas por expertos diseñadas para todos los niveles de fitness
           </p>
         </div>
 
@@ -21,16 +21,16 @@ export default function ClassSchedule() {
                 <thead className="bg-slate-900">
                   <tr>
                     <th className="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider text-white">
-                      Time
+                      Tiempo
                     </th>
                     <th className="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider text-white">
-                      Class
+                      Clase
                     </th>
                     <th className="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider text-white">
-                      Trainer
+                      Entrenador
                     </th>
                     <th className="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider text-white">
-                      Action
+                      Accion
                     </th>
                   </tr>
                 </thead>
@@ -67,7 +67,7 @@ export default function ClassSchedule() {
                           href="/contact"
                           className="flex items-center gap-2 font-semibold text-orange-500 hover:text-orange-400"
                         >
-                          Book
+                          Reservar
                           <i className="ri-arrow-right-line" />
                         </a>
                       </td>
@@ -79,13 +79,13 @@ export default function ClassSchedule() {
           </div>
 
           <div className="mt-8 text-center">
-            <p className="mb-4 text-gray-400">View the complete schedule</p>
+            <p className="mb-4 text-gray-400">Ver el horario completo</p>
 
             <a
               href="/classes"
               className="inline-flex items-center gap-3 rounded-lg bg-orange-500 px-8 py-4 text-lg font-bold text-white transition-all hover:scale-105 hover:bg-orange-600"
             >
-              Full Schedule
+              Calendario completo
               <i className="ri-calendar-line" />
             </a>
           </div>

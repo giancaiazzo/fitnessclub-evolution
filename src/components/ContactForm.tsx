@@ -4,7 +4,7 @@ export default function ContactForm() {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    // Más adelante acá conectamos el formulario con tu backend/API.
+    // Más adelante acá conectamos el formulario con  backend/API.
     console.log("Formulario enviado");
   };
 
@@ -15,7 +15,7 @@ export default function ContactForm() {
     >
       <div>
         <label htmlFor="name" className="mb-2 block font-semibold text-white">
-          Full Name
+          Nombre completo
         </label>
 
         <input
@@ -30,7 +30,7 @@ export default function ContactForm() {
 
       <div>
         <label htmlFor="email" className="mb-2 block font-semibold text-white">
-          Email Address
+          Direccion de email
         </label>
 
         <input
@@ -45,7 +45,7 @@ export default function ContactForm() {
 
       <div>
         <label htmlFor="phone" className="mb-2 block font-semibold text-white">
-          Phone Number
+          Numero telefonico
         </label>
 
         <input
@@ -62,7 +62,7 @@ export default function ContactForm() {
           htmlFor="message"
           className="mb-2 block font-semibold text-white"
         >
-          Message
+          Mensaje
         </label>
 
         <textarea
@@ -79,7 +79,7 @@ export default function ContactForm() {
         type="submit"
         className="flex w-full items-center justify-center gap-3 rounded-lg bg-orange-500 px-8 py-4 text-lg font-bold text-white transition-all hover:scale-105 hover:bg-orange-600"
       >
-        Send Message
+        Enviar mensaje
         <i className="ri-send-plane-line" />
       </button>
     </form>
