@@ -1,14 +1,23 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import './App.css'
+import Home from "./pages/Home";
+import AboutPage from "./pages/AboutPage";
+import ClassesPage from "./pages/ClassesPage";
+import ContactPage from "./pages/ContactPage";
+import PricingPage from "./pages/PricingPage";
 
 function App() {
   return (
-    <main className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
-      <h1 className="text-4xl font-bold">
-        FitnessClubEvolution
-      </h1>
-    </main>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/classes" element={<ClassesPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/pricing" element={<PricingPage />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
