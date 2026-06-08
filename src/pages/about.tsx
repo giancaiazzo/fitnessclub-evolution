@@ -1,13 +1,13 @@
-import Layout from "../layouts/Layout";
-import { history, siteData, trainers } from "../data/siteData";
 
-export default function AboutPage() {
-  return (
-   <Layout
+import Layout from "../layouts/Layout.tsx";
+import { siteData, trainers, history } from "../data/siteData";
+
+
+<Layout
   title={`Sobre nosotros - ${siteData.name}`}
   description="Conocé nuestra misión, valores y equipo de entrenadores"
 >
-  <section className="pt-32 pb-20 bg-gradient-to-br from-background via-card to-background">
+  <section className="pt-32 pb-20 bg-linear-to-br from-background via-card to-background">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="text-center max-w-3xl mx-auto">
         <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6">
@@ -15,7 +15,7 @@ export default function AboutPage() {
         </h1>
 
         <p className="text-xl text-muted-foreground">
-          Nos dedicamos a mejorar tu vida de manera integral.
+          Estamos dedicados a ayudarte a alcanzar tus objetivos fitness y mejorar tu calidad de vida.
         </p>
       </div>
     </div>
@@ -39,8 +39,8 @@ export default function AboutPage() {
 
           <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
             Brindamos instalaciones adecuadas, orientación profesional y un ambiente
-            de apoyo que permite a nuestros miembros superar sus límites, mejorar
-            su bienestar y alcanzar resultados reales.
+            de apoyo que permite a nuestros miembros superar sus límites, mejorar su
+            bienestar y alcanzar resultados reales.
           </p>
         </div>
       </div>
@@ -208,12 +208,12 @@ export default function AboutPage() {
               </p>
 
               <div className="flex flex-wrap gap-2 justify-center">
-                {trainer.certifications.map((certification) => (
+                {trainer.certifications.map((cert) => (
                   <span
-                    key={`${trainer.name}-${certification}`}
+                    key={`${trainer.name}-${cert}`}
                     className="bg-card text-muted-foreground text-xs px-3 py-1 rounded-full border border-border"
                   >
-                    {certification}
+                    {cert}
                   </span>
                 ))}
               </div>
@@ -224,5 +224,3 @@ export default function AboutPage() {
     </div>
   </section>
 </Layout>
-  );
-}
