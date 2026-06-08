@@ -5,42 +5,56 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <header className="fixed z-50 flex w-full items-center justify-center border-b border-border bg-background/95 backdrop-blur-sm">
-  <nav className="w-full max-w-5xl px-4 sm:px-6 lg:px-8">
-    <div className="flex items-center justify-between py-4">
+<header className="fixed left-0 top-0 z-50 flex w-full items-center justify-center border-b border-primary/30 bg-background/90 backdrop-blur-xl shadow-lg shadow-primary/10">
+  <nav className="w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div className="flex items-center justify-between gap-12 py-4">
       <div className="flex shrink-0 items-center">
-        <a
-          href="/"
-          className="font-heading text-2xl font-bold tracking-tight text-primary"
-        >
-          {siteData.name}
+        <a href="/" className="group font-heading tracking-tight">
+          <span className="text-2xl md:text-3xl font-black uppercase leading-none drop-shadow-[0_0_14px_rgba(159,220,26,0.55)]">
+            <span className="text-foreground">FitnessClub</span>
+            <span className="text-primary">Evolution</span>
+          </span>
+
+          <span className="mt-1 block h-0.5 w-0 rounded-full bg-primary shadow-[0_0_12px_rgba(159,220,26,0.8)] transition-all duration-300 group-hover:w-full"></span>
         </a>
       </div>
 
-      <div className="hidden items-center justify-center gap-8 md:flex">
+      <div className="ml-10 hidden items-center justify-center gap-3 md:flex">
         {navigation.map((item) => (
           <a
             key={item.href}
             href={item.href}
-            className="py-2 text-base font-medium text-muted-foreground transition-colors hover:text-primary"
+            className="group relative overflow-hidden rounded-xl border border-primary/10 bg-primary/5 px-4 py-2 text-base font-bold text-foreground shadow-sm shadow-primary/5 transition-all duration-300 hover:border-primary/40 hover:bg-primary/15 hover:text-primary hover:shadow-md hover:shadow-primary/20"
           >
-            {item.name}
+            <span className="relative z-10">{item.name}</span>
+
+            <span className="absolute inset-x-3 bottom-1 h-0.5 scale-x-0 rounded-full bg-primary shadow-[0_0_10px_rgba(159,220,26,0.9)] transition-transform duration-300 group-hover:scale-x-100"></span>
           </a>
         ))}
 
         <a
           href="/contact"
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-2.5 font-semibold text-primary-foreground transition-all duration-200 hover:bg-[#86c312]"
+          className="ml-3 inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 font-black text-primary-foreground shadow-lg shadow-primary/30 transition-all duration-200 hover:scale-105 hover:bg-[#b8ef45] hover:shadow-primary/50"
         >
           Unirme ahora
-          <i className="ri-arrow-right-line" />
+          <i className="ri-arrow-right-line text-lg" />
+        </a>
+
+        <div className="ml-3 h-8 w-px bg-primary/25"></div>
+
+        <a
+          href="#"
+          className="inline-flex items-center justify-center gap-2 rounded-xl border border-primary/40 bg-background px-5 py-3 font-bold text-primary shadow-md shadow-primary/10 transition-all duration-200 hover:scale-105 hover:bg-primary hover:text-primary-foreground hover:shadow-primary/30"
+        >
+          Iniciar sesión
+          <i className="ri-login-box-line text-lg" />
         </a>
       </div>
 
       <button
         type="button"
         onClick={() => setIsMenuOpen((prev) => !prev)}
-        className="flex items-center justify-center p-2 text-foreground md:hidden"
+        className="flex h-11 w-11 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 text-primary transition-all hover:border-primary hover:bg-primary hover:text-primary-foreground md:hidden"
         aria-label="Abrir o cerrar menú"
         aria-expanded={isMenuOpen}
       >
@@ -52,30 +66,42 @@ export default function Header() {
       </button>
     </div>
 
-    <div
-      className={`space-y-2 pb-6 pt-2 md:hidden ${
-        isMenuOpen ? "block" : "hidden"
-      }`}
-    >
-      {navigation.map((item) => (
-        <a
-          key={item.href}
-          href={item.href}
-          onClick={() => setIsMenuOpen(false)}
-          className="block rounded-lg px-4 py-3 font-medium text-muted-foreground transition-colors hover:bg-card hover:text-primary"
-        >
-          {item.name}
-        </a>
-      ))}
+    <div className={`pb-6 pt-2 md:hidden ${isMenuOpen ? "block" : "hidden"}`}>
+      <div className="rounded-2xl border border-primary/20 bg-card p-3 shadow-xl shadow-primary/10">
+        <div className="space-y-2">
+          {navigation.map((item) => (
+            <a
+              key={item.href}
+              href={item.href}
+              onClick={() => setIsMenuOpen(false)}
+              className="group relative block overflow-hidden rounded-xl border border-primary/10 bg-primary/5 px-4 py-3 font-bold text-foreground transition-all hover:border-primary/40 hover:bg-primary/15 hover:text-primary"
+            >
+              {item.name}
+              <span className="absolute inset-x-4 bottom-1 h-0.5 scale-x-0 rounded-full bg-primary shadow-[0_0_10px_rgba(159,220,26,0.9)] transition-transform duration-300 group-hover:scale-x-100"></span>
+            </a>
+          ))}
 
-      <a
-        href="/contact"
-        onClick={() => setIsMenuOpen(false)}
-        className="mt-2 flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 text-center font-semibold text-primary-foreground shadow-md transition-all duration-200 hover:bg-[#86c312] hover:shadow-lg"
-      >
-        Unite
-        <i className="ri-arrow-right-line" />
-      </a>
+          <a
+            href="/contact"
+            onClick={() => setIsMenuOpen(false)}
+            className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 text-center font-black text-primary-foreground shadow-md shadow-primary/30 transition-all duration-200 hover:bg-[#b8ef45] hover:shadow-lg"
+          >
+            Unite
+            <i className="ri-arrow-right-line" />
+          </a>
+
+          <div className="my-3 h-px bg-primary/20"></div>
+
+          <a
+            href="#"
+            onClick={() => setIsMenuOpen(false)}
+            className="flex items-center justify-center gap-2 rounded-xl border border-primary/40 bg-background px-6 py-3 text-center font-bold text-primary shadow-md shadow-primary/10 transition-all duration-200 hover:bg-primary hover:text-primary-foreground"
+          >
+            Iniciar sesión
+            <i className="ri-login-box-line" />
+          </a>
+        </div>
+      </div>
     </div>
   </nav>
 </header>

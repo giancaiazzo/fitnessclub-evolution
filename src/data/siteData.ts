@@ -1,8 +1,8 @@
 export const siteData = {
-  name: "FitZone Gym",
-  tagline: "Transform Your Body, Transform Your Life",
-  description: "Your premier destination for fitness and wellness",
-  address: "123 Fitness Street, Health City, HC 12345",
+  name: "FitnessClubEvolution",
+  tagline: "Transformamos tu vida",
+  description: "Fitness y Bienestar en un solo lugar",
+  address: "DIRECCION",
   phone: "+1 (555) 123-4567",
   email: "info@fitzonegym.com",
   social: {
