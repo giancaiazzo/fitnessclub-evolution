@@ -1,15 +1,15 @@
 import Layout from '../layouts/Layout.tsx';
-import Hero from '../components/Hero.tsx';
-import Statistics from '../components/Statistics.tsx';
-import Features from '../components/Features.tsx';
-import Facilities from '../components/Facilities.tsx';
-import classNamees from '../components/classNamees.tsx';
-import classNameSchedule from '../components/classNameSchedule.tsx';
-import PricingPlans from '../components/PricingPlans.tsx';
-import SuccessStories from '../components/SuccessStories.tsx';
-import Testimonials from '../components/Testimonials.tsx';
-import FAQ from '../components/FAQ.tsx';
-import { siteData } from '../data/siteData';
+import Hero from '../MOD1-CLIENTES/components/Hero.tsx';
+import Statistics from '../MOD1-CLIENTES/components/Statistics.tsx';
+import Features from '../MOD1-CLIENTES/components/Features.tsx';
+import Facilities from '../MOD1-CLIENTES/components/Facilities.tsx';
+import classNamees from '../MOD1-CLIENTES/components/classNamees.tsx';
+import classNameSchedule from '../MOD1-CLIENTES/components/classNameSchedule.tsx';
+import PricingPlans from '../MOD1-CLIENTES/components/PricingPlans.tsx';
+import SuccessStories from '../MOD1-CLIENTES/components/SuccessStories.tsx';
+import Testimonials from '../MOD1-CLIENTES/components/Testimonials.tsx';
+import FAQ from '../MOD1-CLIENTES/components/FAQ.tsx';
+import { siteData } from '../MOD1-CLIENTES/data/siteData.ts';
 
 
 <Layout title={`${siteData.name} - ${siteData.tagline}`} description={siteData.description}>

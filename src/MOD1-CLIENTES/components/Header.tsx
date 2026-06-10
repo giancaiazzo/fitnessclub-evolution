@@ -43,7 +43,7 @@ export default function Header() {
         <div className="ml-3 h-8 w-px bg-primary/25"></div>
 
         <a
-          href="#"
+          href="/SignIn"
           className="inline-flex items-center justify-center gap-2 rounded-xl border border-primary/40 bg-background px-5 py-3 font-bold text-primary shadow-md shadow-primary/10 transition-all duration-200 hover:scale-105 hover:bg-primary hover:text-primary-foreground hover:shadow-primary/30"
         >
           Iniciar sesión
@@ -93,7 +93,7 @@ export default function Header() {
           <div className="my-3 h-px bg-primary/20"></div>
 
           <a
-            href="#"
+            href="/SignIn"
             onClick={() => setIsMenuOpen(false)}
             className="flex items-center justify-center gap-2 rounded-xl border border-primary/40 bg-background px-6 py-3 text-center font-bold text-primary shadow-md shadow-primary/10 transition-all duration-200 hover:bg-primary hover:text-primary-foreground"
           >

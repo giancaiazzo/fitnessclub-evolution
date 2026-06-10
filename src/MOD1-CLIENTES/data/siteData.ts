@@ -53,6 +53,7 @@ export const navigation = [
   { name: "Classes", href: "/classes" },
   { name: "Pricing", href: "/pricing" },
   { name: "Contact", href: "/contact" },
+  { name: "IniciarSesion", href: "/signin" },
 ];
 
 export const features = [

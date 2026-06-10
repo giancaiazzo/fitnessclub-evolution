@@ -1,15 +1,15 @@
 import Layout from "../layouts/Layout";
-import Hero from "../components/Hero";
-import Statistics from "../components/Statistics";
-import Features from "../components/Features";
-import Facilities from "../components/Facilities";
-import ClassesSection from "../components/Classes";
-import ClassSchedule from "../components/ClassSchedule";
-import PricingPlans from "../components/PricingPlans";
-import SuccessStories from "../components/SuccessStories";
-import Testimonials from "../components/Testimonials";
-import FAQ from "../components/FAQ";
-import { siteData } from "../data/siteData";
+import Hero from "../MOD1-CLIENTES/components/Hero";
+import Statistics from "../MOD1-CLIENTES/components/Statistics";
+import Features from "../MOD1-CLIENTES/components/Features";
+import Facilities from "../MOD1-CLIENTES/components/Facilities";
+import ClassesSection from "../MOD1-CLIENTES/components/Classes";
+import ClassSchedule from "../MOD1-CLIENTES/components/ClassSchedule";
+import PricingPlans from "../MOD1-CLIENTES/components/PricingPlans";
+import SuccessStories from "../MOD1-CLIENTES/components/SuccessStories";
+import Testimonials from "../MOD1-CLIENTES/components/Testimonials";
+import FAQ from "../MOD1-CLIENTES/components/FAQ";
+import { siteData } from "../MOD1-CLIENTES/data/siteData";
 
 export default function HomePage() {
   return (

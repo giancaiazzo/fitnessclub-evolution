@@ -1,6 +1,6 @@
 
 import Layout from '../layouts/Layout.tsx';
-import { siteData } from '../data/siteData';
+import { siteData } from '../MOD1-CLIENTES/data/siteData.ts';
 
 
 <Layout

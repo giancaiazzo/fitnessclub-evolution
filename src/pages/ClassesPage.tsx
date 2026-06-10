@@ -1,5 +1,5 @@
 import Layout from "../layouts/Layout";
-import { classes, fullSchedule, siteData } from "../data/siteData";
+import { classes, fullSchedule, siteData } from "../MOD1-CLIENTES/data/siteData";
 
 type DayKey = keyof typeof fullSchedule;
 type ScheduleSlot = (typeof fullSchedule)[DayKey][number];

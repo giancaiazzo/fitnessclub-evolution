@@ -1,5 +1,5 @@
 import Layout from "../layouts/Layout";
-import { history, siteData, trainers } from "../data/siteData";
+import { history, siteData, trainers } from "../MOD1-CLIENTES/data/siteData";
 
 export default function AboutPage() {
   return (

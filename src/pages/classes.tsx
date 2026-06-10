@@ -1,5 +1,5 @@
 import Layout from "../layouts/Layout";
-import { classes, siteData, fullSchedule } from "../data/siteData";
+import { classes, siteData, fullSchedule } from "../MOD1-CLIENTES/data/siteData";
 
 type ScheduleSlot = {
   time: string;

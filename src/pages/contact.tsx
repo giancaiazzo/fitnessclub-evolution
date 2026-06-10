@@ -1,6 +1,6 @@
 import Layout from "../layouts/Layout";
 import ContactForm from "../components/ContactForm";
-import { siteData, socialLinks, contactInfo } from "../data/siteData";
+import { siteData, socialLinks, contactInfo } from "../MOD1-CLIENTES/data/siteData";
 import mapImage from "../assets/photo-1517487881594-2787fef5ebf7.jpg";
 
 export default function ContactPage() {

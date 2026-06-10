@@ -1,7 +1,7 @@
 import { useEffect } from "react";
-import Header from "../components/Header";
-import Footer from "../components/Footer.tsx";
-import { siteData } from "../data/siteData";
+import Header from "../MOD1-CLIENTES/components/Header";
+import Footer from "../MOD1-CLIENTES/components/Footer.tsx";
+import { siteData } from "../MOD1-CLIENTES/data/siteData.ts";
 
 interface LayoutProps {
   children: React.ReactNode;
