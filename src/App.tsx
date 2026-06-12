@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom";
 
 import Home from "./pages/Home";
 import AboutPage from "./pages/AboutPage";
@@ -9,7 +9,7 @@ import SignIn from "./MOD2-GESTION/pagesgestion/SignIn";
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<AboutPage />} />
@@ -18,7 +18,7 @@ function App() {
         <Route path="/pricing" element={<PricingPage />} />
         <Route path="/SignIn" element={<SignIn />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
