@@ -1,6 +1,5 @@
 import React from "react";
 import GridShape from "../common/GridShape";
-import { Link } from "react-router";
 import ThemeTogglerTwo from "../common/ThemeTogglerTwo";
 
 export default function AuthLayout({

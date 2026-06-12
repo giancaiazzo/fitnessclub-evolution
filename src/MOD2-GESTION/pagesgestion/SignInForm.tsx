@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "../icons";
-import Label from "../form/Label";
+
 import Input from "../form/input/InputField";
 import Checkbox from "../form/input/Checkbox";
 import Button from "../ui/button/Button";
@@ -36,16 +36,16 @@ export default function SignInForm() {
       <form>
         <div className="space-y-6">
           <div>
-            <Label>
+            
               Email <span className="text-error-500">*</span>{" "}
-            </Label>
+            
             <Input placeholder="info@gmail.com" />
           </div>
 
           <div>
-            <Label>
+            
               Contraseña <span className="text-error-500">*</span>{" "}
-            </Label>
+            
 
             <div className="relative">
               <Input

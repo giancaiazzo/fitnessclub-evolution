@@ -3,8 +3,6 @@ import Hero from '../MOD1-CLIENTES/components/Hero.tsx';
 import Statistics from '../MOD1-CLIENTES/components/Statistics.tsx';
 import Features from '../MOD1-CLIENTES/components/Features.tsx';
 import Facilities from '../MOD1-CLIENTES/components/Facilities.tsx';
-import classNamees from '../MOD1-CLIENTES/components/classNamees.tsx';
-import classNameSchedule from '../MOD1-CLIENTES/components/classNameSchedule.tsx';
 import PricingPlans from '../MOD1-CLIENTES/components/PricingPlans.tsx';
 import SuccessStories from '../MOD1-CLIENTES/components/SuccessStories.tsx';
 import Testimonials from '../MOD1-CLIENTES/components/Testimonials.tsx';
@@ -17,8 +15,6 @@ import { siteData } from '../MOD1-CLIENTES/data/siteData.ts';
   <Statistics />
   <Features />
   <Facilities />
-  <classNamees />
-  <classNameSchedule />
   <PricingPlans />
   <SuccessStories />
   <Testimonials />

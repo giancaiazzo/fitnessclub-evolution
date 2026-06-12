@@ -1,6 +1,6 @@
-import { FC, ReactNode } from "react";
+import type { FC, ReactNode } from "react";
 import { twMerge } from "tailwind-merge";
-import { clsx } from "clsx";
+import clsx from "clsx";
 
 interface LabelProps {
   htmlFor?: string;
@@ -12,11 +12,11 @@ const Label: FC<LabelProps> = ({ htmlFor, children, className }) => {
   return (
     <label
       htmlFor={htmlFor}
-      className={clsx(
-        twMerge(
+      className={twMerge(
+        clsx(
           "mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400",
-          className,
-        ),
+          className
+        )
       )}
     >
       {children}

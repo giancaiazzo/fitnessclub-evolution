@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { navigation, siteData } from "../data/siteData";
+import { navigation } from "../data/siteData";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
