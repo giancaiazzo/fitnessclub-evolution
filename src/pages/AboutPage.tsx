@@ -159,21 +159,15 @@ export default function AboutPage() {
         Conocé a nuestro equipo de profesionales, comprometidos con tu progreso.
       </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-8">
-        {trainers.map((trainer, index) => {
-          let extraClassName = "";
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+  {trainers.map((trainer, index) => {
+    const extraClassName = index === 3 ? "md:col-start-2" : "";
 
-          if (index + 1 === 4) {
-            extraClassName = "lg:col-start-2";
-          } else if (index + 1 === 5) {
-            extraClassName = "md:col-start-2 lg:col-start-4";
-          }
-
-          return (
-            <div
-              key={trainer.name}
-              className={`bg-background p-8 rounded-xl border border-border hover:border-primary transition-all transform hover:scale-105 md:col-span-2 ${extraClassName}`}
-            >
+    return (
+      <div
+        key={trainer.name}
+        className={`bg-background p-8 rounded-xl border border-border hover:border-primary transition-all transform hover:scale-105 ${extraClassName}`}
+      >
               <div className="text-center mb-6">
                 <div className="w-40 h-40 rounded-full mx-auto mb-4 overflow-hidden border-4 border-primary/20">
                   <img

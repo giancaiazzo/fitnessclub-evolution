@@ -4,37 +4,37 @@ import { paymentOptions, pricingPlans, siteData } from "../MOD1-CLIENTES/data/si
 
 const comparisonRows = [
   {
-    feature: "Gym Access",
-    values: ["check", "check", "check"],
+    feature: "Acceso al gimnasio",
+    values: ["incluido", "incluido", "incluido"],
   },
   {
-    feature: "24/7 Access",
-    values: ["no", "check", "check"],
+    feature: "Acceso con horario extendido",
+    values: ["no", "incluido", "incluido"],
   },
   {
-    feature: "Group Classes",
-    values: ["no", "check", "check"],
+    feature: "Clases grupales",
+    values: ["no", "incluido", "incluido"],
   },
   {
-    feature: "Personal Trainer",
-    values: ["Consultation only", "Consultation included", "Unlimited"],
+    feature: "Entrenador personal",
+    values: ["Solo consulta", "Consulta incluida", "Ilimitado"],
   },
   {
-    feature: "Nutrition Guidance",
-    values: ["no", "check", "Custom Plans"],
+    feature: "Orientación nutricional",
+    values: ["no", "incluido", "Planes personalizados"],
   },
   {
-    feature: "Spa & Recovery",
-    values: ["no", "no", "check"],
+    feature: "Recuperación y bienestar",
+    values: ["no", "no", "incluido"],
   },
   {
-    feature: "Priority Booking",
-    values: ["no", "no", "check"],
+    feature: "Reserva prioritaria",
+    values: ["no", "no", "incluido"],
   },
 ];
 
 function renderComparisonValue(value: string) {
-  if (value === "check") {
+  if (value === "incluido") {
     return <i className="ri-checkbox-circle-fill text-primary text-xl"></i>;
   }
 
@@ -42,7 +42,7 @@ function renderComparisonValue(value: string) {
     return <i className="ri-close-circle-line text-muted-foreground/40 text-xl"></i>;
   }
 
-  if (value === "Unlimited" || value === "Custom Plans") {
+  if (value === "Ilimitado" || value === "Planes personalizados") {
     return <span className="text-primary font-semibold">{value}</span>;
   }
 
@@ -52,18 +52,18 @@ function renderComparisonValue(value: string) {
 export default function PricingPage() {
   return (
     <Layout
-      title={`Pricing - ${siteData.name}`}
-      description="Choose the perfect membership plan for your fitness journey"
+      title={`Planes - ${siteData.name}`}
+      description="Elegí el plan ideal para comenzar tu proceso de entrenamiento"
     >
       <section className="pt-32 pb-20 bg-gradient-to-br from-background via-card to-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto">
             <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6">
-              Precios de Membrecia
+              Planes y membresías
             </h1>
 
             <p className="text-xl text-muted-foreground">
-              Precios flexibles para adaptarse a tus necesidades y objetivos de fitness
+              Opciones flexibles para adaptarse a tus necesidades, objetivos y ritmo de entrenamiento.
             </p>
           </div>
         </div>
@@ -74,11 +74,11 @@ export default function PricingPage() {
       <section className="py-20 bg-card">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-4xl font-bold text-foreground mb-4 text-center">
-            Comparacion de planes
+            Comparación de planes
           </h2>
 
           <p className="text-xl text-muted-foreground mb-12 text-center max-w-2xl mx-auto">
-            Compara las características y beneficios de cada plan para encontrar el que mejor se adapte a ti
+            Compará las características y beneficios de cada plan para encontrar el que mejor se adapte a vos.
           </p>
 
           <div className="bg-background rounded-xl border border-border overflow-x-auto">
@@ -86,7 +86,7 @@ export default function PricingPage() {
               <thead>
                 <tr className="border-b border-border">
                   <th className="px-6 py-4 text-left text-foreground font-semibold">
-                    Caracteristicas
+                    Características
                   </th>
 
                   {pricingPlans.map((plan) => (
@@ -98,7 +98,7 @@ export default function PricingPage() {
 
                       {plan.popular && (
                         <span className="block text-primary text-sm font-normal mt-1">
-                          Mas Popular
+                          Más popular
                         </span>
                       )}
                     </th>
@@ -156,7 +156,7 @@ export default function PricingPage() {
           <div className="max-w-4xl mx-auto">
             <div className="bg-card p-8 rounded-xl border border-border mb-8">
               <h3 className="text-2xl font-bold text-foreground mb-6 text-center">
-                Metodos de pagos aceptados
+                Métodos de pago aceptados
               </h3>
 
               <div className="flex flex-wrap justify-center gap-4">
@@ -165,7 +165,9 @@ export default function PricingPage() {
                     key={method}
                     className="bg-background px-6 py-3 rounded-lg border border-border"
                   >
-                    <span className="text-muted-foreground font-medium">{method}</span>
+                    <span className="text-muted-foreground font-medium">
+                      {method}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -174,18 +176,26 @@ export default function PricingPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-primary/10 border border-primary/30 p-6 rounded-xl text-center">
                 <i className="ri-shield-check-line text-4xl text-primary mb-4"></i>
+
                 <h4 className="text-xl font-bold text-foreground mb-2">
-                  Dinero retornado  de manera garantizada
+                  Condiciones claras
                 </h4>
-                <p className="text-muted-foreground">{paymentOptions.guarantee}</p>
+
+                <p className="text-muted-foreground">
+                  {paymentOptions.guarantee}
+                </p>
               </div>
 
               <div className="bg-primary/10 border border-primary/30 p-6 rounded-xl text-center">
                 <i className="ri-gift-line text-4xl text-primary mb-4"></i>
+
                 <h4 className="text-xl font-bold text-foreground mb-2">
-                  Dia de prueba gratis
+                  Consulta para nuevos clientes
                 </h4>
-                <p className="text-muted-foreground">{paymentOptions.trial}</p>
+
+                <p className="text-muted-foreground">
+                  {paymentOptions.trial}
+                </p>
               </div>
             </div>
           </div>
@@ -202,31 +212,33 @@ export default function PricingPage() {
             <div className="bg-background p-6 rounded-xl border border-border hover:border-primary transition-all">
               <h3 className="text-xl font-bold text-foreground mb-3 flex items-center gap-2">
                 <i className="ri-question-line text-primary"></i>
-                Puedo cancelar mi membresia en cualquier momento?
+                ¿Puedo cancelar mi membresía en cualquier momento?
               </h3>
+
               <p className="text-muted-foreground leading-relaxed">
-                Si, puedes cancelar tu membresia en cualquier momento a traves de tu cuenta en linea o contactando a nuestro equipo de soporte. No hay cargos por cancelacion.
+                Sí, podés consultar las condiciones de cancelación o modificación de tu plan directamente con el gimnasio.
               </p>
             </div>
 
             <div className="bg-background p-6 rounded-xl border border-border hover:border-primary transition-all">
               <h3 className="text-xl font-bold text-foreground mb-3 flex items-center gap-2">
                 <i className="ri-question-line text-primary"></i>
-                Ofrecen periodos de prueba?
+                ¿Ofrecen períodos de prueba?
               </h3>
+
               <p className="text-muted-foreground leading-relaxed">
-                ¡Si! Ofrecemos un periodo de prueba gratuito de 7 días para nuevos miembros. Ven y experimenta todo lo que tenemos para ofrecer.
+                Sí, podés comunicarte con el gimnasio para consultar por clases de prueba, disponibilidad y condiciones para nuevos clientes.
               </p>
             </div>
 
             <div className="bg-background p-6 rounded-xl border border-border hover:border-primary transition-all">
               <h3 className="text-xl font-bold text-foreground mb-3 flex items-center gap-2">
                 <i className="ri-question-line text-primary"></i>
-                ¿Incluyen sesiones de entrenamiento personal?
+                ¿Incluyen entrenamiento personalizado?
               </h3>
+
               <p className="text-muted-foreground leading-relaxed">
-                Las sesiones de entrenamiento personal están incluidas en los planes Premium y Elite.
-                Los miembros básicos pueden comprar sesiones por separado.
+                Algunos planes pueden incluir seguimiento o entrenamiento personalizado. También podés consultar por opciones adaptadas a tus objetivos.
               </p>
             </div>
 
@@ -235,9 +247,9 @@ export default function PricingPage() {
                 <i className="ri-question-line text-primary"></i>
                 ¿Qué métodos de pago aceptan?
               </h3>
+
               <p className="text-muted-foreground leading-relaxed">
-                Aceptamos todas las tarjetas de crédito principales, tarjetas de débito y transferencias bancarias.
-                Los pagos mensuales se procesan automáticamente.
+                Se aceptan distintos métodos de pago según disponibilidad. Consultá directamente con el gimnasio para confirmar las opciones actuales.
               </p>
             </div>
           </div>
@@ -251,7 +263,7 @@ export default function PricingPage() {
           </h2>
 
           <p className="text-xl text-primary-foreground/90 mb-8 max-w-2xl mx-auto">
-            Contáctanos hoy para programar una visita y comenzar tu viaje fitness
+            Contactanos hoy para consultar por planes, horarios y servicios disponibles.
           </p>
 
           <a

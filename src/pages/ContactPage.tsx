@@ -240,34 +240,49 @@ export default function ContactPage() {
   </section>
 
   <section className="py-20 bg-background">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 className="text-3xl font-bold text-foreground mb-12 text-center">
-        Encontranos
-      </h2>
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <h2 className="text-3xl font-bold text-foreground mb-12 text-center">
+      Encontranos
+    </h2>
 
-      <div className="max-w-5xl mx-auto bg-card p-8 rounded-xl border border-border">
-        <div className="aspect-video bg-secondary rounded-lg flex items-center justify-center overflow-hidden relative">
-          <img
-            src={mapImage}
-            alt="Gym location map"
-            width={1200}
-            height={600}
-            className="w-full h-full object-cover opacity-50"
-            loading="lazy"
-          />
+    <div className="max-w-5xl mx-auto bg-card p-8 rounded-xl border border-border">
+      <div className="mb-6 text-center">
+        <h3 className="text-2xl font-bold text-foreground mb-2">
+          FitnessClubEvolution
+        </h3>
 
-          <div className="absolute inset-0 flex items-center justify-center text-center p-4">
-            <div>
-              <i className="ri-map-pin-line text-5xl text-primary mb-4"></i>
-              <p className="text-muted-foreground text-lg">
-                La integración del mapa puede ser agregada aquí (Google Maps, etc.)
-              </p>
-            </div>
-          </div>
-        </div>
+        <p className="text-muted-foreground">
+          Dr. Luis Alberto de Herrera 231, 50000 Salto, Departamento de Salto
+        </p>
+      </div>
+
+      <div className="aspect-video rounded-lg overflow-hidden border border-border">
+        <iframe
+          title="Ubicación de FitnessClubEvolution"
+          src="https://www.google.com/maps?q=Fit%20Evolution%2C%20Dr.%20Luis%20Alberto%20de%20Herrera%20231%2C%2050000%20Salto%2C%20Departamento%20de%20Salto&output=embed"
+          width="100%"
+          height="100%"
+          style={{ border: 0 }}
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          allowFullScreen
+        ></iframe>
+      </div>
+
+      <div className="mt-6 flex justify-center">
+        <a
+          href="https://www.google.com/maps/search/?api=1&query=Fit%20Evolution%2C%20Dr.%20Luis%20Alberto%20de%20Herrera%20231%2C%2050000%20Salto%2C%20Departamento%20de%20Salto"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 font-semibold text-primary-foreground transition-all hover:scale-105 hover:bg-[#86c312]"
+        >
+          Abrir en Google Maps
+          <i className="ri-map-pin-line text-lg"></i>
+        </a>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 </Layout>
   );
 }

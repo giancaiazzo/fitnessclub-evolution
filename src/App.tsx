@@ -6,19 +6,21 @@ import ClassesPage from "./pages/ClassesPage";
 import ContactPage from "./pages/ContactPage";
 import PricingPage from "./pages/PricingPage";
 import SignIn from "./MOD2-GESTION/pagesgestion/SignIn";
+import CalcIMC from "./pages/CalcIMC";
 
 function App() {
   return (
-    <HashRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/classes" element={<ClassesPage />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/pricing" element={<PricingPage />} />
-        <Route path="/SignIn" element={<SignIn />} />
-      </Routes>
-    </HashRouter>
+<HashRouter>
+  <Routes>
+    <Route path="/" element={<Home />} />
+    <Route path="/about" element={<AboutPage />} />
+    <Route path="/classes" element={<ClassesPage />} />
+    <Route path="/contact" element={<ContactPage />} />
+    <Route path="/pricing" element={<PricingPage />} />
+    <Route path="/calc-imc" element={<CalcIMC />} />
+    <Route path="/SignIn" element={<SignIn />} />
+  </Routes>
+</HashRouter>
   );
 }
 
