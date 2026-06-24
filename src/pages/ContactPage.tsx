@@ -2,8 +2,7 @@ import ContactForm from "../MOD1-CLIENTES/components/ContactForm";
 import Layout from "../layouts/Layout";
 import { contactInfo, siteData, socialLinks } from "../MOD1-CLIENTES/data/siteData";
 
-const mapImage =
-  "https://images.unsplash.com/photo-1517487881594-2787fef5ebf7?w=1200&h=600&fit=crop&q=80";
+
 
 export default function ContactPage() {
   return (
