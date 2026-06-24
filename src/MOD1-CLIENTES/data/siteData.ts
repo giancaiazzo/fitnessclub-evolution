@@ -57,6 +57,7 @@ export const navigation = [
   { name: "IMC", href: "/calc-imc" },
   { name: "Planes", href: "/pricing" },
   { name: "Contacto", href: "/contact" },
+  { name: "Tour virtual", href: "/tour-virtual" },
   { name: "Iniciar sesión", href: "/signin" },
 ];
 

@@ -1,5 +1,5 @@
 import { HashRouter, Routes, Route } from "react-router-dom";
-
+import TourVirtual from "./pages/TourVirtual";
 import Home from "./pages/Home";
 import AboutPage from "./pages/AboutPage";
 import ClassesPage from "./pages/ClassesPage";
@@ -18,6 +18,7 @@ function App() {
     <Route path="/contact" element={<ContactPage />} />
     <Route path="/pricing" element={<PricingPage />} />
     <Route path="/calc-imc" element={<CalcIMC />} />
+    <Route path="/tour-virtual" element={<TourVirtual />} />
     <Route path="/SignIn" element={<SignIn />} />
   </Routes>
 </HashRouter>
