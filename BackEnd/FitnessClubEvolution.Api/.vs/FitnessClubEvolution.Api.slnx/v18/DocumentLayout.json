@@ -3,44 +3,48 @@
   "WorkspaceRootPath": "C:\\Users\\gian3\\Documents\\GitHub\\ProyectoTesisFITNESSCLUBEVOLUTION\\BackEnd\\FitnessClubEvolution.Api\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{9D115187-57EC-432D-B2C4-7690B9DCC9BC}|FitnessClubEvolution.Api.csproj|c:\\users\\gian3\\documents\\github\\proyectotesisfitnessclubevolution\\backend\\fitnessclubevolution.api\\controllers\\dashboardcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9D115187-57EC-432D-B2C4-7690B9DCC9BC}|FitnessClubEvolution.Api.csproj|solutionrelative:controllers\\dashboardcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{9C07BC0A-01FE-1617-7367-3D88F4A29FAB}|FitnessClubEvolution.Api.csproj|c:\\users\\gian3\\documents\\github\\proyectotesisfitnessclubevolution\\backend\\fitnessclubevolution.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{9C07BC0A-01FE-1617-7367-3D88F4A29FAB}|FitnessClubEvolution.Api.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9D115187-57EC-432D-B2C4-7690B9DCC9BC}|FitnessClubEvolution.Api.csproj|c:\\users\\gian3\\documents\\github\\proyectotesisfitnessclubevolution\\backend\\fitnessclubevolution.api\\controllers\\comunicacionescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9D115187-57EC-432D-B2C4-7690B9DCC9BC}|FitnessClubEvolution.Api.csproj|solutionrelative:controllers\\comunicacionescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{9C07BC0A-01FE-1617-7367-3D88F4A29FAB}|FitnessClubEvolution.Api.csproj|c:\\users\\gian3\\documents\\github\\proyectotesisfitnessclubevolution\\backend\\fitnessclubevolution.api\\controllers\\dashboardcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C07BC0A-01FE-1617-7367-3D88F4A29FAB}|FitnessClubEvolution.Api.csproj|solutionrelative:controllers\\dashboardcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9D115187-57EC-432D-B2C4-7690B9DCC9BC}|FitnessClubEvolution.Api.csproj|c:\\users\\gian3\\documents\\github\\proyectotesisfitnessclubevolution\\backend\\fitnessclubevolution.api\\controllers\\cuotascontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9D115187-57EC-432D-B2C4-7690B9DCC9BC}|FitnessClubEvolution.Api.csproj|solutionrelative:controllers\\cuotascontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{9C07BC0A-01FE-1617-7367-3D88F4A29FAB}|FitnessClubEvolution.Api.csproj|c:\\users\\gian3\\documents\\github\\proyectotesisfitnessclubevolution\\backend\\fitnessclubevolution.api\\controllers\\comunicacionescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C07BC0A-01FE-1617-7367-3D88F4A29FAB}|FitnessClubEvolution.Api.csproj|solutionrelative:controllers\\comunicacionescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9D115187-57EC-432D-B2C4-7690B9DCC9BC}|FitnessClubEvolution.Api.csproj|c:\\users\\gian3\\documents\\github\\proyectotesisfitnessclubevolution\\backend\\fitnessclubevolution.api\\controllers\\pagoscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9D115187-57EC-432D-B2C4-7690B9DCC9BC}|FitnessClubEvolution.Api.csproj|solutionrelative:controllers\\pagoscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{9C07BC0A-01FE-1617-7367-3D88F4A29FAB}|FitnessClubEvolution.Api.csproj|c:\\users\\gian3\\documents\\github\\proyectotesisfitnessclubevolution\\backend\\fitnessclubevolution.api\\controllers\\cuotascontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C07BC0A-01FE-1617-7367-3D88F4A29FAB}|FitnessClubEvolution.Api.csproj|solutionrelative:controllers\\cuotascontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9D115187-57EC-432D-B2C4-7690B9DCC9BC}|FitnessClubEvolution.Api.csproj|c:\\users\\gian3\\documents\\github\\proyectotesisfitnessclubevolution\\backend\\fitnessclubevolution.api\\controllers\\servicioscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9D115187-57EC-432D-B2C4-7690B9DCC9BC}|FitnessClubEvolution.Api.csproj|solutionrelative:controllers\\servicioscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{9C07BC0A-01FE-1617-7367-3D88F4A29FAB}|FitnessClubEvolution.Api.csproj|c:\\users\\gian3\\documents\\github\\proyectotesisfitnessclubevolution\\backend\\fitnessclubevolution.api\\controllers\\pagoscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C07BC0A-01FE-1617-7367-3D88F4A29FAB}|FitnessClubEvolution.Api.csproj|solutionrelative:controllers\\pagoscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9D115187-57EC-432D-B2C4-7690B9DCC9BC}|FitnessClubEvolution.Api.csproj|c:\\users\\gian3\\documents\\github\\proyectotesisfitnessclubevolution\\backend\\fitnessclubevolution.api\\controllers\\rutinascontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9D115187-57EC-432D-B2C4-7690B9DCC9BC}|FitnessClubEvolution.Api.csproj|solutionrelative:controllers\\rutinascontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{9C07BC0A-01FE-1617-7367-3D88F4A29FAB}|FitnessClubEvolution.Api.csproj|c:\\users\\gian3\\documents\\github\\proyectotesisfitnessclubevolution\\backend\\fitnessclubevolution.api\\controllers\\servicioscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C07BC0A-01FE-1617-7367-3D88F4A29FAB}|FitnessClubEvolution.Api.csproj|solutionrelative:controllers\\servicioscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9D115187-57EC-432D-B2C4-7690B9DCC9BC}|FitnessClubEvolution.Api.csproj|c:\\users\\gian3\\documents\\github\\proyectotesisfitnessclubevolution\\backend\\fitnessclubevolution.api\\controllers\\planescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9D115187-57EC-432D-B2C4-7690B9DCC9BC}|FitnessClubEvolution.Api.csproj|solutionrelative:controllers\\planescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{9C07BC0A-01FE-1617-7367-3D88F4A29FAB}|FitnessClubEvolution.Api.csproj|c:\\users\\gian3\\documents\\github\\proyectotesisfitnessclubevolution\\backend\\fitnessclubevolution.api\\controllers\\rutinascontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C07BC0A-01FE-1617-7367-3D88F4A29FAB}|FitnessClubEvolution.Api.csproj|solutionrelative:controllers\\rutinascontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9D115187-57EC-432D-B2C4-7690B9DCC9BC}|FitnessClubEvolution.Api.csproj|c:\\users\\gian3\\documents\\github\\proyectotesisfitnessclubevolution\\backend\\fitnessclubevolution.api\\controllers\\entrenadorescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9D115187-57EC-432D-B2C4-7690B9DCC9BC}|FitnessClubEvolution.Api.csproj|solutionrelative:controllers\\entrenadorescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{9C07BC0A-01FE-1617-7367-3D88F4A29FAB}|FitnessClubEvolution.Api.csproj|c:\\users\\gian3\\documents\\github\\proyectotesisfitnessclubevolution\\backend\\fitnessclubevolution.api\\controllers\\planescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C07BC0A-01FE-1617-7367-3D88F4A29FAB}|FitnessClubEvolution.Api.csproj|solutionrelative:controllers\\planescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9D115187-57EC-432D-B2C4-7690B9DCC9BC}|FitnessClubEvolution.Api.csproj|c:\\users\\gian3\\documents\\github\\proyectotesisfitnessclubevolution\\backend\\fitnessclubevolution.api\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9D115187-57EC-432D-B2C4-7690B9DCC9BC}|FitnessClubEvolution.Api.csproj|solutionrelative:controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{9C07BC0A-01FE-1617-7367-3D88F4A29FAB}|FitnessClubEvolution.Api.csproj|c:\\users\\gian3\\documents\\github\\proyectotesisfitnessclubevolution\\backend\\fitnessclubevolution.api\\controllers\\entrenadorescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C07BC0A-01FE-1617-7367-3D88F4A29FAB}|FitnessClubEvolution.Api.csproj|solutionrelative:controllers\\entrenadorescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9D115187-57EC-432D-B2C4-7690B9DCC9BC}|FitnessClubEvolution.Api.csproj|c:\\users\\gian3\\documents\\github\\proyectotesisfitnessclubevolution\\backend\\fitnessclubevolution.api\\controllers\\clientescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9D115187-57EC-432D-B2C4-7690B9DCC9BC}|FitnessClubEvolution.Api.csproj|solutionrelative:controllers\\clientescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{9C07BC0A-01FE-1617-7367-3D88F4A29FAB}|FitnessClubEvolution.Api.csproj|c:\\users\\gian3\\documents\\github\\proyectotesisfitnessclubevolution\\backend\\fitnessclubevolution.api\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C07BC0A-01FE-1617-7367-3D88F4A29FAB}|FitnessClubEvolution.Api.csproj|solutionrelative:controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9C07BC0A-01FE-1617-7367-3D88F4A29FAB}|FitnessClubEvolution.Api.csproj|c:\\users\\gian3\\documents\\github\\proyectotesisfitnessclubevolution\\backend\\fitnessclubevolution.api\\controllers\\clientescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C07BC0A-01FE-1617-7367-3D88F4A29FAB}|FitnessClubEvolution.Api.csproj|solutionrelative:controllers\\clientescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -55,6 +59,19 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\gian3\\Documents\\GitHub\\ProyectoTesisFITNESSCLUBEVOLUTION\\BackEnd\\FitnessClubEvolution.Api\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "C:\\Users\\gian3\\Documents\\GitHub\\ProyectoTesisFITNESSCLUBEVOLUTION\\BackEnd\\FitnessClubEvolution.Api\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-07-08T14:54:52.978Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "DashboardController.cs",
               "DocumentMoniker": "C:\\Users\\gian3\\Documents\\GitHub\\ProyectoTesisFITNESSCLUBEVOLUTION\\BackEnd\\FitnessClubEvolution.Api\\Controllers\\DashboardController.cs",
               "RelativeDocumentMoniker": "Controllers\\DashboardController.cs",
@@ -67,7 +84,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "ComunicacionesController.cs",
               "DocumentMoniker": "C:\\Users\\gian3\\Documents\\GitHub\\ProyectoTesisFITNESSCLUBEVOLUTION\\BackEnd\\FitnessClubEvolution.Api\\Controllers\\ComunicacionesController.cs",
               "RelativeDocumentMoniker": "Controllers\\ComunicacionesController.cs",
@@ -80,7 +97,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "CuotasController.cs",
               "DocumentMoniker": "C:\\Users\\gian3\\Documents\\GitHub\\ProyectoTesisFITNESSCLUBEVOLUTION\\BackEnd\\FitnessClubEvolution.Api\\Controllers\\CuotasController.cs",
               "RelativeDocumentMoniker": "Controllers\\CuotasController.cs",
@@ -93,7 +110,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "PagosController.cs",
               "DocumentMoniker": "C:\\Users\\gian3\\Documents\\GitHub\\ProyectoTesisFITNESSCLUBEVOLUTION\\BackEnd\\FitnessClubEvolution.Api\\Controllers\\PagosController.cs",
               "RelativeDocumentMoniker": "Controllers\\PagosController.cs",
@@ -106,7 +123,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "ServiciosController.cs",
               "DocumentMoniker": "C:\\Users\\gian3\\Documents\\GitHub\\ProyectoTesisFITNESSCLUBEVOLUTION\\BackEnd\\FitnessClubEvolution.Api\\Controllers\\ServiciosController.cs",
               "RelativeDocumentMoniker": "Controllers\\ServiciosController.cs",
@@ -119,7 +136,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 6,
               "Title": "RutinasController.cs",
               "DocumentMoniker": "C:\\Users\\gian3\\Documents\\GitHub\\ProyectoTesisFITNESSCLUBEVOLUTION\\BackEnd\\FitnessClubEvolution.Api\\Controllers\\RutinasController.cs",
               "RelativeDocumentMoniker": "Controllers\\RutinasController.cs",
@@ -132,7 +149,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "PlanesController.cs",
               "DocumentMoniker": "C:\\Users\\gian3\\Documents\\GitHub\\ProyectoTesisFITNESSCLUBEVOLUTION\\BackEnd\\FitnessClubEvolution.Api\\Controllers\\PlanesController.cs",
               "RelativeDocumentMoniker": "Controllers\\PlanesController.cs",
@@ -145,7 +162,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "EntrenadoresController.cs",
               "DocumentMoniker": "C:\\Users\\gian3\\Documents\\GitHub\\ProyectoTesisFITNESSCLUBEVOLUTION\\BackEnd\\FitnessClubEvolution.Api\\Controllers\\EntrenadoresController.cs",
               "RelativeDocumentMoniker": "Controllers\\EntrenadoresController.cs",
@@ -158,7 +175,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 9,
               "Title": "AuthController.cs",
               "DocumentMoniker": "C:\\Users\\gian3\\Documents\\GitHub\\ProyectoTesisFITNESSCLUBEVOLUTION\\BackEnd\\FitnessClubEvolution.Api\\Controllers\\AuthController.cs",
               "RelativeDocumentMoniker": "Controllers\\AuthController.cs",
@@ -171,7 +188,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 10,
               "Title": "ClientesController.cs",
               "DocumentMoniker": "C:\\Users\\gian3\\Documents\\GitHub\\ProyectoTesisFITNESSCLUBEVOLUTION\\BackEnd\\FitnessClubEvolution.Api\\Controllers\\ClientesController.cs",
               "RelativeDocumentMoniker": "Controllers\\ClientesController.cs",
