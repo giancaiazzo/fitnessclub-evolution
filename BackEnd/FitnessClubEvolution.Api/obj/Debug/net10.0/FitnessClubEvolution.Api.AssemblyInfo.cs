@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FitnessClubEvolution.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+80b5b944398a56e7c219d4a5c18cd5e2ae559728")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fd11ad6e5f719007f6401fd3ac0bb7b5d796ec5a")]
 [assembly: System.Reflection.AssemblyProductAttribute("FitnessClubEvolution.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FitnessClubEvolution.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
