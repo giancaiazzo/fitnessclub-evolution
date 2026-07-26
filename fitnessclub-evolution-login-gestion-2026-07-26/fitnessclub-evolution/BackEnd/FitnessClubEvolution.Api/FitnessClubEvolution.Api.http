@@ -1,0 +1,6 @@
+@FitnessClubEvolution.Api_HostAddress = http://localhost:5157
+
+GET {{FitnessClubEvolution.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
