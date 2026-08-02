@@ -7,29 +7,29 @@ export default function AboutPage() {
   title={`Sobre nosotros - ${siteData.name}`}
   description="Conocé nuestra misión, valores y equipo de entrenadores"
 >
-  <section className="pt-32 pb-20 bg-gradient-to-br from-background via-card to-background">
+  <section className="bg-gradient-to-br from-background via-card to-background pb-16 pt-28 sm:pb-20 sm:pt-32">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="text-center max-w-3xl mx-auto">
-        <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6">
+        <h1 className="break-words text-4xl font-black leading-tight text-foreground sm:text-5xl md:text-6xl">
           Sobre {siteData.name}
         </h1>
 
-        <p className="text-xl text-muted-foreground">
+        <p className="mt-5 text-lg text-muted-foreground sm:text-xl">
           Nos dedicamos a mejorar tu vida de manera integral.
         </p>
       </div>
     </div>
   </section>
 
-  <section className="py-20 bg-card">
+  <section className="bg-card py-16 sm:py-20">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
-        <h2 className="text-4xl font-bold text-foreground mb-8 text-center">
+        <h2 className="mb-8 text-center text-3xl font-black text-foreground sm:text-4xl">
           Nuestra misión
         </h2>
 
         <div className="max-w-none">
-          <p className="text-xl text-muted-foreground mb-6 leading-relaxed">
+          <p className="mb-6 text-lg leading-relaxed text-muted-foreground sm:text-xl">
             En {siteData.name}, creemos que el entrenamiento no se trata solo de
             fuerza física, sino también de construir confianza, disciplina y una
             mentalidad positiva. Nuestra misión es crear una comunidad inclusiva,
@@ -47,14 +47,14 @@ export default function AboutPage() {
     </div>
   </section>
 
-  <section className="py-20 bg-background">
+  <section className="bg-background py-16 sm:py-20">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 className="text-4xl font-bold text-foreground mb-12 text-center">
+      <h2 className="mb-10 text-center text-3xl font-black text-foreground sm:mb-12 sm:text-4xl">
         Nuestros valores
       </h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-        <div className="bg-card p-8 rounded-xl border border-border text-center hover:border-primary transition-all">
+      <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-3 lg:gap-8">
+        <div className="rounded-2xl border border-border bg-card p-6 text-center transition-all hover:border-primary sm:p-8">
           <div className="w-20 h-20 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-6">
             <i className="ri-trophy-line text-4xl text-primary"></i>
           </div>
@@ -69,7 +69,7 @@ export default function AboutPage() {
           </p>
         </div>
 
-        <div className="bg-card p-8 rounded-xl border border-border text-center hover:border-primary transition-all">
+        <div className="rounded-2xl border border-border bg-card p-6 text-center transition-all hover:border-primary sm:p-8">
           <div className="w-20 h-20 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-6">
             <i className="ri-hand-heart-line text-4xl text-primary"></i>
           </div>
@@ -84,7 +84,7 @@ export default function AboutPage() {
           </p>
         </div>
 
-        <div className="bg-card p-8 rounded-xl border border-border text-center hover:border-primary transition-all">
+        <div className="rounded-2xl border border-border bg-card p-6 text-center transition-all hover:border-primary sm:p-8">
           <div className="w-20 h-20 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-6">
             <i className="ri-focus-3-line text-4xl text-primary"></i>
           </div>
@@ -102,9 +102,9 @@ export default function AboutPage() {
     </div>
   </section>
 
-  <section className="py-20 bg-background">
+  <section className="bg-background py-16 sm:py-20">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 className="text-4xl font-bold text-foreground mb-12 text-center">
+      <h2 className="mb-10 text-center text-3xl font-black text-foreground sm:mb-12 sm:text-4xl">
         Nuestro camino
       </h2>
 
@@ -133,7 +133,7 @@ export default function AboutPage() {
                     </span>
                   </div>
 
-                  <h3 className="text-2xl font-bold text-foreground mb-2">
+                  <h3 className="mb-2 text-xl font-bold text-foreground sm:text-2xl">
                     {milestone.title}
                   </h3>
 
@@ -149,35 +149,35 @@ export default function AboutPage() {
     </div>
   </section>
 
-  <section className="py-20 bg-card">
+  <section className="bg-card py-16 sm:py-20">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 className="text-4xl font-bold text-foreground mb-4 text-center">
+      <h2 className="mb-4 text-center text-3xl font-black text-foreground sm:text-4xl">
         Entrenadores profesionales
       </h2>
 
-      <p className="text-xl text-muted-foreground mb-12 text-center max-w-2xl mx-auto">
+      <p className="mx-auto mb-10 max-w-2xl text-center text-lg text-muted-foreground sm:mb-12 sm:text-xl">
         Conocé a nuestro equipo de profesionales, comprometidos con tu progreso.
       </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-  {trainers.map((trainer, index) => {
-    const extraClassName = index === 3 ? "md:col-start-2" : "";
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
+        {trainers.map((trainer) => {
+          const initials = trainer.name
+            .split(" ")
+            .map((part) => part[0])
+            .slice(0, 2)
+            .join("");
 
-    return (
+          return (
       <div
         key={trainer.name}
-        className={`bg-background p-8 rounded-xl border border-border hover:border-primary transition-all transform hover:scale-105 ${extraClassName}`}
+        className="min-w-0 rounded-2xl border border-border bg-background p-6 transition-all hover:-translate-y-1 hover:border-primary hover:shadow-xl hover:shadow-primary/10"
       >
               <div className="text-center mb-6">
-                <div className="w-40 h-40 rounded-full mx-auto mb-4 overflow-hidden border-4 border-primary/20">
-                  <img
-                    src={trainer.image}
-                    alt={`${trainer.name} - ${trainer.role}`}
-                    width={400}
-                    height={400}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
+                <div
+                  className="mx-auto mb-4 flex h-28 w-28 items-center justify-center rounded-full border-4 border-primary/20 bg-gradient-to-br from-primary/25 to-primary/5 text-3xl font-black text-primary"
+                  aria-hidden="true"
+                >
+                  {initials}
                 </div>
 
                 <h3 className="text-xl font-bold text-foreground mb-2">

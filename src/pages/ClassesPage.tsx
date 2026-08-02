@@ -1,4 +1,5 @@
 import Layout from "../layouts/Layout";
+import { Link } from "react-router-dom";
 import { classes, fullSchedule, siteData } from "../MOD1-CLIENTES/data/siteData";
 
 type DayKey = keyof typeof fullSchedule;
@@ -58,30 +59,30 @@ export default function ClassesPage() {
       title={`Clases - ${siteData.name}`}
       description="Explorá nuestra variedad de clases y entrenamientos"
     >
-      <section className="pt-32 pb-20 bg-gradient-to-br from-background via-card to-background">
+      <section className="bg-gradient-to-br from-background via-card to-background pb-16 pt-28 sm:pb-20 sm:pt-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto">
-            <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6">
-              Nuestras clases
+            <h1 className="text-4xl font-black text-foreground sm:text-5xl md:text-6xl">
+              Nuestros entrenamientos
             </h1>
 
-            <p className="text-xl text-muted-foreground">
+            <p className="mt-5 text-lg text-muted-foreground sm:text-xl">
               Encontrá el entrenamiento ideal según tu nivel, objetivos y estilo de vida.
             </p>
           </div>
         </div>
       </section>
 
-      <section className="py-20 bg-card">
+      <section className="bg-card py-16 sm:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="space-y-16">
+          <div className="space-y-8 sm:space-y-12">
             {classes.map((classItem) => (
               <div
                 key={classItem.name}
-                className="bg-background rounded-xl border border-border overflow-hidden"
+                className="min-w-0 overflow-hidden rounded-2xl border border-border bg-background"
               >
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
-                  <div className="relative h-64 lg:h-auto">
+                  <div className="relative aspect-[16/10] min-h-64 overflow-hidden bg-secondary lg:aspect-auto lg:min-h-full">
                     <img
                       src={classItem.image}
                       alt={classItem.name}
@@ -89,6 +90,7 @@ export default function ClassesPage() {
                       height={600}
                       className="w-full h-full object-cover"
                       loading="lazy"
+                      decoding="async"
                     />
 
                     <div className="absolute top-4 right-4">
@@ -98,9 +100,9 @@ export default function ClassesPage() {
                     </div>
                   </div>
 
-                  <div className="p-8">
+                  <div className="p-5 sm:p-8">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-                      <h2 className="text-3xl font-bold text-foreground">
+                      <h2 className="text-2xl font-bold text-foreground sm:text-3xl">
                         {classItem.name}
                       </h2>
 
@@ -110,7 +112,7 @@ export default function ClassesPage() {
                       </div>
                     </div>
 
-                    <p className="text-muted-foreground text-lg mb-4 leading-relaxed">
+                    <p className="mb-4 leading-relaxed text-muted-foreground sm:text-lg">
                       {classItem.detailedDescription}
                     </p>
 
@@ -145,13 +147,13 @@ export default function ClassesPage() {
                       </ul>
                     </div>
 
-                    <a
-                      href="/contact"
-                      className="inline-flex items-center gap-2 bg-primary hover:bg-[#86c312] text-primary-foreground px-6 py-3 rounded-lg font-semibold transition-all"
+                    <Link
+                      to="/contact"
+                      className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 font-semibold text-primary-foreground transition hover:bg-[#b8ef45] sm:w-auto"
                     >
-                      Reservar esta clase
+                      Consultar disponibilidad
                       <i className="ri-arrow-right-line"></i>
-                    </a>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -160,18 +162,53 @@ export default function ClassesPage() {
         </div>
       </section>
 
-      <section className="py-20 bg-background">
+      <section className="bg-background py-16 sm:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-4xl font-bold text-foreground mb-4 text-center">
+          <h2 className="mb-4 text-center text-3xl font-black text-foreground sm:text-4xl">
             Horario semanal completo
           </h2>
 
-          <p className="text-xl text-muted-foreground mb-12 text-center max-w-2xl mx-auto">
+          <p className="mx-auto mb-10 max-w-2xl text-center text-lg text-muted-foreground sm:mb-12 sm:text-xl">
             Organizá tu semana con nuestro calendario completo de clases.
           </p>
 
-          <div className="bg-card p-8 rounded-xl border border-border overflow-x-auto">
-            <table className="w-full text-left min-w-[800px]">
+          <div className="space-y-3 md:hidden">
+            {days.map((day) => (
+              <details
+                key={day.key}
+                className="group rounded-xl border border-border bg-card"
+              >
+                <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-4 font-bold text-foreground">
+                  {day.label}
+                  <i
+                    className="ri-arrow-down-s-line text-xl text-primary transition group-open:rotate-180"
+                    aria-hidden="true"
+                  />
+                </summary>
+                <div className="space-y-2 border-t border-border p-3">
+                  {fullSchedule[day.key].map((slot) => (
+                    <div
+                      key={`${day.key}-${slot.time}-${slot.class}`}
+                      className="flex items-start justify-between gap-3 rounded-lg bg-background p-3"
+                    >
+                      <div className="min-w-0">
+                        <p className="font-semibold text-foreground">{slot.class}</p>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          {slot.trainer}
+                        </p>
+                      </div>
+                      <span className="shrink-0 rounded-md bg-primary/10 px-2 py-1 text-sm font-bold text-primary">
+                        {slot.time}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </details>
+            ))}
+          </div>
+
+          <div className="hidden overflow-x-auto rounded-2xl border border-border bg-card p-6 md:block lg:p-8">
+            <table className="w-full min-w-[800px] text-left">
               <thead>
                 <tr className="border-b border-border">
                   <th className="pb-4 pr-4 text-foreground font-semibold">
@@ -228,10 +265,14 @@ export default function ClassesPage() {
               </tbody>
             </table>
 
-            <p className="text-muted-foreground text-center mt-6 text-sm">
+            <p className="mt-6 text-center text-sm text-muted-foreground">
               * Los horarios pueden variar. Contactanos para confirmar los horarios actualizados o reservar tu lugar.
             </p>
           </div>
+
+          <p className="mt-5 text-center text-sm text-muted-foreground md:hidden">
+            Los horarios pueden variar. Contactanos para confirmar disponibilidad.
+          </p>
         </div>
       </section>
     </Layout>

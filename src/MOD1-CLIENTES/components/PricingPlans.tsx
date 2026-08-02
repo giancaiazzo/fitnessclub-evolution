@@ -1,4 +1,5 @@
 import { pricingPlans } from "../data/siteData";
+import { Link } from "react-router-dom";
 
 interface PricingPlansProps {
   showHeading?: boolean;
@@ -6,27 +7,27 @@ interface PricingPlansProps {
 
 export default function PricingPlans({ showHeading = true }: PricingPlansProps) {
   return (
-    <section id="pricing" className="py-20 bg-card">
+    <section id="pricing" className="bg-card py-16 sm:py-20">
   <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
     {showHeading && (
-      <div className="mb-16 text-center">
-        <h2 className="mb-4 text-4xl font-bold text-foreground md:text-5xl">
+      <div className="mb-10 text-center sm:mb-14">
+        <h2 className="mb-4 text-3xl font-black text-foreground sm:text-4xl md:text-5xl">
           Planes de membresía
         </h2>
 
-        <p className="mx-auto max-w-2xl text-xl text-muted-foreground">
+        <p className="mx-auto max-w-2xl text-lg text-muted-foreground sm:text-xl">
           Elegí el plan que mejor se adapte a tus objetivos y a tu proceso fitness.
         </p>
       </div>
     )}
 
-    <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 md:grid-cols-3">
+    <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-3 lg:gap-8">
       {pricingPlans.map((plan) => (
         <div
           key={plan.name}
-          className={`rounded-xl border-2 bg-background p-8 transition-all hover:border-primary ${
+          className={`flex min-w-0 flex-col rounded-2xl border-2 bg-background p-6 transition-all hover:-translate-y-1 hover:border-primary hover:shadow-xl hover:shadow-primary/10 lg:p-8 ${
             plan.popular
-              ? "scale-105 border-primary shadow-lg shadow-primary/20"
+              ? "border-primary shadow-lg shadow-primary/20"
               : "border-border"
           }`}
         >
@@ -47,7 +48,7 @@ export default function PricingPlans({ showHeading = true }: PricingPlansProps) 
             <span className="text-muted-foreground">{plan.period}</span>
           </div>
 
-          <ul className="mb-8 space-y-4">
+          <ul className="mb-8 flex-1 space-y-4">
             {plan.features.map((feature) => (
               <li
                 key={feature}
@@ -59,8 +60,8 @@ export default function PricingPlans({ showHeading = true }: PricingPlansProps) 
             ))}
           </ul>
 
-          <a
-            href="/contact"
+          <Link
+            to="/contact"
             className={`flex w-full items-center justify-center gap-3 rounded-lg px-8 py-4 text-lg font-bold transition-all ${
               plan.popular
                 ? "bg-primary text-primary-foreground hover:bg-[#86c312]"
@@ -69,7 +70,7 @@ export default function PricingPlans({ showHeading = true }: PricingPlansProps) 
           >
             Empezar ahora
             <i className="ri-arrow-right-line" />
-          </a>
+          </Link>
         </div>
       ))}
     </div>

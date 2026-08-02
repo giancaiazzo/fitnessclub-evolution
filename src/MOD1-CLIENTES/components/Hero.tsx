@@ -1,122 +1,107 @@
-
+import { Link } from "react-router-dom";
 import { siteData } from "../data/siteData";
-import HeroImage from "../assets/photo-1534438327276-14e5300c3a48.jpg";
+import heroGymImage from "../assets/hero-gym.webp";
+
+const heroStats = [
+  { value: "200+", label: "clientes activos" },
+  { value: "4", label: "entrenadores" },
+  { value: "2012", label: "año de fundación" },
+];
 
 export default function Hero() {
   return (
-   <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-card to-background pt-20 overflow-hidden">
-  {/* Patrón de fondo */}
-  <div className="absolute inset-0 opacity-10">
-    <div
-      className="absolute inset-0"
-      style={{
-        backgroundImage:
-          "radial-gradient(circle at 2px 2px, var(--primary) 1px, transparent 0)",
-        backgroundSize: "40px 40px",
-      }}
-    ></div>
-  </div>
-
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-      {/* Contenido de texto */}
-      <div className="text-center lg:text-left">
-        <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-6 leading-tight">
-          {siteData.tagline}
-        </h1>
-
-        <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed">
-          {siteData.description}
-        </p>
-
-        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center lg:justify-start mb-12">
-          <a
-            href="/contact"
-            className="bg-primary hover:bg-[#86c312] text-primary-foreground px-8 py-4 rounded-lg font-bold text-lg transition-all transform inline-flex items-center justify-center gap-3"
-          >
-            Iniciá tu viaje
-            <i className="ri-arrow-right-line"></i>
-          </a>
-
-          <a
-            href="/about"
-            className="bg-transparent border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-4 rounded-lg font-bold text-lg transition-all inline-flex items-center justify-center gap-3"
-          >
-            Conocé más
-            <i className="ri-information-line"></i>
-          </a>
-        </div>
-
-        {/* Estadísticas */}
-        <div className="grid grid-cols-3 gap-6 max-w-lg mx-auto lg:mx-0">
-          <div className="text-center lg:text-left">
-            <div className="text-4xl md:text-5xl font-bold text-primary mb-2">
-              200+
-            </div>
-            <div className="text-muted-foreground text-sm md:text-base">
-              Miembros activos
-            </div>
-          </div>
-
-          <div className="text-center lg:text-left">
-            <div className="text-4xl md:text-5xl font-bold text-primary mb-2">
-              2+
-            </div>
-            <div className="text-muted-foreground text-sm md:text-base">
-              Entrenadores expertos
-            </div>
-          </div>
-
-          <div className="text-center lg:text-left">
-            <div className="text-4xl md:text-5xl font-bold text-primary mb-2">
-              24/7
-            </div>
-            <div className="text-muted-foreground text-sm md:text-base">
-              Acceso 24/7
-            </div>
-          </div>
-        </div>
+    <section className="relative flex min-h-screen items-center overflow-hidden bg-gradient-to-br from-background via-card to-background pb-16 pt-28 sm:pt-32 lg:pb-20">
+      <div className="pointer-events-none absolute inset-0 opacity-[0.08]">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 2px 2px, var(--primary) 1px, transparent 0)",
+            backgroundSize: "40px 40px",
+          }}
+        />
       </div>
 
-      {/* Imagen principal */}
-      <div className="hidden lg:block">
-        <div className="relative">
-          <div className="aspect-square rounded-2xl overflow-hidden bg-card border-2 border-border shadow-2xl">
-            <img
-              src={HeroImage}
-              alt="Entrenamiento fitness"
-              width={800}
-              height={800}
-              className="w-full h-full object-cover"
-              loading="eager"
-            />
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="grid min-w-0 items-center gap-10 lg:grid-cols-2 lg:gap-14">
+          <div className="min-w-0 text-center lg:text-left">
+            <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-2 text-sm font-bold text-primary">
+              <i className="ri-map-pin-line" aria-hidden="true" />
+              Salto, Uruguay
+            </span>
+
+            <h1 className="text-balance text-4xl font-black leading-[1.08] text-foreground sm:text-5xl md:text-6xl lg:text-7xl">
+              {siteData.tagline}
+            </h1>
+
+            <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-muted-foreground sm:text-xl md:text-2xl lg:mx-0">
+              {siteData.description}. Entrená con acompañamiento, variedad de
+              actividades y una comunidad que te impulsa a progresar.
+            </p>
+
+            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row sm:gap-4 lg:justify-start">
+              <Link
+                to="/services"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-7 py-3.5 text-base font-black text-primary-foreground shadow-lg shadow-primary/20 transition hover:bg-[#b8ef45] sm:text-lg"
+              >
+                Ver servicios
+                <i className="ri-arrow-right-line" aria-hidden="true" />
+              </Link>
+
+              <Link
+                to="/about"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border-2 border-primary/70 bg-background/50 px-7 py-3.5 text-base font-bold text-primary transition hover:bg-primary hover:text-primary-foreground sm:text-lg"
+              >
+                Conocé el gimnasio
+                <i className="ri-information-line" aria-hidden="true" />
+              </Link>
+            </div>
+
+            <dl className="mx-auto mt-10 grid max-w-xl grid-cols-3 divide-x divide-border rounded-2xl border border-border bg-card/75 px-2 py-4 backdrop-blur lg:mx-0">
+              {heroStats.map((stat) => (
+                <div key={stat.label} className="min-w-0 px-2 text-center sm:px-4">
+                  <dt className="mt-1 text-[0.68rem] leading-tight text-muted-foreground sm:text-sm">
+                    {stat.label}
+                  </dt>
+                  <dd className="text-2xl font-black text-primary sm:text-3xl md:text-4xl">
+                    {stat.value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
           </div>
 
-          <div className="absolute -bottom-6 -left-6 bg-primary p-6 rounded-xl shadow-xl">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-background rounded-lg flex items-center justify-center">
-                <i className="ri-trophy-line text-2xl text-primary"></i>
-              </div>
+          <div className="relative mx-auto w-full max-w-2xl lg:max-w-none">
+            <div className="aspect-[4/3] overflow-hidden rounded-3xl border-2 border-border bg-card shadow-2xl shadow-black/30 lg:aspect-square">
+              <img
+                src={heroGymImage}
+                alt="Sector de musculación de un gimnasio equipado"
+                width={1400}
+                height={1000}
+                className="h-full w-full object-cover"
+                loading="eager"
+                fetchPriority="high"
+              />
+            </div>
 
-              <div>
-                <div className="text-primary-foreground font-bold text-lg">
-                  Premios al culturismo
-                </div>
-                <div className="text-primary-foreground/80 text-sm">
-                  Tu gimnasio este 2027
+            <div className="absolute -bottom-4 left-3 right-3 rounded-2xl border border-primary/30 bg-background/90 p-4 shadow-xl backdrop-blur sm:-bottom-5 sm:left-5 sm:right-auto sm:p-5">
+              <div className="flex items-center gap-3">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary text-xl text-primary-foreground sm:h-12 sm:w-12">
+                  <i className="ri-award-line" aria-hidden="true" />
+                </span>
+                <div>
+                  <strong className="block text-lg text-foreground">
+                    Desde 2012
+                  </strong>
+                  <span className="text-sm text-muted-foreground">
+                    Entrenando junto a Salto
+                  </span>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
-
-  {/* Indicador de scroll */}
-  <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce hidden lg:block">
-    <i className="ri-arrow-down-line text-2xl text-primary"></i>
-  </div>
-</section>
+    </section>
   );
 }

@@ -1,8 +1,13 @@
+import gymEquipmentImage from "../assets/gym-equipment.webp";
+import mobilityTrainingImage from "../assets/mobility-training.webp";
+import strengthTrainingImage from "../assets/strength-training.webp";
+import trainingSpaceImage from "../assets/training-space.webp";
+
 export const siteData = {
   name: "FitnessClubEvolution",
   tagline: "Transformamos tu vida",
   description: "Fitness y bienestar en un solo lugar",
-  address: "Salto, Uruguay",
+  address: "Dr. Luis Alberto de Herrera 231, Salto, Uruguay",
   phone: "+598 99 123 456",
   email: "contacto@fitnessclubevolution.com",
   social: {
@@ -53,12 +58,44 @@ export const contactInfo = [
 export const navigation = [
   { name: "Inicio", href: "/" },
   { name: "Nosotros", href: "/about" },
-  { name: "Clases", href: "/classes" },
+  { name: "Servicios", href: "/services" },
+  { name: "Entrenamientos", href: "/classes" },
   { name: "IMC", href: "/calc-imc" },
   { name: "Planes", href: "/pricing" },
   { name: "Contacto", href: "/contact" },
   { name: "Tour virtual", href: "/tour-virtual" },
-  { name: "Iniciar sesión", href: "/signin" },
+  { name: "Iniciar sesión", href: "/SignIn" },
+];
+
+export const services = [
+  {
+    name: "Sala de musculación",
+    description:
+      "Acceso a máquinas, pesos libres y sectores preparados para entrenar fuerza de manera progresiva.",
+    icon: "ri-weight-line",
+    highlights: ["Equipamiento variado", "Orientación técnica", "Todos los niveles"],
+  },
+  {
+    name: "Entrenamientos guiados",
+    description:
+      "Clases y sesiones acompañadas por entrenadores para trabajar técnica, constancia y rendimiento.",
+    icon: "ri-user-star-line",
+    highlights: ["Acompañamiento profesional", "Opciones grupales", "Objetivos definidos"],
+  },
+  {
+    name: "Rutinas personalizadas",
+    description:
+      "Planificaciones adaptadas al nivel, disponibilidad y objetivo de cada cliente del gimnasio.",
+    icon: "ri-file-list-3-line",
+    highlights: ["Plan organizado", "Progresión gradual", "Seguimiento y ajustes"],
+  },
+  {
+    name: "Salud y rehabilitación",
+    description:
+      "Propuestas de ejercicio controlado para mejorar movilidad, bienestar y recuperación física.",
+    icon: "ri-heart-pulse-line",
+    highlights: ["Trabajo progresivo", "Movilidad", "Atención cercana"],
+  },
 ];
 
 export const features = [
@@ -102,7 +139,7 @@ export const classes = [
       "Una clase pensada para trabajar el cuerpo de forma integral mediante movimientos funcionales, circuitos y ejercicios variados. Ideal para mejorar el rendimiento físico general, ganar resistencia y fortalecer distintos grupos musculares.",
     duration: "45 min",
     difficulty: "Intermedio",
-    image: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&h=600&fit=crop&q=80",
+    image: strengthTrainingImage,
     benefits: [
       "Mejora la resistencia",
       "Aumenta la fuerza funcional",
@@ -119,7 +156,7 @@ export const classes = [
       "Programa de entrenamiento enfocado en el trabajo con máquinas, pesos libres y ejercicios guiados. Ideal para quienes buscan ganar fuerza, mejorar la técnica y desarrollar masa muscular de forma progresiva.",
     duration: "60 min",
     difficulty: "Todos los niveles",
-    image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&h=600&fit=crop&q=80",
+    image: gymEquipmentImage,
     benefits: [
       "Aumenta la fuerza",
       "Desarrolla masa muscular",
@@ -136,7 +173,7 @@ export const classes = [
       "Clase orientada al trabajo de fuerza, resistencia y coordinación mediante ejercicios variados de alta intensidad. Cada entrenamiento propone un desafío diferente, combinando movimientos funcionales, trabajo cardiovascular y fuerza.",
     duration: "60 min",
     difficulty: "Avanzado",
-    image: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&h=600&fit=crop&q=80",
+    image: trainingSpaceImage,
     benefits: [
       "Mejora el rendimiento físico",
       "Aumenta la resistencia",
@@ -153,7 +190,7 @@ export const classes = [
       "Actividad enfocada en el aprendizaje técnico, la disciplina y el desarrollo físico. El taekwondo permite mejorar la coordinación, la flexibilidad, la concentración y la confianza personal.",
     duration: "60 min",
     difficulty: "Todos los niveles",
-    image: "https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=800&h=600&fit=crop&q=80",
+    image: trainingSpaceImage,
     benefits: [
       "Mejora la coordinación",
       "Aumenta la flexibilidad",
@@ -170,7 +207,7 @@ export const classes = [
       "Espacio orientado a personas que buscan mejorar su movilidad, recuperarse de molestias o entrenar con un enfoque más cuidadoso. Se trabaja de forma progresiva, respetando las posibilidades de cada persona.",
     duration: "50 min",
     difficulty: "Todos los niveles",
-    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop&q=80",
+    image: mobilityTrainingImage,
     benefits: [
       "Mejora la movilidad",
       "Ayuda a prevenir lesiones",
@@ -251,32 +288,58 @@ export const facilities = [
   {
     title: "Zona de musculación",
     description: "Espacio equipado con máquinas, pesos libres y elementos de entrenamiento",
-    image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&h=600&fit=crop&q=80",
+    image: gymEquipmentImage,
   },
   {
     title: "Zona funcional",
     description: "Área preparada para circuitos, movilidad y ejercicios dinámicos",
-    image: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&h=600&fit=crop&q=80",
+    image: strengthTrainingImage,
   },
   {
     title: "Espacio de clases grupales",
     description: "Sector destinado a actividades como funcional, crossfit y otras propuestas",
-    image: "https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=800&h=600&fit=crop&q=80",
-  },
-  {
-    title: "Vestuarios",
-    description: "Instalaciones cómodas para el uso diario de los clientes",
-    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&h=600&fit=crop&q=80",
-  },
-  {
-    title: "Equipamiento de entrenamiento",
-    description: "Elementos para fuerza, resistencia, movilidad y acondicionamiento físico",
-    image: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&h=600&fit=crop&q=80",
+    image: trainingSpaceImage,
   },
   {
     title: "Área de movilidad",
     description: "Espacio para entrada en calor, estiramientos y recuperación",
-    image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop&q=80",
+    image: mobilityTrainingImage,
+  },
+];
+
+export const routines = [
+  {
+    name: "Adaptación al entrenamiento",
+    objective: "Empezar con seguridad",
+    level: "Inicial",
+    frequency: "3 días por semana",
+    duration: "45 a 60 minutos",
+    description:
+      "Una base equilibrada para aprender movimientos, mejorar la movilidad y construir constancia sin apurarse.",
+    focus: ["Técnica básica", "Movilidad", "Fuerza general", "Acondicionamiento suave"],
+    image: mobilityTrainingImage,
+  },
+  {
+    name: "Fuerza e hipertrofia",
+    objective: "Ganar fuerza y masa muscular",
+    level: "Intermedio",
+    frequency: "4 días por semana",
+    duration: "60 minutos",
+    description:
+      "Distribución progresiva por grupos musculares, combinando ejercicios principales y complementarios.",
+    focus: ["Progresión de cargas", "Técnica", "Volumen de trabajo", "Recuperación"],
+    image: gymEquipmentImage,
+  },
+  {
+    name: "Acondicionamiento integral",
+    objective: "Mejorar rendimiento y resistencia",
+    level: "Todos los niveles",
+    frequency: "3 a 4 días por semana",
+    duration: "45 a 60 minutos",
+    description:
+      "Sesiones variadas de fuerza, movilidad y trabajo cardiovascular que se ajustan al ritmo de cada persona.",
+    focus: ["Resistencia", "Fuerza funcional", "Coordinación", "Movilidad"],
+    image: strengthTrainingImage,
   },
 ];
 
@@ -438,7 +501,6 @@ export const trainers = [
     experience: "Amplia experiencia",
     bio:
       "Rodrigo forma parte del equipo principal de FitnessClubEvolution y acompaña a los clientes en entrenamientos orientados a fuerza, rendimiento y mejora física general.",
-    image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop&q=80",
     certifications: ["Entrenamiento funcional", "Musculación", "Acondicionamiento físico"],
   },
   {
@@ -448,7 +510,6 @@ export const trainers = [
     experience: "Amplia experiencia",
     bio:
       "Paola acompaña a los clientes en procesos de entrenamiento, bienestar y mejora de hábitos, brindando una atención cercana y adaptada a cada persona.",
-    image: "https://images.unsplash.com/photo-1594381898411-846e7d193883?w=400&h=400&fit=crop&q=80",
     certifications: ["Bienestar físico", "Acompañamiento personalizado", "Salud general"],
   },
   {
@@ -458,7 +519,6 @@ export const trainers = [
     experience: "Amplia experiencia",
     bio:
       "Gabriel trabaja en el área de musculación y entrenamiento guiado, ayudando a los clientes a mejorar su técnica, fuerza y constancia.",
-    image: "https://images.unsplash.com/photo-1594381898411-846e7d193883?w=400&h=400&fit=crop&q=80",
     certifications: ["Musculación", "Entrenamiento de fuerza", "Técnica de ejercicios"],
   },
   {
@@ -468,7 +528,6 @@ export const trainers = [
     experience: "Amplia experiencia",
     bio:
       "Benjamin integra el equipo de entrenadores de FitnessClubEvolution, aportando trabajo técnico, disciplina y preparación física en las actividades del gimnasio.",
-    image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop&q=80",
     certifications: ["Taekwondo", "Preparación física", "Disciplina deportiva"],
   },
 ];

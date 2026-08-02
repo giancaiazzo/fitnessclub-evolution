@@ -7,29 +7,29 @@ import { contactInfo, siteData, socialLinks } from "../MOD1-CLIENTES/data/siteDa
 export default function ContactPage() {
   return (
     <Layout
-  title={`Contact Us - ${siteData.name}`}
-  description="Get in touch with us to start your fitness journey"
+  title={`Contacto - ${siteData.name}`}
+  description="Contactate con FitnessClubEvolution para consultar por servicios, entrenamientos, rutinas y planes"
 >
-  <section className="pt-32 pb-20 bg-gradient-to-br from-background via-card to-background">
+  <section className="bg-gradient-to-br from-background via-card to-background pb-16 pt-28 sm:pb-20 sm:pt-32">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="text-center max-w-3xl mx-auto">
-        <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6">
+        <h1 className="text-4xl font-black text-foreground sm:text-5xl md:text-6xl">
           Contactanos
         </h1>
 
-        <p className="text-xl text-muted-foreground">
-          Estamos aqui para ayudarte en tu viaje fitness. ¡Contáctanos hoy mismo!
+        <p className="mt-5 text-lg text-muted-foreground sm:text-xl">
+          Estamos para orientarte sobre servicios, entrenamientos, rutinas y planes.
         </p>
       </div>
     </div>
   </section>
 
-  <section className="py-20 bg-card">
+  <section className="bg-card py-16 sm:py-20">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
         <div>
-          <h2 className="text-3xl font-bold text-foreground mb-8">
-            Ponerme en contacto
+          <h2 className="mb-8 text-2xl font-bold text-foreground sm:text-3xl">
+            Ponete en contacto
           </h2>
 
           <div className="space-y-6">
@@ -71,8 +71,8 @@ export default function ContactPage() {
           </div>
 
           <div className="mt-10">
-            <h3 className="text-xl font-semibold text-foreground mb-4">
-              Siguenos en las redes sociales
+            <h3 className="mb-4 text-xl font-semibold text-foreground">
+              Seguinos en las redes sociales
             </h3>
 
             <div className="flex space-x-4">
@@ -106,14 +106,14 @@ export default function ContactPage() {
     </div>
   </section>
 
-  <section className="py-20 bg-background">
+  <section className="bg-background py-16 sm:py-20">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 className="text-4xl font-bold text-foreground mb-4 text-center">
-        Que esperar cuando nos visitas?
+      <h2 className="mb-4 text-center text-3xl font-black text-foreground sm:text-4xl">
+        ¿Qué podés esperar en tu primera visita?
       </h2>
 
-      <p className="text-xl text-muted-foreground mb-12 text-center max-w-2xl mx-auto">
-        Tu primera visita es importante para nosotros. Aquí está lo que puedes esperar.
+      <p className="mx-auto mb-10 max-w-2xl text-center text-lg text-muted-foreground sm:mb-12 sm:text-xl">
+        Conocé el espacio, conversá con el equipo y encontrá una opción adecuada para comenzar.
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto mb-12">
@@ -126,7 +126,7 @@ export default function ContactPage() {
           </h3>
           <p className="text-muted-foreground text-sm leading-relaxed">
             Te daremos un recorrido completo por nuestras instalaciones y
-            discutiremos tus objetivos de fitness
+            conversaremos sobre tus objetivos de entrenamiento.
           </p>
         </div>
 
@@ -135,11 +135,11 @@ export default function ContactPage() {
             <i className="ri-group-line text-3xl text-primary"></i>
           </div>
           <h3 className="text-xl font-bold text-foreground mb-3">
-            Conoce a nuestro equipo
+            Conocé a nuestro equipo
           </h3>
           <p className="text-muted-foreground text-sm leading-relaxed">
             Te presentaremos a nuestros entrenadores y staff que te apoyarán
-            en tu viaje
+            durante tu proceso.
           </p>
         </div>
 
@@ -151,18 +151,18 @@ export default function ContactPage() {
             Opciones de membresía
           </h3>
           <p className="text-muted-foreground text-sm leading-relaxed">
-            Explora nuestros planes de membresía flexibles diseñados para adaptarse a tu
-            estilo de vida y presupuesto
+            Conocé las alternativas disponibles y consultá cuál se adapta mejor a tu
+            disponibilidad y objetivos.
           </p>
         </div>
       </div>
     </div>
   </section>
 
-  <section className="py-20 bg-card">
+  <section className="bg-card py-16 sm:py-20">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-background p-8 rounded-xl border border-border">
+        <div className="rounded-2xl border border-border bg-background p-5 sm:p-8">
           <div className="flex flex-col sm:flex-row items-start gap-6">
             <div className="bg-primary/10 p-4 rounded-lg shrink-0">
               <i className="ri-time-line text-4xl text-primary"></i>
@@ -170,11 +170,11 @@ export default function ContactPage() {
 
             <div>
               <h3 className="text-2xl font-bold text-foreground mb-3">
-                Tiempo de respuesta esperado
+                Cómo podemos ayudarte
               </h3>
 
               <p className="text-muted-foreground mb-4 leading-relaxed">
-                Estamos comprometidos a responder a todas las consultas de manera oportuna. Aquí hay una guía general de nuestros tiempos de respuesta:
+                Podés comunicarte con el gimnasio para resolver dudas y recibir orientación antes de comenzar.
               </p>
 
               <ul className="space-y-3">
@@ -182,11 +182,11 @@ export default function ContactPage() {
                   <i className="ri-checkbox-circle-fill text-primary text-xl mt-0.5"></i>
                   <div>
                     <span className="text-foreground font-semibold">
-                      Preguntas por email:
+                      Información general:
                     </span>
                     <span className="text-muted-foreground">
                       {" "}
-                      Respondemos dentro de las 24 horas durante los días hábiles
+                      Consultá por actividades, servicios, planes y horarios disponibles.
                     </span>
                   </div>
                 </li>
@@ -195,11 +195,11 @@ export default function ContactPage() {
                   <i className="ri-checkbox-circle-fill text-primary text-xl mt-0.5"></i>
                   <div>
                     <span className="text-foreground font-semibold">
-                      Llamadas telefonicas:
+                      Orientación inicial:
                     </span>
                     <span className="text-muted-foreground">
                       {" "}
-                      Disponibles durante las horas de atención (8 AM - 10 PM)
+                      Contanos tu experiencia y tus objetivos para saber por dónde empezar.
                     </span>
                   </div>
                 </li>
@@ -208,12 +208,11 @@ export default function ContactPage() {
                   <i className="ri-checkbox-circle-fill text-primary text-xl mt-0.5"></i>
                   <div>
                     <span className="text-foreground font-semibold">
-                      Envío de formularios:
+                      Entrenamientos y rutinas:
                     </span>
                     <span className="text-muted-foreground">
                       {" "}
-                      Confirmación dentro de 2 horas, respuesta completa dentro de 24
-                      horas
+                      Preguntá por modalidades, niveles y posibilidades de adaptación.
                     </span>
                   </div>
                 </li>
@@ -222,11 +221,11 @@ export default function ContactPage() {
                   <i className="ri-checkbox-circle-fill text-primary text-xl mt-0.5"></i>
                   <div>
                     <span className="text-foreground font-semibold">
-                      Asuntos urgentes:
+                      Disponibilidad:
                     </span>
                     <span className="text-muted-foreground">
                       {" "}
-                      Llámanos directamente para asistencia inmediata
+                      Confirmá directamente con el gimnasio antes de reservar o asistir.
                     </span>
                   </div>
                 </li>
@@ -238,13 +237,13 @@ export default function ContactPage() {
     </div>
   </section>
 
-  <section className="py-20 bg-background">
+  <section className="bg-background py-16 sm:py-20">
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <h2 className="text-3xl font-bold text-foreground mb-12 text-center">
       Encontranos
     </h2>
 
-    <div className="max-w-5xl mx-auto bg-card p-8 rounded-xl border border-border">
+    <div className="mx-auto max-w-5xl rounded-2xl border border-border bg-card p-4 sm:p-8">
       <div className="mb-6 text-center">
         <h3 className="text-2xl font-bold text-foreground mb-2">
           FitnessClubEvolution

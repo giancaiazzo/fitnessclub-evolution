@@ -1,106 +1,58 @@
 # FitnessClubEvolution
 
-## Ejecutar el login en desarrollo
+Proyecto de tesis compuesto por un portal público para clientes y una web de
+gestión para usuarios autorizados del gimnasio.
 
-La autenticación utiliza la tabla `Entrenadores` de PostgreSQL. En la versión
-actual, `Nombre` funciona como nombre de usuario y `Contrasena` como contraseña.
+## Ejecutar el proyecto
 
-1. Ejecuta la API:
+### 1. Backend
 
-   ```bash
-   cd BackEnd/FitnessClubEvolution.Api
-   dotnet run --launch-profile http
-   ```
+```bash
+cd BackEnd/FitnessClubEvolution.Api
+dotnet run --launch-profile http
+```
 
-2. En otra terminal, ejecuta el frontend:
+La API queda disponible en `http://localhost:5157`.
 
-   ```bash
-   npm install
-   npm run dev
-   ```
+### 2. Frontend
 
-3. Abre la ruta `/#/SignIn`. Si las credenciales son correctas, el sistema
-   redirige a `/#/gestion`.
+En otra terminal, desde la carpeta raíz:
+
+```bash
+npm install
+npm run dev
+```
+
+Abrí `http://localhost:5173/#/` en el navegador.
+
+## Módulo 1: portal público
+
+- Inicio: `/#/`
+- Presentación del gimnasio: `/#/about`
+- Servicios, entrenamientos y rutinas: `/#/services`
+- Detalle de entrenamientos y horarios: `/#/classes`
+- Calculadora de IMC: `/#/calc-imc`
+- Planes: `/#/pricing`
+- Contacto y ubicación: `/#/contact`
+- Tour virtual 360°: `/#/tour-virtual`
+
+## Módulo 2: web de gestión
+
+El acceso se encuentra en `/#/SignIn`. Si las credenciales son correctas, el
+sistema redirige a `/#/gestion`, donde están los accesos de Clientes, Planes,
+Rutinas, Servicios y Pagos en el menú lateral.
 
 Durante el desarrollo, Vite dirige automáticamente las peticiones `/api` a
-`http://localhost:5157`. Para utilizar una API publicada, copia `.env.example`
-a `.env` y completa `VITE_API_URL`.
+`http://localhost:5157`. Para utilizar una API publicada, copiá `.env.example`
+a `.env` y completá `VITE_API_URL`.
 
-> La contraseña existente se compara con el valor actual de la base de datos.
-> Antes de publicar el sistema, debe migrarse a un hash seguro.
+## Comprobaciones del frontend
 
-## Frontend
-
-React, TypeScript y Vite.
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run build
+npx eslint src/MOD1-CLIENTES src/pages src/layouts src/types src/App.tsx
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+> Antes de publicar el sistema, la contraseña administrativa debe almacenarse
+> con un hash seguro y la conexión a la base de datos debe configurarse mediante
+> secretos del entorno de despliegue.

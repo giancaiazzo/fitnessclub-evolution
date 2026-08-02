@@ -50,20 +50,8 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 4,
           "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "20260714175413_InitialCreate.cs",
-              "DocumentMoniker": "C:\\Users\\gian3\\Documents\\GitHub\\ProyectoTesisFITNESSCLUBEVOLUTION\\BackEnd\\FitnessClubEvolution.Api\\Migrations\\20260714175413_InitialCreate.cs",
-              "RelativeDocumentMoniker": "Migrations\\20260714175413_InitialCreate.cs",
-              "ToolTip": "C:\\Users\\gian3\\Documents\\GitHub\\ProyectoTesisFITNESSCLUBEVOLUTION\\BackEnd\\FitnessClubEvolution.Api\\Migrations\\20260714175413_InitialCreate.cs",
-              "RelativeToolTip": "Migrations\\20260714175413_InitialCreate.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-14T17:54:13.831Z"
-            },
             {
               "$type": "Document",
               "DocumentIndex": 6,
@@ -120,10 +108,22 @@
               "RelativeDocumentMoniker": "Data\\AppDbContext.cs",
               "ToolTip": "C:\\Users\\gian3\\Documents\\GitHub\\ProyectoTesisFITNESSCLUBEVOLUTION\\BackEnd\\FitnessClubEvolution.Api\\Data\\AppDbContext.cs",
               "RelativeToolTip": "Data\\AppDbContext.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAABIAAAAIAAAAAAAAAA==",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAAABAAAAAwAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-07-14T17:49:37.91Z",
               "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "20260714175413_InitialCreate.cs",
+              "DocumentMoniker": "C:\\Users\\gian3\\Documents\\GitHub\\ProyectoTesisFITNESSCLUBEVOLUTION\\BackEnd\\FitnessClubEvolution.Api\\Migrations\\20260714175413_InitialCreate.cs",
+              "RelativeDocumentMoniker": "Migrations\\20260714175413_InitialCreate.cs",
+              "ToolTip": "C:\\Users\\gian3\\Documents\\GitHub\\ProyectoTesisFITNESSCLUBEVOLUTION\\BackEnd\\FitnessClubEvolution.Api\\Migrations\\20260714175413_InitialCreate.cs",
+              "RelativeToolTip": "Migrations\\20260714175413_InitialCreate.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-07-14T17:54:13.831Z"
             },
             {
               "$type": "Document",

@@ -1,44 +1,44 @@
+import { Link } from "react-router-dom";
+import Layout from "../layouts/Layout";
+import { siteData } from "../MOD1-CLIENTES/data/siteData";
 
-import Layout from '../layouts/Layout.tsx';
-import { siteData } from '../MOD1-CLIENTES/data/siteData.ts';
+export default function NotFoundPage() {
+  return (
+    <Layout
+      title={`Página no encontrada - ${siteData.name}`}
+      description="La página solicitada no existe"
+    >
+      <section className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background via-card to-background px-4 pb-16 pt-28 sm:pt-32">
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="text-7xl font-black leading-none text-primary sm:text-9xl">
+            404
+          </p>
+          <h1 className="mt-5 text-3xl font-black text-foreground sm:text-4xl md:text-5xl">
+            Página no encontrada
+          </h1>
+          <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground sm:text-xl">
+            La dirección que abriste no existe o fue modificada. Podés volver al
+            inicio o comunicarte con el gimnasio.
+          </p>
 
-
-<Layout
-  title={`404 - Página no encontrada | ${siteData.name}`}
-  description="Página no encontrada"
->
-  <section className="min-h-screen flex items-center justify-center bg-linear-to-br from-background via-card to-background pt-20">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <h1 className="text-9xl font-bold text-primary mb-4">
-        404
-      </h1>
-
-      <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-        Página no encontrada
-      </h2>
-
-      <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-        La página que estás buscando no existe o fue movida.
-      </p>
-
-      <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center">
-        <a
-          href="/"
-          className="bg-primary hover:bg-[#86c312] text-primary-foreground px-8 py-4 rounded-lg font-bold text-lg transition-all transform hover:scale-105 inline-flex items-center justify-center gap-3"
-        >
-          Volver al inicio
-          <i className="ri-home-line"></i>
-        </a>
-
-        <a
-          href="/contact"
-          className="bg-transparent border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground px-8 py-4 rounded-lg font-bold text-lg transition-all inline-flex items-center justify-center gap-3"
-        >
-          Contactanos
-          <i className="ri-mail-line"></i>
-        </a>
-      </div>
-    </div>
-  </section>
-</Layout>
-
+          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+            <Link
+              to="/"
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-7 py-3.5 font-bold text-primary-foreground transition hover:bg-[#b8ef45]"
+            >
+              Volver al inicio
+              <i className="ri-home-line" aria-hidden="true" />
+            </Link>
+            <Link
+              to="/contact"
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border-2 border-primary px-7 py-3.5 font-bold text-primary transition hover:bg-primary hover:text-primary-foreground"
+            >
+              Contactanos
+              <i className="ri-mail-line" aria-hidden="true" />
+            </Link>
+          </div>
+        </div>
+      </section>
+    </Layout>
+  );
+}

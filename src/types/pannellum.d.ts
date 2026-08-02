@@ -5,7 +5,7 @@ declare global {
     pannellum: {
       viewer: (
         container: string | HTMLElement,
-        config: any
+        config: unknown
       ) => {
         destroy: () => void;
         resize?: () => void;

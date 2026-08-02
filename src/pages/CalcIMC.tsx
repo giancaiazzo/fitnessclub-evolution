@@ -6,6 +6,7 @@ export default function CalcIMC() {
   const [peso, setPeso] = useState("");
   const [altura, setAltura] = useState("");
   const [resultado, setResultado] = useState<number | null>(null);
+  const [error, setError] = useState("");
 
   function calcularIMC() {
     const pesoNumero = Number(peso);
@@ -13,11 +14,13 @@ export default function CalcIMC() {
 
     if (!pesoNumero || !alturaNumero || pesoNumero <= 0 || alturaNumero <= 0) {
       setResultado(null);
+      setError("Ingresá un peso y una altura válidos para realizar el cálculo.");
       return;
     }
 
     const imc = pesoNumero / (alturaNumero * alturaNumero);
     setResultado(Number(imc.toFixed(1)));
+    setError("");
   }
 
   function obtenerCategoria(imc: number) {
@@ -32,43 +35,54 @@ export default function CalcIMC() {
       title={`Calculadora IMC - ${siteData.name}`}
       description="Calculá tu Índice de Masa Corporal de forma rápida y sencilla"
     >
-      <section className="pt-32 pb-20 bg-background">
-        <div className="max-w-xl mx-auto px-4">
-          <div className="bg-card border border-border rounded-xl p-8">
-            <h2 className="text-3xl font-bold text-foreground mb-4 text-center">
-              Calculadora de IMC
-            </h2>
+      <section className="bg-background pb-16 pt-28 sm:pb-20 sm:pt-32">
+        <div className="mx-auto max-w-xl px-4 sm:px-6">
+          <div className="rounded-2xl border border-border bg-card p-5 shadow-xl shadow-black/20 sm:p-8">
+            <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-3xl text-primary">
+              <i className="ri-heart-pulse-line" aria-hidden="true" />
+            </div>
 
-            <p className="text-muted-foreground text-center mb-8">
+            <h1 className="text-center text-3xl font-black text-foreground sm:text-4xl">
+              Calculadora de IMC
+            </h1>
+
+            <p className="mb-8 mt-4 text-center text-muted-foreground">
               Ingresá tu peso y altura para conocer tu Índice de Masa Corporal.
             </p>
 
             <div className="space-y-5">
               <div>
-                <label className="block text-sm font-semibold text-foreground mb-2">
+                <label htmlFor="imc-peso" className="mb-2 block text-sm font-semibold text-foreground">
                   Peso en kg
                 </label>
 
                 <input
                   type="number"
+                  id="imc-peso"
                   value={peso}
                   onChange={(e) => setPeso(e.target.value)}
                   placeholder="Ej: 80"
+                  min="1"
+                  inputMode="decimal"
                   className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground outline-none focus:border-primary"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-foreground mb-2">
+                <label htmlFor="imc-altura" className="mb-2 block text-sm font-semibold text-foreground">
                   Altura en metros
                 </label>
 
                 <input
                   type="number"
+                  id="imc-altura"
                   value={altura}
                   onChange={(e) => setAltura(e.target.value)}
                   placeholder="Ej: 1.75"
                   step="0.01"
+                  min="0.5"
+                  max="2.5"
+                  inputMode="decimal"
                   className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground outline-none focus:border-primary"
                 />
               </div>
@@ -80,6 +94,15 @@ export default function CalcIMC() {
               >
                 Calcular IMC
               </button>
+
+              {error && (
+                <p
+                  role="alert"
+                  className="rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-center text-sm text-red-200"
+                >
+                  {error}
+                </p>
+              )}
 
               {resultado !== null && (
                 <div className="mt-6 rounded-xl border border-primary/30 bg-primary/10 p-6 text-center">
@@ -94,6 +117,10 @@ export default function CalcIMC() {
                   </p>
                 </div>
               )}
+
+              <p className="border-t border-border pt-5 text-center text-xs leading-relaxed text-muted-foreground">
+                El resultado es orientativo y no sustituye una evaluación profesional.
+              </p>
             </div>
           </div>
         </div>

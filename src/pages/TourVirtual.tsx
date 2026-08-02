@@ -14,6 +14,7 @@ export default function TourVirtual() {
   const viewerRef = useRef<{ destroy: () => void; resize?: () => void } | null>(
     null
   );
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!window.pannellum) {
@@ -148,11 +149,21 @@ export default function TourVirtual() {
       },
     });
 
-    setTimeout(() => {
+    const resizeTimer = window.setTimeout(() => {
       viewerRef.current?.resize?.();
     }, 300);
 
+    const resizeObserver = new ResizeObserver(() => {
+      viewerRef.current?.resize?.();
+    });
+
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    }
+
     return () => {
+      window.clearTimeout(resizeTimer);
+      resizeObserver.disconnect();
       viewerRef.current?.destroy();
       viewerRef.current = null;
     };
@@ -163,32 +174,27 @@ export default function TourVirtual() {
       title={`Tour virtual - ${siteData.name}`}
       description="Recorré virtualmente las instalaciones del gimnasio"
     >
-      <section className="pt-32 pb-20 bg-gradient-to-br from-background via-card to-background">
+      <section className="bg-gradient-to-br from-background via-card to-background pb-16 pt-28 sm:pb-20 sm:pt-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-12">
-            <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6">
+            <h1 className="text-4xl font-black text-foreground sm:text-5xl md:text-6xl">
               Tour virtual
             </h1>
 
-            <p className="text-xl text-muted-foreground">
+            <p className="mt-5 text-lg text-muted-foreground sm:text-xl">
               Recorré nuestras instalaciones de forma interactiva y conocé los
               principales espacios de FitnessClubEvolution.
             </p>
           </div>
 
-          <div className="bg-card rounded-2xl border border-border p-4 md:p-6 shadow-xl shadow-primary/10">
+          <div className="rounded-2xl border border-border bg-card p-2 shadow-xl shadow-primary/10 sm:p-4 md:p-6">
             <div
-              className="w-full overflow-hidden rounded-xl bg-background"
-              style={{ height: "650px" }}
+              ref={containerRef}
+              className="h-[420px] w-full overflow-hidden rounded-xl bg-background sm:h-[520px] lg:h-[650px]"
             >
               <div
                 id="tour-virtual-viewer"
                 className="w-full h-full"
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  minHeight: "650px",
-                }}
               />
             </div>
           </div>
