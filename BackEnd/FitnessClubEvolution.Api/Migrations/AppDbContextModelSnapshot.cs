@@ -44,8 +44,8 @@ namespace FitnessClubEvolution.Api.Migrations
                     b.Property<bool>("Estado")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("FechaNacimiento")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly?>("FechaNacimiento")
+                        .HasColumnType("date");
 
                     b.Property<DateTime>("FechaRegistro")
                         .HasColumnType("timestamp with time zone");
@@ -60,6 +60,8 @@ namespace FitnessClubEvolution.Api.Migrations
 
                     b.HasKey("IdCliente");
 
+                    b.HasIndex("Documento");
+
                     b.ToTable("Clientes");
                 });
 
@@ -71,14 +73,21 @@ namespace FitnessClubEvolution.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdCuota"));
 
-                    b.Property<int>("ClienteIdCliente")
-                        .HasColumnType("integer");
+                    b.Property<string>("EstadoPago")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasDefaultValue("Confirmado");
 
-                    b.Property<int?>("EntrenadorIdEntrenador")
-                        .HasColumnType("integer");
+                    b.Property<DateOnly>("FechaInicio")
+                        .HasColumnType("date");
 
                     b.Property<DateTime>("FechaPago")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateOnly>("FechaVencimiento")
+                        .HasColumnType("date");
 
                     b.Property<int>("IdCliente")
                         .HasColumnType("integer");
@@ -90,24 +99,23 @@ namespace FitnessClubEvolution.Api.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("MetodoPago")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<decimal>("Monto")
-                        .HasColumnType("numeric");
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)");
 
                     b.Property<string>("Observaciones")
                         .HasColumnType("text");
 
-                    b.Property<int>("ServicioIdServicio")
-                        .HasColumnType("integer");
-
                     b.HasKey("IdCuota");
 
-                    b.HasIndex("ClienteIdCliente");
+                    b.HasIndex("IdEntrenador");
 
-                    b.HasIndex("EntrenadorIdEntrenador");
+                    b.HasIndex("IdServicio");
 
-                    b.HasIndex("ServicioIdServicio");
+                    b.HasIndex("IdCliente", "FechaVencimiento");
 
                     b.ToTable("Cuotas");
                 });
@@ -178,9 +186,6 @@ namespace FitnessClubEvolution.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdNotificacion"));
 
-                    b.Property<int>("ClienteIdCliente")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Estado")
                         .IsRequired()
                         .HasColumnType("text");
@@ -204,7 +209,7 @@ namespace FitnessClubEvolution.Api.Migrations
 
                     b.HasKey("IdNotificacion");
 
-                    b.HasIndex("ClienteIdCliente");
+                    b.HasIndex("IdCliente");
 
                     b.ToTable("Notificaciones");
                 });
@@ -217,25 +222,39 @@ namespace FitnessClubEvolution.Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdRutina"));
 
+                    b.Property<int?>("CantidadPaginas")
+                        .HasColumnType("integer");
+
+                    b.Property<byte[]>("ContenidoPdf")
+                        .HasColumnType("bytea");
+
                     b.Property<string>("Descripcion")
-                        .HasColumnType("text");
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<DateTime>("FechaCarga")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("NombreArchivoPdf")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
 
-                    b.Property<string>("RutaPdf")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<long?>("TamanoBytes")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("TipoContenidoPdf")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("IdRutina");
+
+                    b.HasIndex("Nombre");
 
                     b.ToTable("Rutinas");
                 });
@@ -249,22 +268,36 @@ namespace FitnessClubEvolution.Api.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdServicio"));
 
                     b.Property<string>("Descripcion")
-                        .HasColumnType("text");
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<string>("Duracion")
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
-                    b.Property<string>("Foto")
-                        .HasColumnType("text");
+                    b.Property<byte[]>("Imagen")
+                        .HasColumnType("bytea");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(80)
+                        .HasColumnType("character varying(80)");
+
+                    b.Property<string>("NombreArchivoImagen")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
 
                     b.Property<decimal>("Precio")
-                        .HasColumnType("numeric");
+                        .HasPrecision(12, 2)
+                        .HasColumnType("numeric(12,2)");
+
+                    b.Property<string>("TipoContenidoImagen")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.HasKey("IdServicio");
+
+                    b.HasIndex("Nombre");
 
                     b.ToTable("Servicios");
                 });
@@ -272,19 +305,20 @@ namespace FitnessClubEvolution.Api.Migrations
             modelBuilder.Entity("FitnessClubEvolution.Api.Models.Cuota", b =>
                 {
                     b.HasOne("FitnessClubEvolution.Api.Models.Cliente", "Cliente")
-                        .WithMany()
-                        .HasForeignKey("ClienteIdCliente")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .WithMany("Cuotas")
+                        .HasForeignKey("IdCliente")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("FitnessClubEvolution.Api.Models.Entrenador", "Entrenador")
                         .WithMany("CuotasRegistradas")
-                        .HasForeignKey("EntrenadorIdEntrenador");
+                        .HasForeignKey("IdEntrenador")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("FitnessClubEvolution.Api.Models.Servicio", "Servicio")
-                        .WithMany()
-                        .HasForeignKey("ServicioIdServicio")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .WithMany("Cuotas")
+                        .HasForeignKey("IdServicio")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Cliente");
@@ -297,17 +331,29 @@ namespace FitnessClubEvolution.Api.Migrations
             modelBuilder.Entity("FitnessClubEvolution.Api.Models.Notificacion", b =>
                 {
                     b.HasOne("FitnessClubEvolution.Api.Models.Cliente", "Cliente")
-                        .WithMany()
-                        .HasForeignKey("ClienteIdCliente")
+                        .WithMany("Notificaciones")
+                        .HasForeignKey("IdCliente")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Cliente");
                 });
 
+            modelBuilder.Entity("FitnessClubEvolution.Api.Models.Cliente", b =>
+                {
+                    b.Navigation("Cuotas");
+
+                    b.Navigation("Notificaciones");
+                });
+
             modelBuilder.Entity("FitnessClubEvolution.Api.Models.Entrenador", b =>
                 {
                     b.Navigation("CuotasRegistradas");
+                });
+
+            modelBuilder.Entity("FitnessClubEvolution.Api.Models.Servicio", b =>
+                {
+                    b.Navigation("Cuotas");
                 });
 #pragma warning restore 612, 618
         }

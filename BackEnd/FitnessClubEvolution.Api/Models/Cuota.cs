@@ -13,11 +13,17 @@ namespace FitnessClubEvolution.Api.Models
 
         public int? IdEntrenador { get; set; }
 
-        public DateTime FechaPago { get; set; } = DateTime.Now;
+        public DateTime FechaPago { get; set; } = DateTime.UtcNow;
+
+        public DateOnly FechaInicio { get; set; }
+
+        public DateOnly FechaVencimiento { get; set; }
 
         public decimal Monto { get; set; }
 
-        public string? MetodoPago { get; set; }
+        public string MetodoPago { get; set; } = string.Empty;
+
+        public string EstadoPago { get; set; } = "Confirmado";
 
         public string? Observaciones { get; set; }
 

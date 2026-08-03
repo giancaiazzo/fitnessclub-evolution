@@ -16,12 +16,16 @@ namespace FitnessClubEvolution.Api.Models
 
         public string Telefono { get; set; } = string.Empty;
 
-        public DateTime? FechaNacimiento { get; set; }
+        public DateOnly? FechaNacimiento { get; set; }
 
         public string? Direccion { get; set; }
 
-        public DateTime FechaRegistro { get; set; } = DateTime.Now;
+        public DateTime FechaRegistro { get; set; } = DateTime.UtcNow;
 
         public bool Estado { get; set; } = true;
+
+        public ICollection<Cuota> Cuotas { get; set; } = new List<Cuota>();
+
+        public ICollection<Notificacion> Notificaciones { get; set; } = new List<Notificacion>();
     }
 }

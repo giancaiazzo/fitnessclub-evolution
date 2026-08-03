@@ -1,22 +1,31 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
-namespace FitnessClubEvolution.Api.Models
+namespace FitnessClubEvolution.Api.Models;
+
+public class Rutina
 {
-    public class Rutina
-    {
-        [Key]
-        public int IdRutina { get; set; }
+    [Key]
+    public int IdRutina { get; set; }
 
-        public string Nombre { get; set; } = string.Empty;
+    [Required, StringLength(100)]
+    public string Nombre { get; set; } = string.Empty;
 
-        public string? Descripcion { get; set; }
+    [StringLength(500)]
+    public string? Descripcion { get; set; }
 
-        public string NombreArchivoPdf { get; set; } = string.Empty;
+    [Required, StringLength(255)]
+    public string NombreArchivoPdf { get; set; } = string.Empty;
 
-        public string RutaPdf { get; set; } = string.Empty;
+    [StringLength(100)]
+    public string? TipoContenidoPdf { get; set; }
 
-        public DateTime FechaCarga { get; set; } = DateTime.Now;
+    // Nullable para poder conservar registros creados antes de esta
+    // implementación. Toda rutina nueva sí requiere un PDF válido.
+    public byte[]? ContenidoPdf { get; set; }
 
+    public int? CantidadPaginas { get; set; }
 
-    }
+    public long? TamanoBytes { get; set; }
+
+    public DateTime FechaCarga { get; set; } = DateTime.UtcNow;
 }
