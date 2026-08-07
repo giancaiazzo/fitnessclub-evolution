@@ -1,6 +1,7 @@
 import {
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type FormEvent,
@@ -12,13 +13,25 @@ import {
   mensajeErrorHttp,
 } from "../../services/api";
 
-type Cliente = {
+type EstadoCuota = "Vencida" | "Vence hoy" | "Por vencer" | "Vigente";
+type FiltroClientes = "todos" | "activos" | "semana";
+
+type ClientePago = {
   idCliente: number;
   nombre: string;
   apellido: string;
   documento: string;
   telefono: string;
-  estado: boolean;
+  fechaRegistro: string;
+  clienteActivo: boolean;
+  ultimaFechaPago: string | null;
+  fechaInicio: string | null;
+  fechaVencimiento: string | null;
+  diasRestantes: number | null;
+  diasVencido: number;
+  estadoCuota: EstadoCuota;
+  esCuotaInicial: boolean;
+  pagaEstaSemana: boolean;
 };
 
 type EstadoPagoCliente = {
@@ -32,16 +45,8 @@ type EstadoPagoCliente = {
   fechaVencimiento: string | null;
   diasRestantes: number | null;
   diasVencido: number;
-  estadoCuota: "Sin pagos" | "Vencida" | "Vence hoy" | "Por vencer" | "Vigente";
-  servicio: string | null;
-};
-
-type Servicio = {
-  idServicio: number;
-  nombre: string;
-  descripcion: string | null;
-  precio: number;
-  duracion: string | null;
+  estadoCuota: EstadoCuota;
+  esCuotaInicial: boolean;
 };
 
 type Entrenador = {
@@ -54,8 +59,6 @@ type Pago = {
   idCuota: number;
   idCliente: number;
   cliente: string;
-  idServicio: number;
-  servicio: string;
   idEntrenador: number | null;
   entrenador: string | null;
   fechaPago: string;
@@ -74,7 +77,6 @@ type RegistrarPagoResponse = {
 };
 
 type FormularioPago = {
-  idServicio: string;
   idEntrenador: string;
   monto: string;
   metodoPago: string;
@@ -82,7 +84,6 @@ type FormularioPago = {
 };
 
 const FORMULARIO_INICIAL: FormularioPago = {
-  idServicio: "",
   idEntrenador: "",
   monto: "",
   metodoPago: "Efectivo",
@@ -90,16 +91,30 @@ const FORMULARIO_INICIAL: FormularioPago = {
 };
 
 const inputClassName =
-  "h-12 w-full rounded-xl border border-white/10 bg-black/25 px-4 text-sm text-white outline-none transition placeholder:text-gray-600 focus:border-lime-400/70 focus:ring-2 focus:ring-lime-400/15 disabled:cursor-not-allowed disabled:opacity-50";
+  "h-11 w-full rounded-xl border border-white/10 bg-black/25 px-4 text-sm text-white outline-none transition placeholder:text-gray-600 focus:border-lime-400/70 focus:ring-2 focus:ring-lime-400/15 disabled:cursor-not-allowed disabled:opacity-50";
 
 function formatearFecha(fecha: string | null) {
-  if (!fecha) return "Sin registrar";
+  if (!fecha) return "—";
   const partes = /^(\d{4})-(\d{2})-(\d{2})/.exec(fecha);
+  if (partes && fecha.length <= 10) {
+    return `${partes[3]}/${partes[2]}/${partes[1]}`;
+  }
+
+  const valor = new Date(fecha);
+  if (!Number.isNaN(valor.getTime())) {
+    return new Intl.DateTimeFormat("es-UY", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      timeZone: "America/Montevideo",
+    }).format(valor);
+  }
+
   return partes ? `${partes[3]}/${partes[2]}/${partes[1]}` : fecha;
 }
 
 function formatearFechaHora(fecha: string | null) {
-  if (!fecha) return "Sin registrar";
+  if (!fecha) return "—";
   const valor = new Date(fecha);
   return Number.isNaN(valor.getTime())
     ? formatearFecha(fecha)
@@ -126,41 +141,106 @@ function formatearTelefono(telefono: string) {
     : telefono;
 }
 
+function estadoDesdeCliente(cliente: ClientePago): EstadoPagoCliente {
+  return {
+    idCliente: cliente.idCliente,
+    nombre: cliente.nombre,
+    apellido: cliente.apellido,
+    documento: cliente.documento,
+    clienteActivo: cliente.clienteActivo,
+    ultimaFechaPago: cliente.ultimaFechaPago,
+    fechaInicio: cliente.fechaInicio,
+    fechaVencimiento: cliente.fechaVencimiento,
+    diasRestantes: cliente.diasRestantes,
+    diasVencido: cliente.diasVencido,
+    estadoCuota: cliente.estadoCuota,
+    esCuotaInicial: cliente.esCuotaInicial,
+  };
+}
+
+function actualizarClienteConPago(
+  cliente: ClientePago,
+  estado: EstadoPagoCliente,
+): ClientePago {
+  return {
+    ...cliente,
+    clienteActivo: estado.clienteActivo,
+    ultimaFechaPago: estado.ultimaFechaPago,
+    fechaInicio: estado.fechaInicio,
+    fechaVencimiento: estado.fechaVencimiento,
+    diasRestantes: estado.diasRestantes,
+    diasVencido: estado.diasVencido,
+    estadoCuota: estado.estadoCuota,
+    esCuotaInicial: estado.esCuotaInicial,
+    pagaEstaSemana:
+      estado.clienteActivo &&
+      estado.estadoCuota !== "Vencida" &&
+      estado.diasRestantes !== null &&
+      estado.diasRestantes <= 7,
+  };
+}
+
+function textoDias(cliente: ClientePago) {
+  if (!cliente.fechaVencimiento || cliente.diasRestantes === null) return "Sin vencimiento disponible";
+  if (cliente.diasVencido > 0) {
+    return `Vencida hace ${cliente.diasVencido} ${cliente.diasVencido === 1 ? "día" : "días"}`;
+  }
+  if (cliente.diasRestantes === 0) return "Vence hoy";
+  return `${cliente.diasRestantes} ${cliente.diasRestantes === 1 ? "día restante" : "días restantes"}`;
+}
+
+function estiloFechaVencimiento(cliente: ClientePago) {
+  if (!cliente.clienteActivo) return "text-gray-500";
+  if (cliente.estadoCuota === "Vencida" || cliente.pagaEstaSemana) return "text-red-300";
+  return "text-lime-400";
+}
+
 export default function RegistrarPagoPage() {
-  const [consulta, setConsulta] = useState("");
-  const [resultados, setResultados] = useState<Cliente[]>([]);
-  const [buscando, setBuscando] = useState(false);
-  const [errorBusqueda, setErrorBusqueda] = useState("");
-  const [cliente, setCliente] = useState<Cliente | null>(null);
+  const [clientes, setClientes] = useState<ClientePago[]>([]);
+  const [cargandoClientes, setCargandoClientes] = useState(true);
+  const [errorCarga, setErrorCarga] = useState("");
+  const [busqueda, setBusqueda] = useState("");
+  const [filtro, setFiltro] = useState<FiltroClientes>("todos");
+  const [cliente, setCliente] = useState<ClientePago | null>(null);
   const [estadoPago, setEstadoPago] = useState<EstadoPagoCliente | null>(null);
   const [historial, setHistorial] = useState<Pago[]>([]);
-  const [cargandoCliente, setCargandoCliente] = useState(false);
-  const [servicios, setServicios] = useState<Servicio[]>([]);
+  const [cargandoHistorial, setCargandoHistorial] = useState(false);
   const [entrenadores, setEntrenadores] = useState<Entrenador[]>([]);
   const [errorCatalogos, setErrorCatalogos] = useState("");
   const [formulario, setFormulario] = useState<FormularioPago>(FORMULARIO_INICIAL);
   const [registrando, setRegistrando] = useState(false);
   const [errorRegistro, setErrorRegistro] = useState("");
   const [mensajeExito, setMensajeExito] = useState("");
-  const secuenciaBusqueda = useRef(0);
-  const catalogosCargados = useRef(false);
+  const cargaInicial = useRef(false);
+
+  const cargarClientes = useCallback(async () => {
+    try {
+      setCargandoClientes(true);
+      setErrorCarga("");
+      const respuesta = await apiFetch("clientes/estado-pagos");
+      if (!respuesta.ok) {
+        throw new Error(
+          await mensajeErrorHttp(respuesta, "No se pudo cargar el control de cuotas."),
+        );
+      }
+      setClientes((await respuesta.json()) as ClientePago[]);
+    } catch (errorDesconocido) {
+      setErrorCarga(
+        mensajeErrorDesconocido(errorDesconocido, "No se pudo cargar el control de cuotas."),
+      );
+    } finally {
+      setCargandoClientes(false);
+    }
+  }, []);
 
   useEffect(() => {
-    if (catalogosCargados.current) return;
-    catalogosCargados.current = true;
+    if (cargaInicial.current) return;
+    cargaInicial.current = true;
+    void cargarClientes();
 
     async function cargarCatalogos() {
       try {
-        const [respuestaServicios, respuestaEntrenadores] = await Promise.all([
-          apiFetch("servicios"),
-          apiFetch("entrenadores"),
-        ]);
-
-        if (!respuestaServicios.ok) {
-          throw new Error(
-            await mensajeErrorHttp(respuestaServicios, "No se pudieron cargar los servicios."),
-          );
-        }
+        const respuestaEntrenadores = await apiFetch("entrenadores");
         if (!respuestaEntrenadores.ok) {
           throw new Error(
             await mensajeErrorHttp(
@@ -170,141 +250,98 @@ export default function RegistrarPagoPage() {
           );
         }
 
-        const serviciosCargados = (await respuestaServicios.json()) as Servicio[];
-        setServicios(serviciosCargados);
         setEntrenadores((await respuestaEntrenadores.json()) as Entrenador[]);
-
-        if (serviciosCargados.length === 1) {
-          setFormulario((actual) => ({
-            ...actual,
-            idServicio: serviciosCargados[0].idServicio.toString(),
-            monto: serviciosCargados[0].precio > 0
-              ? serviciosCargados[0].precio.toString()
-              : "",
-          }));
-        }
       } catch (errorDesconocido) {
         setErrorCatalogos(
-          mensajeErrorDesconocido(errorDesconocido, "No se cargaron los datos del pago."),
+          mensajeErrorDesconocido(errorDesconocido, "No se cargó la lista de entrenadores."),
         );
       }
     }
 
     void cargarCatalogos();
-  }, []);
+  }, [cargarClientes]);
 
   useEffect(() => {
-    const termino = consulta.trim();
-    const nombreSeleccionado = cliente ? `${cliente.nombre} ${cliente.apellido}` : "";
-    const secuenciaActual = ++secuenciaBusqueda.current;
+    if (!cliente) return;
+    const overflowAnterior = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
 
-    if (cliente && termino === nombreSeleccionado) {
-      return;
+    function cerrarConEscape(event: KeyboardEvent) {
+      if (event.key === "Escape" && !registrando) cerrarModal();
     }
 
-    if (termino.length < 2) {
-      return;
-    }
+    window.addEventListener("keydown", cerrarConEscape);
+    return () => {
+      document.body.style.overflow = overflowAnterior;
+      window.removeEventListener("keydown", cerrarConEscape);
+    };
+  }, [cliente, registrando]);
 
-    const temporizador = window.setTimeout(async () => {
-      try {
-        setBuscando(true);
-        setErrorBusqueda("");
-        const respuesta = await apiFetch(
-          `clientes/buscar?texto=${encodeURIComponent(termino)}`,
-        );
-        if (!respuesta.ok) {
-          throw new Error(
-            await mensajeErrorHttp(respuesta, "No se pudo realizar la búsqueda."),
-          );
-        }
-        const clientes = (await respuesta.json()) as Cliente[];
-        if (secuenciaActual === secuenciaBusqueda.current) {
-          setResultados(clientes);
-        }
-      } catch (errorDesconocido) {
-        if (secuenciaActual === secuenciaBusqueda.current) {
-          setErrorBusqueda(
-            mensajeErrorDesconocido(errorDesconocido, "No se pudo realizar la búsqueda."),
-          );
-        }
-      } finally {
-        if (secuenciaActual === secuenciaBusqueda.current) {
-          setBuscando(false);
-        }
-      }
-    }, 350);
+  const contadores = useMemo(
+    () => ({
+      total: clientes.length,
+      activos: clientes.filter((item) => item.clienteActivo).length,
+      semana: clientes.filter((item) => item.pagaEstaSemana).length,
+    }),
+    [clientes],
+  );
 
-    return () => window.clearTimeout(temporizador);
-  }, [cliente, consulta]);
+  const clientesFiltrados = useMemo(() => {
+    const termino = busqueda.trim().toLocaleLowerCase("es-UY");
 
-  const cargarCliente = useCallback(async (seleccionado: Cliente) => {
+    return clientes.filter((item) => {
+      const coincideFiltro =
+        filtro === "todos" ||
+        (filtro === "activos" && item.clienteActivo) ||
+        (filtro === "semana" && item.pagaEstaSemana);
+
+      if (!coincideFiltro) return false;
+      if (!termino) return true;
+
+      return [
+        item.idCliente.toString(),
+        item.nombre,
+        item.apellido,
+        `${item.nombre} ${item.apellido}`,
+        item.documento,
+        item.telefono,
+      ].some((dato) => dato.toLocaleLowerCase("es-UY").includes(termino));
+    });
+  }, [busqueda, clientes, filtro]);
+
+  async function abrirRegistroPago(seleccionado: ClientePago) {
+    setCliente(seleccionado);
+    setEstadoPago(estadoDesdeCliente(seleccionado));
+    setHistorial([]);
+    setErrorRegistro("");
+    setMensajeExito("");
+
+    setFormulario(FORMULARIO_INICIAL);
+
     try {
-      setCargandoCliente(true);
-      setErrorRegistro("");
-      setMensajeExito("");
-      const [respuestaEstado, respuestaHistorial] = await Promise.all([
-        apiFetch(`clientes/${seleccionado.idCliente}/estado-pago`),
-        apiFetch(`pagos/cliente/${seleccionado.idCliente}`),
-      ]);
-
-      if (!respuestaEstado.ok) {
+      setCargandoHistorial(true);
+      const respuesta = await apiFetch(`pagos/cliente/${seleccionado.idCliente}`);
+      if (!respuesta.ok) {
         throw new Error(
-          await mensajeErrorHttp(respuestaEstado, "No se pudo consultar el vencimiento."),
+          await mensajeErrorHttp(respuesta, "No se pudo consultar el historial."),
         );
       }
-      if (!respuestaHistorial.ok) {
-        throw new Error(
-          await mensajeErrorHttp(respuestaHistorial, "No se pudo consultar el historial."),
-        );
-      }
-
-      setEstadoPago((await respuestaEstado.json()) as EstadoPagoCliente);
-      setHistorial((await respuestaHistorial.json()) as Pago[]);
+      setHistorial((await respuesta.json()) as Pago[]);
     } catch (errorDesconocido) {
       setErrorRegistro(
-        mensajeErrorDesconocido(errorDesconocido, "No se pudo consultar al cliente."),
+        mensajeErrorDesconocido(errorDesconocido, "No se pudo consultar el historial."),
       );
     } finally {
-      setCargandoCliente(false);
+      setCargandoHistorial(false);
     }
-  }, []);
+  }
 
-  function seleccionarCliente(seleccionado: Cliente) {
-    setCliente(seleccionado);
-    setConsulta(`${seleccionado.nombre} ${seleccionado.apellido}`);
-    setResultados([]);
-    setBuscando(false);
+  function cerrarModal() {
+    setCliente(null);
     setEstadoPago(null);
     setHistorial([]);
-    void cargarCliente(seleccionado);
-  }
-
-  function cambiarConsulta(valor: string) {
-    setConsulta(valor);
-    if (valor.trim().length < 2) {
-      setResultados([]);
-      setBuscando(false);
-      setErrorBusqueda("");
-    }
-    if (cliente) {
-      setCliente(null);
-      setEstadoPago(null);
-      setHistorial([]);
-      setErrorRegistro("");
-      setMensajeExito("");
-    }
-  }
-
-  function seleccionarServicio(idServicio: string) {
-    const servicio = servicios.find(
-      (opcion) => opcion.idServicio === Number(idServicio),
-    );
-    setFormulario((actual) => ({
-      ...actual,
-      idServicio,
-      monto: servicio && servicio.precio > 0 ? servicio.precio.toString() : actual.monto,
-    }));
+    setErrorRegistro("");
+    setMensajeExito("");
   }
 
   async function registrarPago(event: FormEvent<HTMLFormElement>) {
@@ -314,10 +351,6 @@ export default function RegistrarPagoPage() {
     setMensajeExito("");
 
     const monto = Number(formulario.monto.replace(",", "."));
-    if (!formulario.idServicio) {
-      setErrorRegistro("Seleccioná el servicio o plan abonado.");
-      return;
-    }
     if (!Number.isFinite(monto) || monto <= 0) {
       setErrorRegistro("Ingresá un monto mayor a cero.");
       return;
@@ -329,7 +362,6 @@ export default function RegistrarPagoPage() {
         method: "POST",
         body: JSON.stringify({
           idCliente: cliente.idCliente,
-          idServicio: Number(formulario.idServicio),
           idEntrenador: formulario.idEntrenador
             ? Number(formulario.idEntrenador)
             : null,
@@ -346,7 +378,14 @@ export default function RegistrarPagoPage() {
       }
 
       const resultado = (await respuesta.json()) as RegistrarPagoResponse;
+      const clienteActualizado = actualizarClienteConPago(cliente, resultado.estadoCliente);
       setEstadoPago(resultado.estadoCliente);
+      setCliente(clienteActualizado);
+      setClientes((actuales) =>
+        actuales.map((item) =>
+          item.idCliente === clienteActualizado.idCliente ? clienteActualizado : item,
+        ),
+      );
       setHistorial((actual) => [resultado.pago, ...actual]);
       setFormulario((actual) => ({ ...actual, observaciones: "" }));
       setMensajeExito(
@@ -363,296 +402,468 @@ export default function RegistrarPagoPage() {
 
   return (
     <div>
-      <header className="mb-8">
-        <p className="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-lime-400">
-          Gestión de pagos
-        </p>
-        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Registrar pago</h1>
-        <p className="mt-3 max-w-3xl text-gray-400">
-          Buscá al cliente, revisá su vencimiento individual y registrá un nuevo mes sin perder los días que todavía tenga pagos.
-        </p>
+      <header className="mb-8 flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
+        <div>
+          <p className="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-lime-400">
+            Gestión de pagos
+          </p>
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Registrar pagos</h1>
+          <p className="mt-3 max-w-3xl text-gray-400">
+            Consultá el estado de cada cuota y registrá el pago desde la fila del cliente.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-3 gap-2 sm:gap-3" role="group" aria-label="Filtros de clientes">
+          <TarjetaFiltro
+            valor={contadores.total}
+            etiqueta="Total"
+            tono="neutral"
+            seleccionada={filtro === "todos"}
+            onClick={() => setFiltro("todos")}
+          />
+          <TarjetaFiltro
+            valor={contadores.activos}
+            etiqueta="Activos"
+            tono="verde"
+            seleccionada={filtro === "activos"}
+            onClick={() => setFiltro("activos")}
+          />
+          <TarjetaFiltro
+            valor={contadores.semana}
+            etiqueta="Pagan esta semana"
+            tono="rojo"
+            seleccionada={filtro === "semana"}
+            onClick={() => setFiltro("semana")}
+          />
+        </div>
       </header>
 
-      <section className="relative z-20 mb-6 rounded-3xl border border-white/[0.08] bg-white/[0.035] p-5 shadow-2xl shadow-black/20 sm:p-7">
-        <label className="block max-w-2xl">
-          <span className="mb-2 block text-sm font-semibold text-gray-200">
-            Buscar cliente por nombre, apellido o documento
-          </span>
-          <div className="relative">
-            <i className="ri-search-line absolute left-4 top-1/2 -translate-y-1/2 text-lg text-gray-500" />
+      {errorCatalogos && <Alerta tipo="error">{errorCatalogos}</Alerta>}
+
+      <section className="overflow-hidden rounded-3xl border border-white/[0.08] bg-white/[0.035] shadow-2xl shadow-black/20">
+        <div className="flex flex-col gap-3 border-b border-white/[0.08] p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+          <label className="relative w-full sm:max-w-md">
+            <i className="ri-search-line absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" />
             <input
               type="search"
-              value={consulta}
-              onChange={(event) => cambiarConsulta(event.target.value)}
-              className={`${inputClassName} pl-12 pr-12`}
-              placeholder="Ej.: Gian Caiazzo o 51234567"
-              autoComplete="off"
+              value={busqueda}
+              onChange={(event) => setBusqueda(event.target.value)}
+              className={`${inputClassName} pl-11`}
+              placeholder="Nombre, apellido, documento o ID..."
             />
-            {buscando && (
-              <span className="absolute right-4 top-1/2 size-5 -translate-y-1/2 animate-spin rounded-full border-2 border-lime-400/25 border-t-lime-400" />
-            )}
+          </label>
+          <button
+            type="button"
+            onClick={() => void cargarClientes()}
+            disabled={cargandoClientes}
+            className="h-11 rounded-xl border border-white/10 px-4 text-sm font-semibold text-gray-300 transition hover:bg-white/5 disabled:opacity-50"
+          >
+            <i className="ri-refresh-line mr-2" />
+            {cargandoClientes ? "Actualizando..." : "Actualizar"}
+          </button>
+        </div>
+
+        {errorCarga ? (
+          <EstadoVacio icono="ri-error-warning-line" titulo="No se pudo cargar" detalle={errorCarga} />
+        ) : cargandoClientes ? (
+          <EstadoVacio icono="ri-loader-4-line animate-spin" titulo="Cargando cuotas..." />
+        ) : clientesFiltrados.length === 0 ? (
+          <EstadoVacio
+            icono="ri-user-search-line"
+            titulo={clientes.length ? "No hay clientes para este filtro" : "No hay clientes registrados"}
+            detalle={busqueda ? "Probá con otro nombre, apellido o documento." : undefined}
+          />
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[1080px] text-left">
+              <thead className="bg-black/20 text-xs uppercase tracking-wider text-gray-500">
+                <tr>
+                  {[
+                    "Cliente",
+                    "Fecha de registro",
+                    "Inicio / último pago",
+                    "Vencimiento",
+                    "Estado de cuota",
+                    "Acción",
+                  ].map((encabezado) => (
+                    <th key={encabezado} className="px-5 py-4 font-bold">{encabezado}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/[0.07]">
+                {clientesFiltrados.map((item) => (
+                  <tr key={item.idCliente} className="transition hover:bg-white/[0.025]">
+                    <td className="px-5 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className={`flex size-10 shrink-0 items-center justify-center rounded-xl text-sm font-black ${
+                          item.clienteActivo
+                            ? "bg-lime-400 text-black"
+                            : "bg-white/5 text-gray-500"
+                        }`}>
+                          {item.nombre.charAt(0)}{item.apellido.charAt(0)}
+                        </div>
+                        <div>
+                          <p className="font-semibold text-white">{item.nombre} {item.apellido}</p>
+                          <p className="mt-0.5 text-xs text-gray-500">
+                            CI {item.documento} · ID #{item.idCliente}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-5 py-4 text-sm text-gray-400">
+                      {formatearFecha(item.fechaRegistro)}
+                    </td>
+                    <td className="px-5 py-4">
+                      <p className="text-sm text-gray-300">
+                        {item.esCuotaInicial
+                          ? formatearFecha(item.ultimaFechaPago)
+                          : formatearFechaHora(item.ultimaFechaPago)}
+                      </p>
+                      <p className="mt-0.5 text-xs text-gray-600">
+                        {item.esCuotaInicial ? "Inicio por fecha de registro" : "Último pago registrado"}
+                      </p>
+                    </td>
+                    <td className={`px-5 py-4 text-sm font-bold ${estiloFechaVencimiento(item)}`}>
+                      {formatearFecha(item.fechaVencimiento)}
+                    </td>
+                    <td className="px-5 py-4">
+                      <EstadoCuotaBadge cliente={item} />
+                    </td>
+                    <td className="px-5 py-4">
+                      <button
+                        type="button"
+                        onClick={() => void abrirRegistroPago(item)}
+                        disabled={!item.clienteActivo}
+                        title={!item.clienteActivo
+                          ? "Reactivalo desde el listado de clientes para registrar un pago."
+                          : "Registrar un nuevo pago"}
+                        className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-lime-400/30 bg-lime-400/10 px-4 text-xs font-black text-lime-300 transition hover:bg-lime-400 hover:text-black disabled:cursor-not-allowed disabled:border-white/10 disabled:bg-white/5 disabled:text-gray-600"
+                      >
+                        <i className="ri-hand-coin-line text-base" />
+                        {item.clienteActivo ? "Registrar pago" : "Cliente inactivo"}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        </label>
-
-        {errorBusqueda && <p className="mt-3 text-sm text-red-300">{errorBusqueda}</p>}
-
-        {resultados.length > 0 && (
-          <div className="absolute left-5 right-5 top-[calc(100%-1.25rem)] z-30 max-h-80 max-w-2xl overflow-y-auto rounded-2xl border border-white/10 bg-[#171b18] p-2 shadow-2xl sm:left-7 sm:right-auto sm:top-[calc(100%-1.75rem)] sm:w-[calc(100%-3.5rem)] sm:max-w-2xl">
-            {resultados.map((resultado) => (
-              <button
-                key={resultado.idCliente}
-                type="button"
-                onClick={() => seleccionarCliente(resultado)}
-                className="flex w-full items-center justify-between gap-4 rounded-xl px-4 py-3 text-left transition hover:bg-white/5"
-              >
-                <span>
-                  <span className="block font-semibold text-white">
-                    {resultado.nombre} {resultado.apellido}
-                  </span>
-                  <span className="mt-0.5 block text-xs text-gray-500">
-                    CI {resultado.documento} · {formatearTelefono(resultado.telefono)}
-                  </span>
-                </span>
-                <span className={resultado.estado ? "text-xs font-bold text-lime-400" : "text-xs font-bold text-gray-500"}>
-                  {resultado.estado ? "Activo" : "Inactivo"}
-                </span>
-              </button>
-            ))}
-          </div>
-        )}
-
-        {!buscando && consulta.trim().length >= 2 && resultados.length === 0 && !cliente && !errorBusqueda && (
-          <p className="mt-3 text-sm text-gray-500">No se encontraron clientes con esos datos.</p>
         )}
       </section>
 
-      {errorCatalogos && (
-        <Alerta tipo="error">{errorCatalogos}</Alerta>
-      )}
-      {mensajeExito && <Alerta tipo="exito">{mensajeExito}</Alerta>}
-      {errorRegistro && <Alerta tipo="error">{errorRegistro}</Alerta>}
+      {cliente && estadoPago && (
+        <Modal
+          titulo={`Registrar pago · ${cliente.nombre} ${cliente.apellido}`}
+          onCerrar={() => !registrando && cerrarModal()}
+        >
+          <div className="space-y-5 p-4 sm:p-6">
+            <ResumenCliente cliente={cliente} estado={estadoPago} />
 
-      {!cliente ? (
-        <section className="flex min-h-72 items-center justify-center rounded-3xl border border-dashed border-white/10 bg-white/[0.02] p-8 text-center">
-          <div>
-            <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-lime-400/10 text-3xl text-lime-400">
-              <i className="ri-user-search-line" />
-            </div>
-            <h2 className="mt-4 text-xl font-semibold text-white">Seleccioná un cliente</h2>
-            <p className="mt-2 text-sm text-gray-500">Su vencimiento y su historial aparecerán acá.</p>
+            {mensajeExito && <Alerta tipo="exito" dentroModal>{mensajeExito}</Alerta>}
+            {errorRegistro && <Alerta tipo="error" dentroModal>{errorRegistro}</Alerta>}
+
+            <form
+              onSubmit={registrarPago}
+              className="overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.025]"
+            >
+              <div className="border-b border-white/[0.08] px-5 py-4">
+                <h3 className="font-bold text-white">Datos del nuevo pago</h3>
+                <p className="mt-1 text-xs text-gray-500">
+                  La fecha se asigna automáticamente y el mes se suma sin perder días abonados.
+                </p>
+              </div>
+
+              <div className="grid gap-4 p-5 sm:grid-cols-2">
+                <Campo etiqueta="Monto (UYU)" requerido>
+                  <input
+                    type="number"
+                    min="0.01"
+                    step="0.01"
+                    className={inputClassName}
+                    value={formulario.monto}
+                    onChange={(event) => setFormulario({ ...formulario, monto: event.target.value })}
+                    placeholder="Ej.: 1500"
+                    disabled={registrando}
+                    required
+                  />
+                </Campo>
+
+                <Campo etiqueta="Método de pago" requerido>
+                  <select
+                    className={inputClassName}
+                    value={formulario.metodoPago}
+                    onChange={(event) => setFormulario({ ...formulario, metodoPago: event.target.value })}
+                    disabled={registrando}
+                  >
+                    {[
+                      "Efectivo",
+                      "Transferencia",
+                      "Tarjeta de débito",
+                      "Tarjeta de crédito",
+                      "Otro",
+                    ].map((metodo) => <option key={metodo}>{metodo}</option>)}
+                  </select>
+                </Campo>
+
+                <Campo etiqueta="Registrado por" ayuda="Entrenador opcional">
+                  <select
+                    className={inputClassName}
+                    value={formulario.idEntrenador}
+                    onChange={(event) => setFormulario({ ...formulario, idEntrenador: event.target.value })}
+                    disabled={registrando}
+                  >
+                    <option value="">Sin asignar</option>
+                    {entrenadores.map((entrenador) => (
+                      <option key={entrenador.idEntrenador} value={entrenador.idEntrenador}>
+                        {entrenador.nombre} {entrenador.apellido}
+                      </option>
+                    ))}
+                  </select>
+                </Campo>
+
+                <label className="sm:col-span-2">
+                  <span className="mb-2 block text-sm font-semibold text-gray-200">Observaciones</span>
+                  <textarea
+                    className="min-h-24 w-full resize-y rounded-xl border border-white/10 bg-black/25 px-4 py-3 text-sm text-white outline-none transition placeholder:text-gray-600 focus:border-lime-400/70 focus:ring-2 focus:ring-lime-400/15"
+                    value={formulario.observaciones}
+                    onChange={(event) => setFormulario({
+                      ...formulario,
+                      observaciones: event.target.value.slice(0, 300),
+                    })}
+                    placeholder="Información adicional del pago..."
+                    disabled={registrando}
+                  />
+                  <span className="mt-1 block text-right text-xs text-gray-600">
+                    {formulario.observaciones.length}/300
+                  </span>
+                </label>
+              </div>
+
+              <footer className="flex flex-col-reverse gap-3 border-t border-white/[0.08] bg-black/15 px-5 py-4 sm:flex-row sm:justify-end">
+                <button
+                  type="button"
+                  onClick={cerrarModal}
+                  disabled={registrando}
+                  className="h-11 rounded-xl border border-white/10 px-5 text-sm font-semibold text-gray-300 transition hover:bg-white/5 disabled:opacity-50"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={registrando || !estadoPago.clienteActivo}
+                  className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-lime-400 px-6 text-sm font-black text-black transition hover:bg-lime-300 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {registrando ? (
+                    <>
+                      <span className="size-4 animate-spin rounded-full border-2 border-black/25 border-t-black" />
+                      Registrando...
+                    </>
+                  ) : (
+                    <><i className="ri-hand-coin-line text-lg" /> Confirmar pago</>
+                  )}
+                </button>
+              </footer>
+            </form>
+
+            <HistorialPagos
+              pagos={historial}
+              cargando={cargandoHistorial}
+              fechaRegistro={cliente.fechaRegistro}
+            />
           </div>
-        </section>
-      ) : cargandoCliente ? (
-        <section className="flex min-h-72 items-center justify-center rounded-3xl border border-white/[0.08] bg-white/[0.035]">
-          <span className="size-8 animate-spin rounded-full border-3 border-lime-400/25 border-t-lime-400" />
-        </section>
-      ) : (
-        <div className="space-y-6">
-          <ResumenCliente cliente={cliente} estado={estadoPago} />
-
-          <form onSubmit={registrarPago} className="overflow-hidden rounded-3xl border border-white/[0.08] bg-white/[0.035] shadow-2xl shadow-black/20">
-            <div className="border-b border-white/[0.08] px-5 py-4 sm:px-7">
-              <h2 className="text-xl font-bold text-white">Datos del nuevo pago</h2>
-              <p className="mt-1 text-sm text-gray-500">La fecha de pago se asigna automáticamente.</p>
-            </div>
-
-            <div className="grid gap-5 p-5 sm:grid-cols-2 sm:p-7">
-              <Campo etiqueta="Servicio o plan" requerido>
-                <select
-                  className={inputClassName}
-                  value={formulario.idServicio}
-                  onChange={(event) => seleccionarServicio(event.target.value)}
-                  disabled={registrando || servicios.length === 0}
-                  required
-                >
-                  <option value="">Seleccioná un servicio</option>
-                  {servicios.map((servicio) => (
-                    <option key={servicio.idServicio} value={servicio.idServicio}>
-                      {servicio.nombre}{servicio.duracion ? ` · ${servicio.duracion}` : ""}
-                    </option>
-                  ))}
-                </select>
-                {servicios.length === 0 && (
-                  <span className="mt-2 block text-xs text-amber-300">No hay servicios cargados en la base de datos.</span>
-                )}
-              </Campo>
-
-              <Campo etiqueta="Monto (UYU)" requerido>
-                <input
-                  type="number"
-                  min="0.01"
-                  step="0.01"
-                  className={inputClassName}
-                  value={formulario.monto}
-                  onChange={(event) => setFormulario({ ...formulario, monto: event.target.value })}
-                  placeholder="Ej.: 1500"
-                  disabled={registrando}
-                  required
-                />
-              </Campo>
-
-              <Campo etiqueta="Método de pago" requerido>
-                <select
-                  className={inputClassName}
-                  value={formulario.metodoPago}
-                  onChange={(event) => setFormulario({ ...formulario, metodoPago: event.target.value })}
-                  disabled={registrando}
-                >
-                  {[
-                    "Efectivo",
-                    "Transferencia",
-                    "Tarjeta de débito",
-                    "Tarjeta de crédito",
-                    "Otro",
-                  ].map((metodo) => <option key={metodo}>{metodo}</option>)}
-                </select>
-              </Campo>
-
-              <Campo etiqueta="Registrado por" ayuda="Entrenador opcional">
-                <select
-                  className={inputClassName}
-                  value={formulario.idEntrenador}
-                  onChange={(event) => setFormulario({ ...formulario, idEntrenador: event.target.value })}
-                  disabled={registrando}
-                >
-                  <option value="">Sin asignar</option>
-                  {entrenadores.map((entrenador) => (
-                    <option key={entrenador.idEntrenador} value={entrenador.idEntrenador}>
-                      {entrenador.nombre} {entrenador.apellido}
-                    </option>
-                  ))}
-                </select>
-              </Campo>
-
-              <label className="sm:col-span-2">
-                <span className="mb-2 block text-sm font-semibold text-gray-200">Observaciones</span>
-                <textarea
-                  className="min-h-28 w-full resize-y rounded-xl border border-white/10 bg-black/25 px-4 py-3 text-sm text-white outline-none transition placeholder:text-gray-600 focus:border-lime-400/70 focus:ring-2 focus:ring-lime-400/15"
-                  value={formulario.observaciones}
-                  onChange={(event) => setFormulario({ ...formulario, observaciones: event.target.value.slice(0, 300) })}
-                  placeholder="Información adicional del pago..."
-                  disabled={registrando}
-                />
-              </label>
-            </div>
-
-            <footer className="flex justify-end border-t border-white/[0.08] bg-black/15 px-5 py-4 sm:px-7">
-              <button
-                type="submit"
-                disabled={registrando || !estadoPago?.clienteActivo || servicios.length === 0}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-lime-400 px-7 text-sm font-black text-black transition hover:bg-lime-300 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {registrando ? (
-                  <><span className="size-4 animate-spin rounded-full border-2 border-black/25 border-t-black" /> Registrando...</>
-                ) : (
-                  <><i className="ri-hand-coin-line text-xl" /> Registrar pago</>
-                )}
-              </button>
-            </footer>
-          </form>
-
-          <HistorialPagos pagos={historial} />
-        </div>
+        </Modal>
       )}
     </div>
   );
 }
 
-function ResumenCliente({ cliente, estado }: { cliente: Cliente; estado: EstadoPagoCliente | null }) {
-  const estiloEstado = estado?.estadoCuota === "Vigente"
-    ? "border-lime-400/25 bg-lime-400/10 text-lime-300"
-    : estado?.estadoCuota === "Por vencer" || estado?.estadoCuota === "Vence hoy"
-      ? "border-amber-400/25 bg-amber-400/10 text-amber-300"
-      : estado?.estadoCuota === "Vencida"
-        ? "border-red-400/25 bg-red-400/10 text-red-300"
-        : "border-white/10 bg-white/5 text-gray-400";
+function TarjetaFiltro({
+  valor,
+  etiqueta,
+  tono,
+  seleccionada,
+  onClick,
+}: {
+  valor: number;
+  etiqueta: string;
+  tono: "neutral" | "verde" | "rojo";
+  seleccionada: boolean;
+  onClick: () => void;
+}) {
+  const estilos = {
+    neutral: seleccionada
+      ? "border-white/20 bg-white/[0.075] text-white ring-white/15"
+      : "border-white/10 bg-white/[0.025] text-gray-400 ring-transparent hover:bg-white/[0.05]",
+    verde: seleccionada
+      ? "border-lime-400/45 bg-lime-400/15 text-lime-400 ring-lime-400/20"
+      : "border-lime-400/15 bg-lime-400/[0.045] text-lime-400/60 ring-transparent hover:bg-lime-400/[0.08]",
+    rojo: seleccionada
+      ? "border-red-400/50 bg-red-400/15 text-red-300 ring-red-400/20"
+      : "border-red-400/15 bg-red-400/[0.045] text-red-300/60 ring-transparent hover:bg-red-400/[0.08]",
+  }[tono];
 
   return (
-    <section className="rounded-3xl border border-white/[0.08] bg-white/[0.035] p-5 sm:p-7">
+    <button
+      type="button"
+      aria-pressed={seleccionada}
+      onClick={onClick}
+      className={`relative flex min-h-20 min-w-0 flex-col items-center justify-center rounded-2xl border px-2 py-3 text-center ring-2 ring-inset transition sm:min-w-24 sm:px-4 ${estilos}`}
+    >
+      <span className="text-xl font-black leading-none sm:text-2xl">{valor}</span>
+      <span className="mt-2 text-[10px] font-semibold leading-tight text-current opacity-70 sm:text-xs">
+        {etiqueta}
+      </span>
+      {seleccionada && (
+        <span className="absolute right-2 top-2 size-1.5 rounded-full bg-current" aria-hidden="true" />
+      )}
+    </button>
+  );
+}
+
+function EstadoCuotaBadge({ cliente }: { cliente: ClientePago }) {
+  const estilo = !cliente.clienteActivo
+    ? "border-white/10 bg-white/5 text-gray-500"
+    : cliente.estadoCuota === "Vencida" || cliente.pagaEstaSemana
+      ? "border-red-400/25 bg-red-400/10 text-red-300"
+      : "border-lime-400/25 bg-lime-400/10 text-lime-300";
+
+  return (
+    <div>
+      <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-bold ${estilo}`}>
+        {!cliente.clienteActivo ? "Cliente inactivo" : cliente.estadoCuota}
+      </span>
+      <p className="mt-1.5 text-xs text-gray-500">{textoDias(cliente)}</p>
+    </div>
+  );
+}
+
+function ResumenCliente({ cliente, estado }: { cliente: ClientePago; estado: EstadoPagoCliente }) {
+  const estiloEstado = estado.estadoCuota === "Vigente"
+    ? "border-lime-400/25 bg-lime-400/10 text-lime-300"
+    : estado.estadoCuota === "Por vencer" || estado.estadoCuota === "Vence hoy"
+      ? "border-red-400/25 bg-red-400/10 text-red-300"
+      : estado.estadoCuota === "Vencida"
+        ? "border-red-400/25 bg-red-400/10 text-red-300"
+        : "border-lime-400/25 bg-lime-400/10 text-lime-300";
+
+  return (
+    <section className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-center gap-4">
-          <div className="flex size-13 items-center justify-center rounded-2xl bg-lime-400 text-xl font-black text-black">
+          <div className="flex size-12 items-center justify-center rounded-xl bg-lime-400 text-lg font-black text-black">
             {cliente.nombre.charAt(0)}{cliente.apellido.charAt(0)}
           </div>
           <div>
-            <h2 className="text-xl font-bold text-white">{cliente.nombre} {cliente.apellido}</h2>
-            <p className="mt-1 text-sm text-gray-500">CI {cliente.documento} · ID #{cliente.idCliente}</p>
+            <h3 className="text-lg font-bold text-white">{cliente.nombre} {cliente.apellido}</h3>
+            <p className="mt-1 text-xs text-gray-500">
+              CI {cliente.documento} · {formatearTelefono(cliente.telefono)}
+            </p>
           </div>
         </div>
         <span className={`self-start rounded-full border px-3 py-1.5 text-xs font-bold ${estiloEstado}`}>
-          {estado?.estadoCuota ?? "Consultando"}
+          {estado.estadoCuota}
         </span>
       </div>
 
-      {!cliente.estado && (
-        <p className="mt-5 rounded-xl border border-amber-400/20 bg-amber-400/10 px-4 py-3 text-sm text-amber-200">
-          Este cliente está inactivo. Reactivalo desde el listado antes de registrar un pago.
-        </p>
-      )}
-
-      <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <DatoResumen etiqueta="Último pago" valor={formatearFechaHora(estado?.ultimaFechaPago ?? null)} icono="ri-calendar-check-line" />
-        <DatoResumen etiqueta="Vencimiento actual" valor={formatearFecha(estado?.fechaVencimiento ?? null)} icono="ri-calendar-event-line" />
+      <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <DatoResumen
-          etiqueta={estado?.diasVencido ? "Días vencido" : "Días restantes"}
-          valor={estado?.diasVencido ? estado.diasVencido.toString() : estado?.diasRestantes?.toString() ?? "—"}
-          icono="ri-time-line"
+          etiqueta={estado.esCuotaInicial ? "Inicio de cuota" : "Último pago"}
+          valor={estado.esCuotaInicial
+            ? formatearFecha(estado.ultimaFechaPago)
+            : formatearFechaHora(estado.ultimaFechaPago)}
         />
-        <DatoResumen etiqueta="Último servicio" valor={estado?.servicio ?? "Sin registrar"} icono="ri-service-line" />
+        <DatoResumen etiqueta="Vencimiento" valor={formatearFecha(estado.fechaVencimiento)} />
+        <DatoResumen
+          etiqueta={estado.diasVencido ? "Días vencido" : "Días restantes"}
+          valor={estado.diasVencido
+            ? estado.diasVencido.toString()
+            : estado.diasRestantes?.toString() ?? "—"}
+        />
+        <DatoResumen
+          etiqueta="Período vigente"
+          valor={`${formatearFecha(estado.fechaInicio)} → ${formatearFecha(estado.fechaVencimiento)}`}
+        />
       </div>
     </section>
   );
 }
 
-function DatoResumen({ etiqueta, valor, icono }: { etiqueta: string; valor: string; icono: string }) {
+function DatoResumen({ etiqueta, valor }: { etiqueta: string; valor: string }) {
   return (
-    <div className="rounded-2xl border border-white/[0.07] bg-black/15 p-4">
-      <i className={`${icono} text-lg text-lime-400`} />
-      <p className="mt-3 text-xs font-semibold uppercase tracking-wider text-gray-500">{etiqueta}</p>
-      <p className="mt-1 font-bold text-white">{valor}</p>
+    <div className="rounded-xl border border-white/[0.07] bg-black/15 p-3.5">
+      <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-500">{etiqueta}</p>
+      <p className="mt-1.5 text-sm font-bold text-white">{valor}</p>
     </div>
   );
 }
 
-function HistorialPagos({ pagos }: { pagos: Pago[] }) {
+function HistorialPagos({
+  pagos,
+  cargando,
+  fechaRegistro,
+}: {
+  pagos: Pago[];
+  cargando: boolean;
+  fechaRegistro: string;
+}) {
   return (
-    <section className="overflow-hidden rounded-3xl border border-white/[0.08] bg-white/[0.035]">
-      <header className="border-b border-white/[0.08] px-5 py-4 sm:px-7">
-        <h2 className="text-xl font-bold text-white">Historial de pagos</h2>
-        <p className="mt-1 text-sm text-gray-500">Cada cuota permanece vinculada únicamente a este cliente.</p>
-      </header>
-      {pagos.length === 0 ? (
-        <div className="p-8 text-center text-sm text-gray-500">Todavía no tiene pagos registrados.</div>
+    <details className="overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.025]">
+      <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-4 text-sm font-bold text-white">
+        <span><i className="ri-history-line mr-2 text-lime-400" />Historial de pagos</span>
+        <span className="text-xs font-semibold text-gray-500">{pagos.length} registros</span>
+      </summary>
+      {cargando ? (
+        <div className="border-t border-white/[0.08] p-6 text-center text-sm text-gray-500">
+          Cargando historial...
+        </div>
+      ) : pagos.length === 0 ? (
+        <div className="border-t border-white/[0.08] p-6 text-center text-sm text-gray-500">
+          La cuota inicial comenzó el {formatearFecha(fechaRegistro)} con el alta del cliente.
+          Todavía no hay renovaciones registradas.
+        </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[800px] text-left">
-            <thead className="bg-black/20 text-xs uppercase tracking-wider text-gray-500">
+        <div className="overflow-x-auto border-t border-white/[0.08]">
+          <table className="w-full min-w-[760px] text-left">
+            <thead className="bg-black/20 text-[10px] uppercase tracking-wider text-gray-500">
               <tr>
-                {['Pago', 'Servicio', 'Período', 'Monto', 'Método', 'Estado'].map((titulo) => (
-                  <th key={titulo} className="px-5 py-4 font-bold">{titulo}</th>
+                {['Pago', 'Período', 'Monto', 'Método', 'Observaciones'].map((titulo) => (
+                  <th key={titulo} className="px-4 py-3 font-bold">{titulo}</th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-white/[0.07]">
               {pagos.map((pago) => (
                 <tr key={pago.idCuota}>
-                  <td className="px-5 py-4 text-sm text-gray-300">{formatearFechaHora(pago.fechaPago)}</td>
-                  <td className="px-5 py-4 text-sm font-semibold text-white">{pago.servicio}</td>
-                  <td className="px-5 py-4 text-sm text-gray-400">{formatearFecha(pago.fechaInicio)} → {formatearFecha(pago.fechaVencimiento)}</td>
-                  <td className="px-5 py-4 text-sm font-bold text-lime-400">{formatearMonto(pago.monto)}</td>
-                  <td className="px-5 py-4 text-sm text-gray-400">{pago.metodoPago}</td>
-                  <td className="px-5 py-4"><span className="rounded-full bg-lime-400/10 px-2.5 py-1 text-xs font-bold text-lime-300">{pago.estadoPago}</span></td>
+                  <td className="px-4 py-3 text-xs text-gray-300">{formatearFechaHora(pago.fechaPago)}</td>
+                  <td className="px-4 py-3 text-xs text-gray-400">
+                    {formatearFecha(pago.fechaInicio)} → {formatearFecha(pago.fechaVencimiento)}
+                  </td>
+                  <td className="px-4 py-3 text-xs font-bold text-lime-400">{formatearMonto(pago.monto)}</td>
+                  <td className="px-4 py-3 text-xs text-gray-400">{pago.metodoPago}</td>
+                  <td className="max-w-64 px-4 py-3 text-xs text-gray-400">
+                    {pago.observaciones ?? "—"}
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       )}
-    </section>
+    </details>
   );
 }
 
-function Campo({ etiqueta, ayuda, requerido = false, children }: { etiqueta: string; ayuda?: string; requerido?: boolean; children: ReactNode }) {
+function Campo({
+  etiqueta,
+  ayuda,
+  requerido = false,
+  children,
+}: {
+  etiqueta: string;
+  ayuda?: string;
+  requerido?: boolean;
+  children: ReactNode;
+}) {
   return (
     <label>
       <span className="mb-2 block text-sm font-semibold text-gray-200">
@@ -664,10 +875,65 @@ function Campo({ etiqueta, ayuda, requerido = false, children }: { etiqueta: str
   );
 }
 
-function Alerta({ tipo, children }: { tipo: "error" | "exito"; children: ReactNode }) {
+function Modal({ titulo, onCerrar, children }: { titulo: string; onCerrar: () => void; children: ReactNode }) {
   return (
-    <div className={`mb-5 flex items-center gap-3 rounded-2xl border px-4 py-3 text-sm font-semibold ${tipo === "exito" ? "border-lime-400/25 bg-lime-400/10 text-lime-200" : "border-red-400/25 bg-red-400/10 text-red-200"}`}>
-      <i className={`${tipo === "exito" ? "ri-checkbox-circle-line text-lime-400" : "ri-error-warning-line text-red-400"} text-xl`} />
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 p-3 backdrop-blur-sm"
+      onMouseDown={(event) => event.target === event.currentTarget && onCerrar()}
+    >
+      <section
+        role="dialog"
+        aria-modal="true"
+        aria-label={titulo}
+        className="max-h-[94vh] w-full max-w-5xl overflow-y-auto rounded-3xl border border-white/10 bg-[#151915] shadow-2xl"
+      >
+        <header className="sticky top-0 z-10 flex items-center justify-between border-b border-white/[0.08] bg-[#151915]/95 px-5 py-4 backdrop-blur">
+          <h2 className="text-lg font-bold text-white">{titulo}</h2>
+          <button
+            type="button"
+            onClick={onCerrar}
+            className="flex size-9 items-center justify-center rounded-xl text-gray-400 transition hover:bg-white/5 hover:text-white"
+            aria-label="Cerrar"
+          >
+            <i className="ri-close-line text-xl" />
+          </button>
+        </header>
+        {children}
+      </section>
+    </div>
+  );
+}
+
+function EstadoVacio({ icono, titulo, detalle }: { icono: string; titulo: string; detalle?: string }) {
+  return (
+    <div className="flex min-h-64 flex-col items-center justify-center p-8 text-center">
+      <i className={`${icono} text-4xl text-lime-400`} />
+      <p className="mt-3 font-semibold text-white">{titulo}</p>
+      {detalle && <p className="mt-2 max-w-lg text-sm text-gray-500">{detalle}</p>}
+    </div>
+  );
+}
+
+function Alerta({
+  tipo,
+  dentroModal = false,
+  children,
+}: {
+  tipo: "error" | "exito";
+  dentroModal?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <div className={`${dentroModal ? "" : "mb-5"} flex items-center gap-3 rounded-2xl border px-4 py-3 text-sm font-semibold ${
+      tipo === "exito"
+        ? "border-lime-400/25 bg-lime-400/10 text-lime-200"
+        : "border-red-400/25 bg-red-400/10 text-red-200"
+    }`}>
+      <i className={`${
+        tipo === "exito"
+          ? "ri-checkbox-circle-line text-lime-400"
+          : "ri-error-warning-line text-red-400"
+      } text-xl`} />
       {children}
     </div>
   );

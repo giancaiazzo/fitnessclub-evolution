@@ -36,6 +36,83 @@ public class ClientesController : ControllerBase
         return Ok(clientes);
     }
 
+    // GET: api/clientes/estado-pagos
+    [HttpGet("estado-pagos")]
+    public async Task<ActionResult<IReadOnlyCollection<ClientePagoResumenResponse>>> ObtenerEstadoPagosClientes(
+        CancellationToken cancellationToken)
+    {
+        var clientes = await _context.Clientes
+            .AsNoTracking()
+            .OrderBy(cliente => cliente.Apellido)
+            .ThenBy(cliente => cliente.Nombre)
+            .Select(cliente => new
+            {
+                cliente.IdCliente,
+                cliente.Nombre,
+                cliente.Apellido,
+                cliente.Documento,
+                cliente.Telefono,
+                cliente.FechaRegistro,
+                ClienteActivo = cliente.Estado,
+                UltimaFechaPago = cliente.Cuotas
+                    .Where(cuota => cuota.EstadoPago == "Confirmado")
+                    .OrderByDescending(cuota => cuota.FechaVencimiento)
+                    .ThenByDescending(cuota => cuota.FechaPago)
+                    .Select(cuota => (DateTime?)cuota.FechaPago)
+                    .FirstOrDefault(),
+                FechaInicio = cliente.Cuotas
+                    .Where(cuota => cuota.EstadoPago == "Confirmado")
+                    .OrderByDescending(cuota => cuota.FechaVencimiento)
+                    .ThenByDescending(cuota => cuota.FechaPago)
+                    .Select(cuota => (DateOnly?)cuota.FechaInicio)
+                    .FirstOrDefault(),
+                FechaVencimiento = cliente.Cuotas
+                    .Where(cuota => cuota.EstadoPago == "Confirmado")
+                    .OrderByDescending(cuota => cuota.FechaVencimiento)
+                    .ThenByDescending(cuota => cuota.FechaPago)
+                    .Select(cuota => (DateOnly?)cuota.FechaVencimiento)
+                    .FirstOrDefault()
+            })
+            .ToListAsync(cancellationToken);
+
+        var hoy = FechaGimnasio.Hoy();
+        var respuesta = clientes.Select(cliente =>
+        {
+            var esCuotaInicial = cliente.UltimaFechaPago is null;
+            var inicioCuotaInicial = FechaGimnasio.DesdeUtc(cliente.FechaRegistro);
+            var fechaInicio = cliente.FechaInicio ?? inicioCuotaInicial;
+            var fechaVencimiento = cliente.FechaVencimiento ?? inicioCuotaInicial.AddMonths(1);
+            var diferencia = fechaVencimiento.DayNumber - hoy.DayNumber;
+
+            return new ClientePagoResumenResponse
+            {
+                IdCliente = cliente.IdCliente,
+                Nombre = cliente.Nombre,
+                Apellido = cliente.Apellido,
+                Documento = cliente.Documento,
+                Telefono = cliente.Telefono,
+                FechaRegistro = cliente.FechaRegistro,
+                ClienteActivo = cliente.ClienteActivo,
+                UltimaFechaPago = cliente.UltimaFechaPago ?? cliente.FechaRegistro,
+                FechaInicio = fechaInicio,
+                FechaVencimiento = fechaVencimiento,
+                DiasRestantes = Math.Max(0, diferencia),
+                DiasVencido = diferencia < 0 ? Math.Abs(diferencia) : 0,
+                EstadoCuota = diferencia switch
+                {
+                    < 0 => "Vencida",
+                    0 => "Vence hoy",
+                    <= 5 => "Por vencer",
+                    _ => "Vigente"
+                },
+                EsCuotaInicial = esCuotaInicial,
+                PagaEstaSemana = cliente.ClienteActivo && diferencia is >= 0 and <= 7
+            };
+        }).ToList();
+
+        return Ok(respuesta);
+    }
+
     // GET: api/clientes/5
     [HttpGet("{id:int}")]
     public async Task<ActionResult<ClienteResponse>> ObtenerClientePorId(
@@ -278,13 +355,12 @@ public class ClientesController : ControllerBase
             {
                 cuota.FechaPago,
                 cuota.FechaInicio,
-                cuota.FechaVencimiento,
-                Servicio = cuota.Servicio.Nombre
+                cuota.FechaVencimiento
             })
             .FirstOrDefaultAsync(cancellationToken);
 
         return Ok(CrearEstadoPago(cliente, ultimaCuota?.FechaPago, ultimaCuota?.FechaInicio,
-            ultimaCuota?.FechaVencimiento, ultimaCuota?.Servicio));
+            ultimaCuota?.FechaVencimiento));
     }
 
     private static ClienteResponse MapearCliente(Cliente cliente)
@@ -321,9 +397,12 @@ public class ClientesController : ControllerBase
         Cliente cliente,
         DateTime? fechaPago,
         DateOnly? fechaInicio,
-        DateOnly? fechaVencimiento,
-        string? servicio)
+        DateOnly? fechaVencimiento)
     {
+        var esCuotaInicial = fechaPago is null;
+        var inicioCuotaInicial = FechaGimnasio.DesdeUtc(cliente.FechaRegistro);
+        var fechaInicioEfectiva = fechaInicio ?? inicioCuotaInicial;
+        var fechaVencimientoEfectiva = fechaVencimiento ?? inicioCuotaInicial.AddMonths(1);
         var respuesta = new EstadoPagoClienteResponse
         {
             IdCliente = cliente.IdCliente,
@@ -331,18 +410,13 @@ public class ClientesController : ControllerBase
             Apellido = cliente.Apellido,
             Documento = cliente.Documento,
             ClienteActivo = cliente.Estado,
-            UltimaFechaPago = fechaPago,
-            FechaInicio = fechaInicio,
-            FechaVencimiento = fechaVencimiento,
-            Servicio = servicio
+            UltimaFechaPago = fechaPago ?? cliente.FechaRegistro,
+            FechaInicio = fechaInicioEfectiva,
+            FechaVencimiento = fechaVencimientoEfectiva,
+            EsCuotaInicial = esCuotaInicial
         };
 
-        if (fechaVencimiento is null)
-        {
-            return respuesta;
-        }
-
-        var diferencia = fechaVencimiento.Value.DayNumber - FechaGimnasio.Hoy().DayNumber;
+        var diferencia = fechaVencimientoEfectiva.DayNumber - FechaGimnasio.Hoy().DayNumber;
         respuesta.DiasRestantes = Math.Max(0, diferencia);
         respuesta.DiasVencido = diferencia < 0 ? Math.Abs(diferencia) : 0;
         respuesta.EstadoCuota = diferencia switch

@@ -35,8 +35,6 @@ public class PagosController : ControllerBase
                 IdCuota = cuota.IdCuota,
                 IdCliente = cuota.IdCliente,
                 Cliente = cuota.Cliente.Nombre + " " + cuota.Cliente.Apellido,
-                IdServicio = cuota.IdServicio,
-                Servicio = cuota.Servicio.Nombre,
                 IdEntrenador = cuota.IdEntrenador,
                 Entrenador = cuota.Entrenador == null
                     ? null
@@ -81,8 +79,6 @@ public class PagosController : ControllerBase
                 IdCuota = cuota.IdCuota,
                 IdCliente = cuota.IdCliente,
                 Cliente = cuota.Cliente.Nombre + " " + cuota.Cliente.Apellido,
-                IdServicio = cuota.IdServicio,
-                Servicio = cuota.Servicio.Nombre,
                 IdEntrenador = cuota.IdEntrenador,
                 Entrenador = cuota.Entrenador == null
                     ? null
@@ -120,17 +116,6 @@ public class PagosController : ControllerBase
             return Conflict(new { message = "El cliente está inactivo. Reactivalo antes de registrar un pago." });
         }
 
-        var servicio = await _context.Servicios
-            .AsNoTracking()
-            .SingleOrDefaultAsync(
-                servicio => servicio.IdServicio == request.IdServicio,
-                cancellationToken);
-
-        if (servicio is null)
-        {
-            return NotFound(new { message = "No se encontró el servicio seleccionado." });
-        }
-
         Entrenador? entrenador = null;
         if (request.IdEntrenador is { } idEntrenador)
         {
@@ -155,17 +140,22 @@ public class PagosController : ControllerBase
                 cuota.EstadoPago == PagoConfirmado)
             .MaxAsync(cuota => (DateOnly?)cuota.FechaVencimiento, cancellationToken);
 
+        var vencimientoCuotaInicial = FechaGimnasio
+            .DesdeUtc(cliente.FechaRegistro)
+            .AddMonths(1);
+        var vencimientoActual = ultimoVencimiento ?? vencimientoCuotaInicial;
+
         // Si paga antes de vencer, el mes nuevo comienza desde su vencimiento
-        // actual. De esta manera el cliente nunca pierde días ya abonados.
-        var fechaInicio = ultimoVencimiento is { } vencimiento && vencimiento >= hoy
-            ? vencimiento
+        // actual, incluida la primera cuota iniciada al registrar al cliente.
+        // De esta manera el cliente nunca pierde días ya abonados.
+        var fechaInicio = vencimientoActual >= hoy
+            ? vencimientoActual
             : hoy;
         var fechaVencimiento = fechaInicio.AddMonths(1);
 
         var cuota = new Cuota
         {
             IdCliente = cliente.IdCliente,
-            IdServicio = servicio.IdServicio,
             IdEntrenador = entrenador?.IdEntrenador,
             FechaPago = fechaPago,
             FechaInicio = fechaInicio,
@@ -188,8 +178,6 @@ public class PagosController : ControllerBase
             IdCuota = cuota.IdCuota,
             IdCliente = cuota.IdCliente,
             Cliente = nombreCliente,
-            IdServicio = cuota.IdServicio,
-            Servicio = servicio.Nombre,
             IdEntrenador = cuota.IdEntrenador,
             Entrenador = nombreEntrenador,
             FechaPago = cuota.FechaPago,
@@ -214,7 +202,7 @@ public class PagosController : ControllerBase
             DiasRestantes = cuota.FechaVencimiento.DayNumber - hoy.DayNumber,
             DiasVencido = 0,
             EstadoCuota = "Vigente",
-            Servicio = servicio.Nombre
+            EsCuotaInicial = false
         };
 
         var respuesta = new RegistrarPagoResponse

@@ -188,6 +188,44 @@
         }
       }
     },
+    "/api/Clientes/estado-pagos": {
+      "get": {
+        "tags": [
+          "Clientes"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ClientePagoResumenResponse"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ClientePagoResumenResponse"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ClientePagoResumenResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Clientes/{id}": {
       "get": {
         "tags": [
@@ -1345,6 +1383,85 @@
           }
         }
       },
+      "ClientePagoResumenResponse": {
+        "type": "object",
+        "properties": {
+          "idCliente": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "nombre": {
+            "type": "string"
+          },
+          "apellido": {
+            "type": "string"
+          },
+          "documento": {
+            "type": "string"
+          },
+          "telefono": {
+            "type": "string"
+          },
+          "fechaRegistro": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "clienteActivo": {
+            "type": "boolean"
+          },
+          "ultimaFechaPago": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "fechaInicio": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "fechaVencimiento": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "diasRestantes": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "diasVencido": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "estadoCuota": {
+            "type": "string"
+          },
+          "esCuotaInicial": {
+            "type": "boolean"
+          },
+          "pagaEstaSemana": {
+            "type": "boolean"
+          }
+        }
+      },
       "ClienteResponse": {
         "type": "object",
         "properties": {
@@ -1522,11 +1639,8 @@
           "estadoCuota": {
             "type": "string"
           },
-          "servicio": {
-            "type": [
-              "null",
-              "string"
-            ]
+          "esCuotaInicial": {
+            "type": "boolean"
           }
         }
       },
@@ -1573,17 +1687,6 @@
             "format": "int32"
           },
           "cliente": {
-            "type": "string"
-          },
-          "idServicio": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          },
-          "servicio": {
             "type": "string"
           },
           "idEntrenador": {
@@ -1642,16 +1745,6 @@
         "type": "object",
         "properties": {
           "idCliente": {
-            "maximum": 2147483647,
-            "minimum": 1,
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": [
-              "integer",
-              "string"
-            ],
-            "format": "int32"
-          },
-          "idServicio": {
             "maximum": 2147483647,
             "minimum": 1,
             "pattern": "^-?(?:0|[1-9]\\d*)$",

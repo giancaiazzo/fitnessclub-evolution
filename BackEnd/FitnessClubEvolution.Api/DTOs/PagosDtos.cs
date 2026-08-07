@@ -8,9 +8,6 @@ public sealed class RegistrarPagoRequest
     public int IdCliente { get; set; }
 
     [Range(1, int.MaxValue)]
-    public int IdServicio { get; set; }
-
-    [Range(1, int.MaxValue)]
     public int? IdEntrenador { get; set; }
 
     [Range(typeof(decimal), "0.01", "9999999999")]
@@ -28,8 +25,6 @@ public sealed class PagoResponse
     public int IdCuota { get; set; }
     public int IdCliente { get; set; }
     public string Cliente { get; set; } = string.Empty;
-    public int IdServicio { get; set; }
-    public string Servicio { get; set; } = string.Empty;
     public int? IdEntrenador { get; set; }
     public string? Entrenador { get; set; }
     public DateTime FechaPago { get; set; }

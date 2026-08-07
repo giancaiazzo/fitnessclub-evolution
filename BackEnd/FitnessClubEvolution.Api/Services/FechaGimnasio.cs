@@ -7,8 +7,13 @@ public static class FechaGimnasio
     public static DateOnly Hoy(DateTime? instanteUtc = null)
     {
         var utc = instanteUtc ?? DateTime.UtcNow;
+        return DesdeUtc(utc);
+    }
+
+    public static DateOnly DesdeUtc(DateTime instanteUtc)
+    {
         var local = TimeZoneInfo.ConvertTimeFromUtc(
-            DateTime.SpecifyKind(utc, DateTimeKind.Utc),
+            DateTime.SpecifyKind(instanteUtc, DateTimeKind.Utc),
             ZonaHoraria);
 
         return DateOnly.FromDateTime(local);

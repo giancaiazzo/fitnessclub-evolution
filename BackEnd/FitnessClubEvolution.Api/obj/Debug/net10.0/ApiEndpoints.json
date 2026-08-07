@@ -284,6 +284,26 @@
     ]
   },
   {
+    "ContainingType": "FitnessClubEvolution.Api.Controllers.ClientesController",
+    "Method": "ObtenerEstadoPagosClientes",
+    "RelativePath": "api/Clientes/estado-pagos",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IReadOnlyCollection\u00601[[FitnessClubEvolution.Api.DTOs.ClientePagoResumenResponse, FitnessClubEvolution.Api, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
     "ContainingType": "FitnessClubEvolution.Api.Controllers.DashboardController",
     "Method": "Get",
     "RelativePath": "api/Dashboard",

@@ -27,6 +27,4 @@ public class Servicio
 
     [StringLength(50)]
     public string? TipoContenidoImagen { get; set; }
-
-    public ICollection<Cuota> Cuotas { get; set; } = new List<Cuota>();
 }

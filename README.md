@@ -50,11 +50,13 @@ Rutinas, Servicios y Pagos en el menú lateral.
 
 El flujo de pagos permite buscar un cliente por nombre, apellido o documento,
 consultar su vencimiento y días restantes, registrar una renovación y conservar
-el historial completo. Si se paga antes del vencimiento, el nuevo mes comienza
-desde la fecha ya abonada para que el cliente no pierda días.
+el historial completo. La primera cuota comienza automáticamente en la fecha de
+registro del cliente y vence un mes calendario después, sin asociarse a un
+servicio. Si se paga antes del vencimiento, el nuevo mes comienza desde la fecha
+ya abonada para que el cliente no pierda días.
 
 Servicios incluye alta con imagen promocional, listado, búsqueda por nombre,
-modificación y eliminación protegida cuando existen pagos relacionados. Las
+modificación y eliminación. Este catálogo es independiente de los pagos. Las
 imágenes admitidas son JPG, PNG y WEBP de hasta 5 MB.
 
 Rutinas incluye alta, listado, búsqueda, visualización, modificación y

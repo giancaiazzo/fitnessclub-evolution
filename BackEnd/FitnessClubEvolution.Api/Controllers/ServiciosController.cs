@@ -233,18 +233,6 @@ public class ServiciosController : ControllerBase
             return NotFound(new { message = "No se encontró el servicio solicitado." });
         }
 
-        var tienePagos = await _context.Cuotas
-            .AsNoTracking()
-            .AnyAsync(cuota => cuota.IdServicio == id, cancellationToken);
-
-        if (tienePagos)
-        {
-            return Conflict(new
-            {
-                message = "No se puede eliminar el servicio porque tiene pagos asociados. El historial debe conservarse."
-            });
-        }
-
         _context.Servicios.Remove(servicio);
         await _context.SaveChangesAsync(cancellationToken);
         return NoContent();

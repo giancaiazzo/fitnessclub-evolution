@@ -87,6 +87,25 @@ public sealed class EstadoPagoClienteResponse
     public DateOnly? FechaVencimiento { get; set; }
     public int? DiasRestantes { get; set; }
     public int DiasVencido { get; set; }
-    public string EstadoCuota { get; set; } = "Sin pagos";
-    public string? Servicio { get; set; }
+    public string EstadoCuota { get; set; } = "Vigente";
+    public bool EsCuotaInicial { get; set; }
+}
+
+public sealed class ClientePagoResumenResponse
+{
+    public int IdCliente { get; set; }
+    public string Nombre { get; set; } = string.Empty;
+    public string Apellido { get; set; } = string.Empty;
+    public string Documento { get; set; } = string.Empty;
+    public string Telefono { get; set; } = string.Empty;
+    public DateTime FechaRegistro { get; set; }
+    public bool ClienteActivo { get; set; }
+    public DateTime? UltimaFechaPago { get; set; }
+    public DateOnly? FechaInicio { get; set; }
+    public DateOnly? FechaVencimiento { get; set; }
+    public int? DiasRestantes { get; set; }
+    public int DiasVencido { get; set; }
+    public string EstadoCuota { get; set; } = "Vigente";
+    public bool EsCuotaInicial { get; set; }
+    public bool PagaEstaSemana { get; set; }
 }
