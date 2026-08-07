@@ -28,18 +28,18 @@ export const gestionSections: GestionSection[] = [
     ],
   },
   {
-    title: "Planes",
-    icon: "ri-clipboard-line",
+    title: "Ejercicios",
+    icon: "ri-boxing-line",
     actions: [
       {
-        title: "Ingresar plan",
-        path: "/gestion/planes/ingresar",
-        icon: "ri-file-add-line",
+        title: "Ingresar ejercicio",
+        path: "/gestion/ejercicios/ingresar",
+        icon: "ri-add-box-line",
       },
       {
-        title: "Listado de planes",
-        path: "/gestion/planes/listado",
-        icon: "ri-file-list-3-line",
+        title: "Listado de ejercicios",
+        path: "/gestion/ejercicios/listado",
+        icon: "ri-list-check-3",
       },
     ],
   },

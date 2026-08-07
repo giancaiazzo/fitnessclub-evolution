@@ -60,6 +60,7 @@ export const navigation = [
   { name: "Nosotros", href: "/about" },
   { name: "Servicios", href: "/services" },
   { name: "Entrenamientos", href: "/classes" },
+  { name: "Ejercicios", href: "/exercises" },
   { name: "IMC", href: "/calc-imc" },
   { name: "Planes", href: "/pricing" },
   { name: "Contacto", href: "/contact" },

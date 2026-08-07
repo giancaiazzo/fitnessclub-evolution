@@ -550,6 +550,333 @@
         }
       }
     },
+    "/api/Ejercicios": {
+      "get": {
+        "tags": [
+          "Ejercicios"
+        ],
+        "parameters": [
+          {
+            "name": "buscar",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "grupoMuscular",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "incluirInactivos",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EjercicioResponse"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EjercicioResponse"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EjercicioResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Ejercicios"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "Nombre": {
+                    "maxLength": 100,
+                    "minLength": 2,
+                    "type": "string"
+                  },
+                  "GrupoMuscular": {
+                    "maxLength": 60,
+                    "minLength": 2,
+                    "type": "string"
+                  },
+                  "Descripcion": {
+                    "maxLength": 600,
+                    "minLength": 0,
+                    "type": "string"
+                  },
+                  "Estado": {
+                    "type": "boolean"
+                  },
+                  "ImagenPreview": {
+                    "$ref": "#/components/schemas/IFormFile"
+                  },
+                  "VideoTutorial": {
+                    "$ref": "#/components/schemas/IFormFile"
+                  },
+                  "DuracionVideoSegundos": {
+                    "pattern": "^-?(?:0|[1-9]\\d*)$",
+                    "type": [
+                      "integer",
+                      "string"
+                    ],
+                    "format": "int32"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/EjercicioResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EjercicioResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EjercicioResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Ejercicios/{id}": {
+      "get": {
+        "tags": [
+          "Ejercicios"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/EjercicioResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EjercicioResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EjercicioResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Ejercicios"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "Nombre": {
+                    "maxLength": 100,
+                    "minLength": 2,
+                    "type": "string"
+                  },
+                  "GrupoMuscular": {
+                    "maxLength": 60,
+                    "minLength": 2,
+                    "type": "string"
+                  },
+                  "Descripcion": {
+                    "maxLength": 600,
+                    "minLength": 0,
+                    "type": "string"
+                  },
+                  "Estado": {
+                    "type": "boolean"
+                  },
+                  "ImagenPreview": {
+                    "$ref": "#/components/schemas/IFormFile"
+                  },
+                  "VideoTutorial": {
+                    "$ref": "#/components/schemas/IFormFile"
+                  },
+                  "DuracionVideoSegundos": {
+                    "pattern": "^-?(?:0|[1-9]\\d*)$",
+                    "type": [
+                      "integer",
+                      "string"
+                    ],
+                    "format": "int32"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/EjercicioResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EjercicioResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EjercicioResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Ejercicios"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Ejercicios/{id}/imagen": {
+      "get": {
+        "tags": [
+          "Ejercicios"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Ejercicios/{id}/video": {
+      "get": {
+        "tags": [
+          "Ejercicios"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Entrenadores": {
       "get": {
         "tags": [
@@ -1556,6 +1883,114 @@
           }
         }
       },
+      "EjercicioResponse": {
+        "type": "object",
+        "properties": {
+          "idEjercicio": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "nombre": {
+            "type": "string"
+          },
+          "grupoMuscular": {
+            "type": "string"
+          },
+          "descripcion": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "estado": {
+            "type": "boolean"
+          },
+          "tieneImagenPreview": {
+            "type": "boolean"
+          },
+          "nombreArchivoImagen": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "tipoContenidoImagen": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "tamanoImagenBytes": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "imagenPreviewUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "tieneVideoTutorial": {
+            "type": "boolean"
+          },
+          "nombreArchivoVideo": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "tipoContenidoVideo": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "tamanoVideoBytes": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "duracionVideoSegundos": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "videoTutorialUrl": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "fechaRegistro": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "fechaActualizacion": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          }
+        }
+      },
       "EntrenadorPagoResponse": {
         "type": "object",
         "properties": {
@@ -1960,6 +2395,9 @@
     },
     {
       "name": "Dashboard"
+    },
+    {
+      "name": "Ejercicios"
     },
     {
       "name": "Entrenadores"

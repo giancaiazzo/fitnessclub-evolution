@@ -3,6 +3,18 @@
   "WorkspaceRootPath": "C:\\Users\\gian3\\Documents\\GitHub\\ProyectoTesisFITNESSCLUBEVOLUTION\\BackEnd\\FitnessClubEvolution.Api\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{9C07BC0A-01FE-1617-7367-3D88F4A29FAB}|FitnessClubEvolution.Api.csproj|c:\\users\\gian3\\documents\\github\\proyectotesisfitnessclubevolution\\backend\\fitnessclubevolution.api\\models\\ejercicio.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C07BC0A-01FE-1617-7367-3D88F4A29FAB}|FitnessClubEvolution.Api.csproj|solutionrelative:models\\ejercicio.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9C07BC0A-01FE-1617-7367-3D88F4A29FAB}|FitnessClubEvolution.Api.csproj|c:\\users\\gian3\\documents\\github\\proyectotesisfitnessclubevolution\\backend\\fitnessclubevolution.api\\controllers\\planescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C07BC0A-01FE-1617-7367-3D88F4A29FAB}|FitnessClubEvolution.Api.csproj|solutionrelative:controllers\\planescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9C07BC0A-01FE-1617-7367-3D88F4A29FAB}|FitnessClubEvolution.Api.csproj|c:\\users\\gian3\\documents\\github\\proyectotesisfitnessclubevolution\\backend\\fitnessclubevolution.api\\controllers\\rutinascontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9C07BC0A-01FE-1617-7367-3D88F4A29FAB}|FitnessClubEvolution.Api.csproj|solutionrelative:controllers\\rutinascontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{9C07BC0A-01FE-1617-7367-3D88F4A29FAB}|FitnessClubEvolution.Api.csproj|c:\\users\\gian3\\documents\\github\\proyectotesisfitnessclubevolution\\backend\\fitnessclubevolution.api\\data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{9C07BC0A-01FE-1617-7367-3D88F4A29FAB}|FitnessClubEvolution.Api.csproj|solutionrelative:data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -31,10 +43,6 @@
       "RelativeMoniker": "D:0:0:{9C07BC0A-01FE-1617-7367-3D88F4A29FAB}|FitnessClubEvolution.Api.csproj|solutionrelative:models\\entrenador.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9C07BC0A-01FE-1617-7367-3D88F4A29FAB}|FitnessClubEvolution.Api.csproj|c:\\users\\gian3\\documents\\github\\proyectotesisfitnessclubevolution\\backend\\fitnessclubevolution.api\\models\\ejercicio.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9C07BC0A-01FE-1617-7367-3D88F4A29FAB}|FitnessClubEvolution.Api.csproj|solutionrelative:models\\ejercicio.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{9C07BC0A-01FE-1617-7367-3D88F4A29FAB}|FitnessClubEvolution.Api.csproj|c:\\users\\gian3\\documents\\github\\proyectotesisfitnessclubevolution\\backend\\fitnessclubevolution.api\\models\\cuota.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{9C07BC0A-01FE-1617-7367-3D88F4A29FAB}|FitnessClubEvolution.Api.csproj|solutionrelative:models\\cuota.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -50,11 +58,35 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 1,
+              "Title": "PlanesController.cs",
+              "DocumentMoniker": "C:\\Users\\gian3\\Documents\\GitHub\\ProyectoTesisFITNESSCLUBEVOLUTION\\BackEnd\\FitnessClubEvolution.Api\\Controllers\\PlanesController.cs",
+              "RelativeDocumentMoniker": "Controllers\\PlanesController.cs",
+              "ToolTip": "C:\\Users\\gian3\\Documents\\GitHub\\ProyectoTesisFITNESSCLUBEVOLUTION\\BackEnd\\FitnessClubEvolution.Api\\Controllers\\PlanesController.cs",
+              "RelativeToolTip": "Controllers\\PlanesController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-07T12:13:19.036Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "RutinasController.cs",
+              "DocumentMoniker": "C:\\Users\\gian3\\Documents\\GitHub\\ProyectoTesisFITNESSCLUBEVOLUTION\\BackEnd\\FitnessClubEvolution.Api\\Controllers\\RutinasController.cs",
+              "RelativeDocumentMoniker": "Controllers\\RutinasController.cs",
+              "ToolTip": "C:\\Users\\gian3\\Documents\\GitHub\\ProyectoTesisFITNESSCLUBEVOLUTION\\BackEnd\\FitnessClubEvolution.Api\\Controllers\\RutinasController.cs",
+              "RelativeToolTip": "Controllers\\RutinasController.cs",
+              "ViewState": "AgIAAOsAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-07T12:13:12.846Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
               "Title": "Entrenador.cs",
               "DocumentMoniker": "C:\\Users\\gian3\\Documents\\GitHub\\ProyectoTesisFITNESSCLUBEVOLUTION\\BackEnd\\FitnessClubEvolution.Api\\Models\\Entrenador.cs",
               "RelativeDocumentMoniker": "Models\\Entrenador.cs",
@@ -66,19 +98,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 0,
               "Title": "Ejercicio.cs",
               "DocumentMoniker": "C:\\Users\\gian3\\Documents\\GitHub\\ProyectoTesisFITNESSCLUBEVOLUTION\\BackEnd\\FitnessClubEvolution.Api\\Models\\Ejercicio.cs",
               "RelativeDocumentMoniker": "Models\\Ejercicio.cs",
               "ToolTip": "C:\\Users\\gian3\\Documents\\GitHub\\ProyectoTesisFITNESSCLUBEVOLUTION\\BackEnd\\FitnessClubEvolution.Api\\Models\\Ejercicio.cs",
               "RelativeToolTip": "Models\\Ejercicio.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAANAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAKAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-14T17:53:26.202Z"
+              "WhenOpened": "2026-07-14T17:53:26.202Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 10,
               "Title": "Cuota.cs",
               "DocumentMoniker": "C:\\Users\\gian3\\Documents\\GitHub\\ProyectoTesisFITNESSCLUBEVOLUTION\\BackEnd\\FitnessClubEvolution.Api\\Models\\Cuota.cs",
               "RelativeDocumentMoniker": "Models\\Cuota.cs",
@@ -90,7 +123,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 4,
               "Title": "Cliente.cs",
               "DocumentMoniker": "C:\\Users\\gian3\\Documents\\GitHub\\ProyectoTesisFITNESSCLUBEVOLUTION\\BackEnd\\FitnessClubEvolution.Api\\Models\\Cliente.cs",
               "RelativeDocumentMoniker": "Models\\Cliente.cs",
@@ -102,7 +135,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 3,
               "Title": "AppDbContext.cs",
               "DocumentMoniker": "C:\\Users\\gian3\\Documents\\GitHub\\ProyectoTesisFITNESSCLUBEVOLUTION\\BackEnd\\FitnessClubEvolution.Api\\Data\\AppDbContext.cs",
               "RelativeDocumentMoniker": "Data\\AppDbContext.cs",
@@ -110,12 +143,11 @@
               "RelativeToolTip": "Data\\AppDbContext.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAXAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-07-14T17:49:37.91Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-07-14T17:49:37.91Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 5,
               "Title": "20260714175413_InitialCreate.cs",
               "DocumentMoniker": "C:\\Users\\gian3\\Documents\\GitHub\\ProyectoTesisFITNESSCLUBEVOLUTION\\BackEnd\\FitnessClubEvolution.Api\\Migrations\\20260714175413_InitialCreate.cs",
               "RelativeDocumentMoniker": "Migrations\\20260714175413_InitialCreate.cs",
@@ -127,7 +159,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 8,
               "Title": "Notificacion.cs",
               "DocumentMoniker": "C:\\Users\\gian3\\Documents\\GitHub\\ProyectoTesisFITNESSCLUBEVOLUTION\\BackEnd\\FitnessClubEvolution.Api\\Models\\Notificacion.cs",
               "RelativeDocumentMoniker": "Models\\Notificacion.cs",
@@ -139,7 +171,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 6,
               "Title": "Servicio.cs",
               "DocumentMoniker": "C:\\Users\\gian3\\Documents\\GitHub\\ProyectoTesisFITNESSCLUBEVOLUTION\\BackEnd\\FitnessClubEvolution.Api\\Models\\Servicio.cs",
               "RelativeDocumentMoniker": "Models\\Servicio.cs",
@@ -151,7 +183,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 7,
               "Title": "Rutina.cs",
               "DocumentMoniker": "C:\\Users\\gian3\\Documents\\GitHub\\ProyectoTesisFITNESSCLUBEVOLUTION\\BackEnd\\FitnessClubEvolution.Api\\Models\\Rutina.cs",
               "RelativeDocumentMoniker": "Models\\Rutina.cs",
@@ -163,7 +195,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 11,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\Users\\gian3\\Documents\\GitHub\\ProyectoTesisFITNESSCLUBEVOLUTION\\BackEnd\\FitnessClubEvolution.Api\\appsettings.json",
               "RelativeDocumentMoniker": "appsettings.json",

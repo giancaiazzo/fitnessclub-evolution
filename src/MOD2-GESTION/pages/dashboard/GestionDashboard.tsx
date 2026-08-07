@@ -27,7 +27,7 @@ export default function GestionDashboard() {
             Todo el gimnasio en un solo lugar
           </h2>
           <p className="mt-3 leading-7 text-gray-400">
-            Elegí una opción del menú para trabajar con clientes, planes,
+            Elegí una opción del menú para trabajar con clientes, ejercicios,
             rutinas, servicios o pagos.
           </p>
         </div>

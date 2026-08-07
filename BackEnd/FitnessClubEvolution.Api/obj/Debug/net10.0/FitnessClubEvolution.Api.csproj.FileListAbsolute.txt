@@ -128,3 +128,4 @@ C:\Users\gian3\Documents\GitHub\ProyectoTesisFITNESSCLUBEVOLUTION\BackEnd\Fitnes
 C:\Users\gian3\Documents\GitHub\ProyectoTesisFITNESSCLUBEVOLUTION\BackEnd\FitnessClubEvolution.Api\bin\Debug\net10.0\UglyToad.PdfPig.Tokenization.dll
 C:\Users\gian3\Documents\GitHub\ProyectoTesisFITNESSCLUBEVOLUTION\BackEnd\FitnessClubEvolution.Api\bin\Debug\net10.0\UglyToad.PdfPig.Tokens.dll
 C:\Users\gian3\Documents\GitHub\ProyectoTesisFITNESSCLUBEVOLUTION\BackEnd\FitnessClubEvolution.Api\bin\Debug\net10.0\UglyToad.PdfPig.dll
+C:\Users\gian3\Documents\GitHub\ProyectoTesisFITNESSCLUBEVOLUTION\BackEnd\FitnessClubEvolution.Api\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt

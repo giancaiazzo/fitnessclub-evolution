@@ -314,6 +314,233 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "FitnessClubEvolution.Api.Controllers.EjerciciosController",
+    "Method": "ObtenerEjercicios",
+    "RelativePath": "api/Ejercicios",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "buscar",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "grupoMuscular",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "incluirInactivos",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IReadOnlyCollection\u00601[[FitnessClubEvolution.Api.DTOs.EjercicioResponse, FitnessClubEvolution.Api, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "FitnessClubEvolution.Api.Controllers.EjerciciosController",
+    "Method": "CrearEjercicio",
+    "RelativePath": "api/Ejercicios",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Nombre",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "GrupoMuscular",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Descripcion",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Estado",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "ImagenPreview",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      },
+      {
+        "Name": "VideoTutorial",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      },
+      {
+        "Name": "DuracionVideoSegundos",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "FitnessClubEvolution.Api.DTOs.EjercicioResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "FitnessClubEvolution.Api.Controllers.EjerciciosController",
+    "Method": "ObtenerEjercicioPorId",
+    "RelativePath": "api/Ejercicios/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "FitnessClubEvolution.Api.DTOs.EjercicioResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "FitnessClubEvolution.Api.Controllers.EjerciciosController",
+    "Method": "ActualizarEjercicio",
+    "RelativePath": "api/Ejercicios/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "Nombre",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "GrupoMuscular",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Descripcion",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Estado",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "ImagenPreview",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      },
+      {
+        "Name": "VideoTutorial",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      },
+      {
+        "Name": "DuracionVideoSegundos",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=10.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "FitnessClubEvolution.Api.DTOs.EjercicioResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "FitnessClubEvolution.Api.Controllers.EjerciciosController",
+    "Method": "EliminarEjercicio",
+    "RelativePath": "api/Ejercicios/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FitnessClubEvolution.Api.Controllers.EjerciciosController",
+    "Method": "ObtenerImagenPreview",
+    "RelativePath": "api/Ejercicios/{id}/imagen",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FitnessClubEvolution.Api.Controllers.EjerciciosController",
+    "Method": "ObtenerVideoTutorial",
+    "RelativePath": "api/Ejercicios/{id}/video",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "FitnessClubEvolution.Api.Controllers.EntrenadoresController",
     "Method": "ObtenerEntrenadores",
     "RelativePath": "api/Entrenadores",

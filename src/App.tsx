@@ -10,8 +10,8 @@ import SignIn from "./MOD2-GESTION/pages/auth/SignIn";
 import GestionDashboard from "./MOD2-GESTION/pages/dashboard/GestionDashboard";
 import IngresarClientePage from "./MOD2-GESTION/pages/clientes/IngresarClientePage";
 import ListadoClientesPage from "./MOD2-GESTION/pages/clientes/ListadoClientesPage";
-import IngresarPlanPage from "./MOD2-GESTION/pages/planes/IngresarPlanPage";
-import ListadoPlanesPage from "./MOD2-GESTION/pages/planes/ListadoPlanesPage";
+import IngresarEjercicioPage from "./MOD2-GESTION/pages/ejercicios/IngresarEjercicioPage";
+import ListadoEjerciciosPage from "./MOD2-GESTION/pages/ejercicios/ListadoEjerciciosPage";
 import IngresarRutinaPage from "./MOD2-GESTION/pages/rutinas/IngresarRutinaPage";
 import ListadoRutinasPage from "./MOD2-GESTION/pages/rutinas/ListadoRutinasPage";
 import IngresarServicioPage from "./MOD2-GESTION/pages/servicios/IngresarServicioPage";
@@ -21,6 +21,7 @@ import ProtectedRoute from "./MOD2-GESTION/components/ProtectedRoute";
 import GestionLayout from "./MOD2-GESTION/layouts/GestionLayout";
 import CalcIMC from "./pages/CalcIMC";
 import NotFoundPage from "./pages/404";
+import ExercisesPage from "./pages/ExercisesPage";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/pricing" element={<PricingPage />} />
         <Route path="/services" element={<ServicesPage />} />
+        <Route path="/exercises" element={<ExercisesPage />} />
         <Route path="/calc-imc" element={<CalcIMC />} />
         <Route path="/tour-virtual" element={<TourVirtual />} />
         <Route path="/SignIn" element={<SignIn />} />
@@ -47,8 +49,8 @@ function App() {
           <Route index element={<GestionDashboard />} />
           <Route path="clientes/ingresar" element={<IngresarClientePage />} />
           <Route path="clientes/listado" element={<ListadoClientesPage />} />
-          <Route path="planes/ingresar" element={<IngresarPlanPage />} />
-          <Route path="planes/listado" element={<ListadoPlanesPage />} />
+          <Route path="ejercicios/ingresar" element={<IngresarEjercicioPage />} />
+          <Route path="ejercicios/listado" element={<ListadoEjerciciosPage />} />
           <Route path="rutinas/ingresar" element={<IngresarRutinaPage />} />
           <Route path="rutinas/listado" element={<ListadoRutinasPage />} />
           <Route path="servicios/ingresar" element={<IngresarServicioPage />} />

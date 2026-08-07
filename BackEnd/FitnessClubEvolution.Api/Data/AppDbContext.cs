@@ -120,6 +120,44 @@ public class AppDbContext : DbContext
             entity.HasIndex(rutina => rutina.Nombre);
         });
 
+        modelBuilder.Entity<Ejercicio>(entity =>
+        {
+            entity.HasKey(ejercicio => ejercicio.IdEjercicio);
+
+            entity.Property(ejercicio => ejercicio.Nombre)
+                .IsRequired();
+
+            entity.Property(ejercicio => ejercicio.GrupoMuscular)
+                .IsRequired()
+                .HasDefaultValue("Sin clasificar");
+
+            entity.Property(ejercicio => ejercicio.Estado)
+                .HasDefaultValue(true);
+
+            entity.Property(ejercicio => ejercicio.NombreArchivoImagen)
+                .HasMaxLength(255);
+
+            entity.Property(ejercicio => ejercicio.TipoContenidoImagen)
+                .HasMaxLength(50);
+
+            entity.Property(ejercicio => ejercicio.NombreArchivoVideo)
+                .HasMaxLength(255);
+
+            entity.Property(ejercicio => ejercicio.TipoContenidoVideo)
+                .HasMaxLength(50);
+
+            entity.Property(ejercicio => ejercicio.FechaRegistro)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            entity.HasIndex(ejercicio => ejercicio.Nombre);
+
+            entity.HasIndex(ejercicio => new
+            {
+                ejercicio.GrupoMuscular,
+                ejercicio.Estado
+            });
+        });
+
         modelBuilder.Entity<Notificacion>(entity =>
         {
             entity.HasOne(notificacion => notificacion.Cliente)
