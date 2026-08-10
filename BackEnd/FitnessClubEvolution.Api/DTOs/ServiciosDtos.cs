@@ -11,7 +11,14 @@ public class ServicioFormularioRequest
     [StringLength(500)]
     public string? Descripcion { get; set; }
 
-    [Range(typeof(decimal), "0.01", "9999999999")]
+    [Range(
+    typeof(decimal),
+    "0.01",
+    "9999999999",
+    ParseLimitsInInvariantCulture = true,
+    ConvertValueInInvariantCulture = true,
+    ErrorMessage = "El precio debe ser mayor o igual a 0,01."
+)]
     public decimal Precio { get; set; }
 
     [StringLength(50)]

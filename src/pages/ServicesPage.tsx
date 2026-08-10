@@ -1,12 +1,17 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Layout from "../layouts/Layout";
 import heroGymImage from "../MOD1-CLIENTES/assets/hero-gym.webp";
+import { classes, routines, siteData } from "../MOD1-CLIENTES/data/siteData";
 import {
-  classes,
-  routines,
-  services,
-  siteData,
-} from "../MOD1-CLIENTES/data/siteData";
+  apiFetch,
+  apiUrl,
+  mensajeErrorHttp,
+} from "../MOD2-GESTION/services/api";
+import {
+  formatearPrecioServicio,
+  type Servicio,
+} from "../types/servicio";
 
 const sectionShortcuts = [
   {
@@ -37,20 +42,59 @@ function scrollToSection(sectionId: string) {
 }
 
 export default function ServicesPage() {
+  // Este estado contiene exactamente lo que existe en la tabla Servicios.
+  // No se usa un listado local como respaldo para evitar mostrar datos borrados.
+  const [servicios, setServicios] = useState<Servicio[]>([]);
+  const [cargandoServicios, setCargandoServicios] = useState(true);
+  const [errorServicios, setErrorServicios] = useState("");
+  const [intentoCarga, setIntentoCarga] = useState(0);
+
+  // Cada ingreso a la página (o reintento manual) consulta nuevamente el CRUD.
+  useEffect(() => {
+    const controlador = new AbortController();
+
+    async function cargarServicios() {
+      try {
+        setCargandoServicios(true);
+        setErrorServicios("");
+
+        const respuesta = await apiFetch("servicios", {
+          signal: controlador.signal,
+        });
+
+        if (!respuesta.ok) {
+          throw new Error(
+            await mensajeErrorHttp(
+              respuesta,
+              "No se pudieron cargar los servicios disponibles.",
+            ),
+          );
+        }
+
+        setServicios((await respuesta.json()) as Servicio[]);
+      } catch (errorDesconocido) {
+        if (controlador.signal.aborted) return;
+        setErrorServicios(
+          errorDesconocido instanceof Error
+            ? errorDesconocido.message
+            : "No se pudieron cargar los servicios disponibles.",
+        );
+      } finally {
+        if (!controlador.signal.aborted) setCargandoServicios(false);
+      }
+    }
+
+    void cargarServicios();
+    return () => controlador.abort();
+  }, [intentoCarga]);
+
   return (
     <Layout
       title={`Servicios y entrenamientos - ${siteData.name}`}
       description="Conocé los servicios, entrenamientos y rutinas disponibles en FitnessClubEvolution"
     >
       <section className="relative overflow-hidden bg-gradient-to-br from-background via-card to-background pb-16 pt-28 sm:pb-20 sm:pt-32">
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.08]"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 2px 2px, var(--primary) 1px, transparent 0)",
-            backgroundSize: "36px 36px",
-          }}
-        />
+        <div className="background-dot-grid background-dot-grid--catalog pointer-events-none absolute inset-0 opacity-[0.08]" />
 
         <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:px-8">
           <div className="min-w-0 text-center lg:text-left">
@@ -105,7 +149,7 @@ export default function ServicesPage() {
             <div className="absolute inset-x-3 bottom-3 grid grid-cols-3 gap-2 rounded-2xl border border-white/10 bg-background/85 p-3 backdrop-blur sm:inset-x-6 sm:bottom-6 sm:gap-4 sm:p-4">
               <div className="text-center">
                 <strong className="block text-xl font-black text-primary sm:text-2xl">
-                  {services.length}
+                  {cargandoServicios ? "—" : servicios.length}
                 </strong>
                 <span className="text-[0.68rem] text-muted-foreground sm:text-sm">
                   servicios
@@ -172,43 +216,33 @@ export default function ServicesPage() {
             </p>
           </div>
 
-          <div className="grid gap-5 md:grid-cols-2">
-            {services.map((service) => (
-              <article
-                key={service.name}
-                className="group flex h-full min-w-0 flex-col rounded-2xl border border-border bg-card p-6 transition hover:border-primary hover:shadow-xl hover:shadow-primary/10 sm:p-8"
-              >
-                <div className="flex items-start gap-4">
-                  <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-3xl text-primary transition group-hover:bg-primary group-hover:text-primary-foreground">
-                    <i className={service.icon} aria-hidden="true" />
-                  </span>
-                  <div className="min-w-0">
-                    <h3 className="text-2xl font-bold text-foreground">
-                      {service.name}
-                    </h3>
-                    <p className="mt-3 leading-relaxed text-muted-foreground">
-                      {service.description}
-                    </p>
-                  </div>
-                </div>
-
-                <ul className="mt-6 grid gap-2 border-t border-border pt-5 sm:grid-cols-3">
-                  {service.highlights.map((highlight) => (
-                    <li
-                      key={`${service.name}-${highlight}`}
-                      className="flex items-center gap-2 text-sm text-muted-foreground"
-                    >
-                      <i
-                        className="ri-checkbox-circle-fill shrink-0 text-primary"
-                        aria-hidden="true"
-                      />
-                      {highlight}
-                    </li>
-                  ))}
-                </ul>
-              </article>
-            ))}
-          </div>
+          {cargandoServicios ? (
+            <EstadoServicios
+              icono="ri-loader-4-line animate-spin"
+              titulo="Cargando servicios..."
+              detalle="Estamos consultando las opciones disponibles en el gimnasio."
+            />
+          ) : errorServicios ? (
+            <EstadoServicios
+              icono="ri-error-warning-line"
+              titulo="No pudimos cargar los servicios"
+              detalle={errorServicios}
+              error
+              onReintentar={() => setIntentoCarga((intento) => intento + 1)}
+            />
+          ) : servicios.length === 0 ? (
+            <EstadoServicios
+              icono="ri-service-line"
+              titulo="Todavía no hay servicios publicados"
+              detalle="Los servicios que cargue el equipo desde Gestión aparecerán aquí automáticamente."
+            />
+          ) : (
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {servicios.map((servicio) => (
+                <TarjetaServicio key={servicio.idServicio} servicio={servicio} />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -392,5 +426,99 @@ export default function ServicesPage() {
         </div>
       </section>
     </Layout>
+  );
+}
+
+/** Tarjeta pública construida únicamente con los datos guardados por el CRUD. */
+function TarjetaServicio({ servicio }: { servicio: Servicio }) {
+  return (
+    <article className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-card transition hover:-translate-y-1 hover:border-primary/60 hover:shadow-xl hover:shadow-primary/10">
+      <div className="relative aspect-[16/10] overflow-hidden bg-secondary">
+        {servicio.tieneImagen ? (
+          <img
+            src={apiUrl(`servicios/${servicio.idServicio}/imagen`)}
+            alt={`Imagen del servicio ${servicio.nombre}`}
+            className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+            loading="lazy"
+            decoding="async"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-secondary to-background text-6xl text-primary/40">
+            <i className="ri-service-line" aria-hidden="true" />
+          </div>
+        )}
+
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/5 to-transparent" />
+        {servicio.duracion && (
+          <span className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-black/70 px-3 py-1.5 text-xs font-bold text-white backdrop-blur">
+            <i className="ri-time-line text-primary" aria-hidden="true" />
+            {servicio.duracion}
+          </span>
+        )}
+        <span className="absolute bottom-3 left-3 rounded-full bg-primary px-3 py-1.5 text-sm font-black text-primary-foreground shadow-lg">
+          {formatearPrecioServicio(servicio.precio)}
+        </span>
+      </div>
+
+      <div className="flex flex-1 flex-col p-5 sm:p-6">
+        <h3 className="text-2xl font-bold leading-tight text-foreground">
+          {servicio.nombre}
+        </h3>
+        <p className="mt-3 flex-1 leading-relaxed text-muted-foreground">
+          {servicio.descripcion ||
+            "Consultá al equipo para conocer todos los detalles de este servicio."}
+        </p>
+        <Link
+          to="/contact"
+          className="mt-5 inline-flex min-h-11 items-center justify-between rounded-xl border border-primary/30 bg-primary/5 px-4 py-2.5 font-bold text-primary transition hover:bg-primary hover:text-primary-foreground"
+          aria-label={`Consultar por ${servicio.nombre}`}
+        >
+          Consultar
+          <i className="ri-arrow-right-line" aria-hidden="true" />
+        </Link>
+      </div>
+    </article>
+  );
+}
+
+/** Estado común para carga, error y catálogo vacío. */
+function EstadoServicios({
+  icono,
+  titulo,
+  detalle,
+  error = false,
+  onReintentar,
+}: {
+  icono: string;
+  titulo: string;
+  detalle: string;
+  error?: boolean;
+  onReintentar?: () => void;
+}) {
+  return (
+    <div
+      className="flex min-h-80 flex-col items-center justify-center rounded-3xl border border-border bg-card p-8 text-center"
+      role={error ? "alert" : "status"}
+    >
+      <span
+        className={`flex size-16 items-center justify-center rounded-2xl text-3xl ${
+          error ? "bg-red-500/10 text-red-400" : "bg-primary/10 text-primary"
+        }`}
+      >
+        <i className={icono} aria-hidden="true" />
+      </span>
+      <h3 className="mt-5 text-2xl font-black text-foreground">{titulo}</h3>
+      <p className="mt-2 max-w-xl text-muted-foreground">{detalle}</p>
+      {onReintentar && (
+        <button
+          type="button"
+          onClick={onReintentar}
+          className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-xl bg-primary px-5 py-2.5 font-bold text-primary-foreground transition hover:bg-[#b8ef45]"
+        >
+          <i className="ri-refresh-line" aria-hidden="true" />
+          Reintentar
+        </button>
+      )}
+    </div>
   );
 }

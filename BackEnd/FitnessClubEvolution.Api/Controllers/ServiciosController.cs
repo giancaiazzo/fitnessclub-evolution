@@ -22,6 +22,9 @@ public class ServiciosController : ControllerBase
     }
 
     // GET: api/servicios?buscar=musculacion
+    // La lectura es pública porque alimenta el catálogo del módulo de clientes.
+    // El atributo [Authorize] de la clase sigue protegiendo POST, PUT y DELETE.
+    [AllowAnonymous]
     [HttpGet]
     public async Task<ActionResult<IReadOnlyCollection<ServicioResponse>>> ObtenerServicios(
         [FromQuery] string? buscar,
@@ -57,6 +60,8 @@ public class ServiciosController : ControllerBase
     }
 
     // GET: api/servicios/5
+    // Permite consultar el detalle sin iniciar sesión desde el portal público.
+    [AllowAnonymous]
     [HttpGet("{id:int}")]
     public async Task<ActionResult<ServicioResponse>> ObtenerServicioPorId(
         int id,
@@ -87,6 +92,8 @@ public class ServiciosController : ControllerBase
     }
 
     // GET: api/servicios/5/imagen
+    // La imagen también debe ser pública para que las tarjetas puedan mostrarla.
+    [AllowAnonymous]
     [HttpGet("{id:int}/imagen")]
     public async Task<IActionResult> ObtenerImagen(
         int id,

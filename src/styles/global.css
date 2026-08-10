@@ -1,10 +1,24 @@
+/* ================================================================
+   DEPENDENCIAS VISUALES
+   Este es el único punto de entrada de estilos de la aplicación.
+   Tailwind genera las utilidades usadas mediante className y los otros
+   paquetes aportan animaciones, componentes, iconos y el tour panorámico.
+   ================================================================ */
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
+@import "remixicon/fonts/remixicon.css";
+@import "pannellum/build/pannellum.css";
 
+/* Hace que la variante dark responda a la clase .dark del documento. */
 @custom-variant dark (&:is(.dark *));
 
+/* ================================================================
+   PUENTE ENTRE EL TEMA Y TAILWIND
+   Expone las variables de FitnessClubEvolution como utilidades tales como
+   bg-primary, text-foreground, border-border y rounded-xl.
+   ================================================================ */
 @theme inline {
   --font-heading: var(--font-sans);
   --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
@@ -52,14 +66,24 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* ================================================================
+   IDENTIDAD VISUAL GLOBAL
+   Cambiar aquí un color, radio o tono actualiza tanto el portal público
+   como el módulo administrativo.
+   ================================================================ */
 :root {
+  /* La interfaz completa utiliza una paleta oscura. */
   color-scheme: dark;
+
+  /* Fondos y textos principales. */
   --background: #0f1110;
   --foreground: #ffffff;
   --card: #171b18;
   --card-foreground: #ffffff;
   --popover: #171b18;
   --popover-foreground: #ffffff;
+
+  /* Verde institucional y superficies secundarias. */
   --primary: #9fdc1a;
   --primary-foreground: #0f1110;
   --secondary: #222823;
@@ -68,16 +92,24 @@
   --muted-foreground: #a8b3a2;
   --accent: #2f3a2f;
   --accent-foreground: #b8ef45;
+
+  /* Estados, bordes, controles y foco accesible. */
   --destructive: #ef4444;
   --border: #2f3a2f;
   --input: #39433a;
   --ring: #9fdc1a;
+
+  /* Colores disponibles para gráficos del dashboard. */
   --chart-1: #9fdc1a;
   --chart-2: #b8ef45;
   --chart-3: #86c312;
   --chart-4: #5f8f0f;
   --chart-5: #dbe4d6;
+
+  /* Radio base del que Tailwind calcula todos los tamaños. */
   --radius: 0.625rem;
+
+  /* Paleta específica de la navegación administrativa. */
   --sidebar: #171b18;
   --sidebar-foreground: #ffffff;
   --sidebar-primary: #9fdc1a;
@@ -88,10 +120,16 @@
   --sidebar-ring: #9fdc1a;
 }
 
+/* Conserva explícitamente el esquema oscuro cuando ThemeContext activa .dark. */
 .dark {
   color-scheme: dark;
 }
 
+/* ================================================================
+   REGLAS BASE
+   Normalizan el documento antes de aplicar estilos particulares mediante
+   las utilidades usadas en cada componente React.
+   ================================================================ */
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -123,11 +161,72 @@
   }
 }
 
+/* ================================================================
+   COMPONENTES VISUALES GLOBALES
+   Estas clases reemplazan estilos inline repetidos. Cada pantalla invoca la
+   variante que corresponde y mantiene el aspecto centralizado en este archivo.
+   ================================================================ */
+@layer components {
+  /* Patrón de puntos compartido por las cabeceras del portal. */
+  .background-dot-grid {
+    background-image: radial-gradient(
+      circle at 2px 2px,
+      var(--primary) 1px,
+      transparent 0
+    );
+    background-size: 36px 36px;
+  }
+
+  /* Separaciones del patrón según el contexto visual de cada pantalla. */
+  .background-dot-grid--home {
+    background-size: 40px 40px;
+  }
+
+  .background-dot-grid--catalog {
+    background-size: 36px 36px;
+  }
+
+  .background-dot-grid--exercises {
+    background-size: 34px 34px;
+  }
+
+  .background-dot-grid--auth {
+    background-size: 38px 38px;
+  }
+
+  /* Capas del fondo utilizadas por las pantallas de autenticación. */
+  .auth-page-shell {
+    background-color: #070907;
+  }
+
+  .auth-page-radial-glow {
+    background: radial-gradient(
+      circle at top,
+      color-mix(in srgb, var(--primary) 16%, transparent),
+      transparent 38%
+    );
+  }
+
+  .auth-page-dark-gradient {
+    background: linear-gradient(180deg, #0c120c 0%, #070907 45%, #050605 100%);
+  }
+
+  /* El borde del mapa lo controla su contenedor, no el iframe de Google. */
+  .map-frame {
+    border: 0;
+  }
+}
+
+/* Resalta el texto seleccionado con el verde institucional. */
 ::selection {
   background: color-mix(in srgb, var(--primary) 35%, transparent);
   color: var(--foreground);
 }
 
+/* ================================================================
+   BARRA DE DESPLAZAMIENTO
+   Mantiene la identidad visual también en navegadores WebKit/Chromium.
+   ================================================================ */
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -147,6 +246,7 @@
   background-color: #86c312;
 }
 
+/* Respeta la preferencia del sistema para personas sensibles al movimiento. */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

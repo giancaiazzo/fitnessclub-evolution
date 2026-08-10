@@ -7,7 +7,6 @@ import musculacionImg from "../MOD1-CLIENTES/virtualtour/2.jpg";
 import funcionalImg from "../MOD1-CLIENTES/virtualtour/3.jpg";
 import vestuariosImg from "../MOD1-CLIENTES/virtualtour/4.jpg";
 
-import "pannellum/build/pannellum.css";
 import "pannellum/build/pannellum.js";
 
 export default function TourVirtual() {

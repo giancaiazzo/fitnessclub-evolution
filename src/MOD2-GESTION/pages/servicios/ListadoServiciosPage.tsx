@@ -14,18 +14,10 @@ import {
   mensajeErrorDesconocido,
   mensajeErrorHttp,
 } from "../../services/api";
-
-type Servicio = {
-  idServicio: number;
-  nombre: string;
-  descripcion: string | null;
-  precio: number;
-  duracion: string | null;
-  tieneImagen: boolean;
-  nombreArchivoImagen: string | null;
-  tipoContenidoImagen: string | null;
-  imagenUrl: string | null;
-};
+import {
+  formatearPrecioServicio,
+  type Servicio,
+} from "../../../types/servicio";
 
 type FormularioEdicion = {
   nombre: string;
@@ -39,14 +31,6 @@ const MAX_IMAGEN_BYTES = 5 * 1024 * 1024;
 const TIPOS_IMAGEN = new Set(["image/jpeg", "image/png", "image/webp"]);
 const inputClassName =
   "h-11 w-full rounded-xl border border-white/10 bg-black/30 px-3 text-sm text-white outline-none transition placeholder:text-gray-600 focus:border-lime-400/70 focus:ring-2 focus:ring-lime-400/15 disabled:opacity-60";
-
-function formatearPrecio(precio: number) {
-  return new Intl.NumberFormat("es-UY", {
-    style: "currency",
-    currency: "UYU",
-    maximumFractionDigits: 2,
-  }).format(precio);
-}
 
 function errorImagen(archivo: File) {
   if (!TIPOS_IMAGEN.has(archivo.type)) {
@@ -375,7 +359,7 @@ export default function ListadoServiciosPage() {
                       </p>
                     </td>
                     <td className="px-5 py-4 text-sm font-bold text-gray-200">
-                      {formatearPrecio(servicio.precio)}
+                      {formatearPrecioServicio(servicio.precio)}
                     </td>
                     <td className="px-5 py-4 text-sm text-gray-400">
                       {servicio.duracion || "—"}

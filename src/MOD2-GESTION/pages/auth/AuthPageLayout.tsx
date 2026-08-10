@@ -7,23 +7,16 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-  <div className="relative min-h-screen overflow-hidden bg-[#070907]">
+  <div className="auth-page-shell relative min-h-screen overflow-hidden">
   {/* Fondo base con glow superior */}
-  <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,hsl(var(--primary)/0.16),transparent_38%)]" />
+  <div className="auth-page-radial-glow pointer-events-none absolute inset-0" />
 
   {/* Degradado general oscuro */}
-  <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,#0c120c_0%,#070907_45%,#050605_100%)]" />
+  <div className="auth-page-dark-gradient pointer-events-none absolute inset-0" />
 
   {/* Patrón muy suave, casi invisible */}
   <div className="pointer-events-none absolute inset-0 opacity-[0.035]">
-    <div
-      className="absolute inset-0"
-      style={{
-        backgroundImage:
-          "radial-gradient(circle at 2px 2px, hsl(var(--primary)) 1px, transparent 0)",
-        backgroundSize: "38px 38px",
-      }}
-    />
+    <div className="background-dot-grid background-dot-grid--auth absolute inset-0" />
   </div>
 
   {/* Luces suaves laterales */}

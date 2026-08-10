@@ -260,7 +260,7 @@ export default function ContactPage() {
           src="https://www.google.com/maps?q=Fit%20Evolution%2C%20Dr.%20Luis%20Alberto%20de%20Herrera%20231%2C%2050000%20Salto%2C%20Departamento%20de%20Salto&output=embed"
           width="100%"
           height="100%"
-          style={{ border: 0 }}
+          className="map-frame"
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
           allowFullScreen

@@ -12,14 +12,7 @@ export default function Hero() {
   return (
     <section className="relative flex min-h-screen items-center overflow-hidden bg-gradient-to-br from-background via-card to-background pb-16 pt-28 sm:pt-32 lg:pb-20">
       <div className="pointer-events-none absolute inset-0 opacity-[0.08]">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 2px 2px, var(--primary) 1px, transparent 0)",
-            backgroundSize: "40px 40px",
-          }}
-        />
+        <div className="background-dot-grid background-dot-grid--home absolute inset-0" />
       </div>
 
       <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">

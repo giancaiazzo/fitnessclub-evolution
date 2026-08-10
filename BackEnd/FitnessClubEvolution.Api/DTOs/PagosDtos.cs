@@ -10,7 +10,14 @@ public sealed class RegistrarPagoRequest
     [Range(1, int.MaxValue)]
     public int? IdEntrenador { get; set; }
 
-    [Range(typeof(decimal), "0.01", "9999999999")]
+    [Range(
+      typeof(decimal),
+      "0.01",
+      "9999999999",
+      ParseLimitsInInvariantCulture = true,
+      ConvertValueInInvariantCulture = true,
+      ErrorMessage = "El monto debe ser mayor o igual a 0,01."
+  )]
     public decimal Monto { get; set; }
 
     [Required, StringLength(30, MinimumLength = 2)]

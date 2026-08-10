@@ -106,14 +106,7 @@ export default function ExercisesPage() {
       description="Biblioteca de ejercicios de FitnessClubEvolution organizada por grupo muscular, con imágenes y videos tutoriales"
     >
       <section className="relative overflow-hidden border-b border-border bg-gradient-to-br from-background via-card to-background pb-14 pt-28 sm:pb-20 sm:pt-32">
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.07]"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 2px 2px, var(--primary) 1px, transparent 0)",
-            backgroundSize: "34px 34px",
-          }}
-        />
+        <div className="background-dot-grid background-dot-grid--exercises pointer-events-none absolute inset-0 opacity-[0.07]" />
         <div className="pointer-events-none absolute -right-24 top-16 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
 
         <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

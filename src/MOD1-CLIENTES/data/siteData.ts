@@ -68,37 +68,8 @@ export const navigation = [
   { name: "Iniciar sesión", href: "/SignIn" },
 ];
 
-export const services = [
-  {
-    name: "Sala de musculación",
-    description:
-      "Acceso a máquinas, pesos libres y sectores preparados para entrenar fuerza de manera progresiva.",
-    icon: "ri-weight-line",
-    highlights: ["Equipamiento variado", "Orientación técnica", "Todos los niveles"],
-  },
-  {
-    name: "Entrenamientos guiados",
-    description:
-      "Clases y sesiones acompañadas por entrenadores para trabajar técnica, constancia y rendimiento.",
-    icon: "ri-user-star-line",
-    highlights: ["Acompañamiento profesional", "Opciones grupales", "Objetivos definidos"],
-  },
-  {
-    name: "Rutinas personalizadas",
-    description:
-      "Planificaciones adaptadas al nivel, disponibilidad y objetivo de cada cliente del gimnasio.",
-    icon: "ri-file-list-3-line",
-    highlights: ["Plan organizado", "Progresión gradual", "Seguimiento y ajustes"],
-  },
-  {
-    name: "Salud y rehabilitación",
-    description:
-      "Propuestas de ejercicio controlado para mejorar movilidad, bienestar y recuperación física.",
-    icon: "ri-heart-pulse-line",
-    highlights: ["Trabajo progresivo", "Movilidad", "Atención cercana"],
-  },
-];
-
+// Los servicios no se definen aquí: el portal los obtiene de /api/servicios
+// para reflejar siempre las altas, modificaciones y bajas realizadas en Gestión.
 export const features = [
   {
     title: "Atención personalizada",

@@ -1373,7 +1373,7 @@
                   },
                   "Precio": {
                     "maximum": 9999999999,
-                    "minimum": 1,
+                    "minimum": 0.01,
                     "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
                     "type": [
                       "number",
@@ -1496,7 +1496,7 @@
                   },
                   "Precio": {
                     "maximum": 9999999999,
-                    "minimum": 1,
+                    "minimum": 0.01,
                     "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
                     "type": [
                       "number",
@@ -2202,7 +2202,7 @@
           },
           "monto": {
             "maximum": 9999999999,
-            "minimum": 1,
+            "minimum": 0.01,
             "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
             "type": [
               "number",
