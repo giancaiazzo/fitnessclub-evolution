@@ -28,4 +28,7 @@ public class Rutina
     public long? TamanoBytes { get; set; }
 
     public DateTime FechaCarga { get; set; } = DateTime.UtcNow;
+
+    // Una rutina puede estar asignada a muchos clientes.
+    public ICollection<Cliente> Clientes { get; set; } = new List<Cliente>();
 }

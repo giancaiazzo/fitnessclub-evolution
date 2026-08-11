@@ -23,6 +23,14 @@ type Cliente = {
   direccion: string | null;
   fechaRegistro: string;
   estado: boolean;
+  idRutina: number;
+  rutinaNombre: string;
+};
+
+type RutinaOpcion = {
+  idRutina: number;
+  nombre: string;
+  tienePdf: boolean;
 };
 
 type FormularioEdicion = {
@@ -33,6 +41,7 @@ type FormularioEdicion = {
   fechaNacimiento: string;
   direccion: string;
   estado: boolean;
+  idRutina: string;
 };
 
 const inputClassName =
@@ -74,8 +83,11 @@ function formatearFecha(valor: string | null) {
 
 export default function ListadoClientesPage() {
   const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [rutinas, setRutinas] = useState<RutinaOpcion[]>([]);
   const [cargando, setCargando] = useState(true);
+  const [cargandoRutinas, setCargandoRutinas] = useState(true);
   const [errorCarga, setErrorCarga] = useState("");
+  const [errorRutinas, setErrorRutinas] = useState("");
   const [busqueda, setBusqueda] = useState("");
   const [mensaje, setMensaje] = useState("");
   const [clienteEditar, setClienteEditar] = useState<Cliente | null>(null);
@@ -109,11 +121,35 @@ export default function ListadoClientesPage() {
     }
   }, []);
 
+  const cargarRutinas = useCallback(async () => {
+    try {
+      setCargandoRutinas(true);
+      setErrorRutinas("");
+      const respuesta = await apiFetch("rutinas");
+      if (!respuesta.ok) {
+        throw new Error(
+          await mensajeErrorHttp(respuesta, "No se pudieron cargar las rutinas."),
+        );
+      }
+      setRutinas((await respuesta.json()) as RutinaOpcion[]);
+    } catch (errorDesconocido) {
+      setErrorRutinas(
+        mensajeErrorDesconocido(
+          errorDesconocido,
+          "No se pudieron cargar las rutinas.",
+        ),
+      );
+    } finally {
+      setCargandoRutinas(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (cargaInicial.current) return;
     cargaInicial.current = true;
     void cargarClientes();
-  }, [cargarClientes]);
+    void cargarRutinas();
+  }, [cargarClientes, cargarRutinas]);
 
   useEffect(() => {
     if (!clienteEditar && !clienteEliminar) return;
@@ -135,6 +171,7 @@ export default function ListadoClientesPage() {
         `${cliente.nombre} ${cliente.apellido}`,
         cliente.documento,
         cliente.telefono,
+        cliente.rutinaNombre,
       ].some((dato) => dato.toLocaleLowerCase("es-UY").includes(termino)),
     );
   }, [busqueda, clientes]);
@@ -151,6 +188,7 @@ export default function ListadoClientesPage() {
       fechaNacimiento: cliente.fechaNacimiento ?? "",
       direccion: cliente.direccion ?? "",
       estado: cliente.estado,
+      idRutina: cliente.idRutina.toString(),
     });
   }
 
@@ -168,6 +206,12 @@ export default function ListadoClientesPage() {
       return;
     }
 
+    const idRutina = Number(edicion.idRutina);
+    if (!Number.isInteger(idRutina) || idRutina <= 0) {
+      setErrorModal("Seleccioná una rutina registrada en el sistema.");
+      return;
+    }
+
     try {
       setGuardando(true);
       const respuesta = await apiFetch(`clientes/${clienteEditar.idCliente}`, {
@@ -179,6 +223,7 @@ export default function ListadoClientesPage() {
           telefono: `598${edicion.telefono}`,
           fechaNacimiento: edicion.fechaNacimiento || null,
           direccion: edicion.direccion.trim() || null,
+          idRutina,
         }),
       });
 
@@ -196,7 +241,12 @@ export default function ListadoClientesPage() {
       );
       setClienteEditar(null);
       setEdicion(null);
-      setMensaje(`Los datos de ${actualizado.nombre} ${actualizado.apellido} fueron actualizados.`);
+      const cambioRutina = clienteEditar.idRutina !== actualizado.idRutina;
+      setMensaje(
+        cambioRutina
+          ? `Los datos y la rutina de ${actualizado.nombre} ${actualizado.apellido} fueron actualizados.`
+          : `Los datos de ${actualizado.nombre} ${actualizado.apellido} fueron actualizados.`,
+      );
     } catch (errorDesconocido) {
       setErrorModal(
         mensajeErrorDesconocido(errorDesconocido, "No se pudieron guardar los cambios."),
@@ -269,12 +319,15 @@ export default function ListadoClientesPage() {
               value={busqueda}
               onChange={(event) => setBusqueda(event.target.value)}
               className={`${inputClassName} pl-11`}
-              placeholder="Nombre, documento, teléfono o ID..."
+              placeholder="Nombre, rutina, documento, teléfono o ID..."
             />
           </label>
           <button
             type="button"
-            onClick={() => void cargarClientes()}
+            onClick={() => {
+              void cargarClientes();
+              void cargarRutinas();
+            }}
             disabled={cargando}
             className="h-11 rounded-xl border border-white/10 px-4 text-sm font-semibold text-gray-300 transition hover:bg-white/5 disabled:opacity-50"
           >
@@ -294,7 +347,7 @@ export default function ListadoClientesPage() {
           />
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[940px] text-left">
+            <table className="w-full min-w-[1120px] text-left">
               <thead className="bg-black/20 text-xs uppercase tracking-wider text-gray-500">
                 <tr>
                   {[
@@ -302,6 +355,7 @@ export default function ListadoClientesPage() {
                     "Cliente",
                     "Documento",
                     "Teléfono",
+                    "Rutina asignada",
                     "Registro",
                     "Estado",
                     "Acciones",
@@ -322,6 +376,12 @@ export default function ListadoClientesPage() {
                     </td>
                     <td className="px-5 py-4 text-sm text-gray-300">{cliente.documento}</td>
                     <td className="px-5 py-4 text-sm text-gray-300">{formatearTelefono(cliente.telefono)}</td>
+                    <td className="px-5 py-4">
+                      <span className="inline-flex max-w-56 items-center gap-2 rounded-full border border-sky-400/20 bg-sky-400/10 px-3 py-1 text-xs font-bold text-sky-200">
+                        <i className="ri-file-list-3-line shrink-0" />
+                        <span className="truncate">{cliente.rutinaNombre}</span>
+                      </span>
+                    </td>
                     <td className="px-5 py-4 text-sm text-gray-400">{formatearFecha(cliente.fechaRegistro)}</td>
                     <td className="px-5 py-4">
                       <span className={cliente.estado
@@ -371,6 +431,35 @@ export default function ListadoClientesPage() {
               <InputEdicion etiqueta="Teléfono (+598)" value={edicion.telefono} onChange={(valor) => setEdicion({ ...edicion, telefono: soloDigitos(valor, 8) })} />
               <InputEdicion etiqueta="Fecha de nacimiento" type="date" value={edicion.fechaNacimiento} onChange={(valor) => setEdicion({ ...edicion, fechaNacimiento: valor })} />
               <InputEdicion etiqueta="Dirección" value={edicion.direccion} onChange={(valor) => setEdicion({ ...edicion, direccion: valor })} />
+              <label className="sm:col-span-2">
+                <span className="mb-2 block text-sm font-semibold text-gray-300">
+                  Rutina asignada
+                </span>
+                <select
+                  className={inputClassName}
+                  value={edicion.idRutina}
+                  onChange={(event) =>
+                    setEdicion({ ...edicion, idRutina: event.target.value })
+                  }
+                  disabled={guardando || cargandoRutinas || rutinas.length === 0}
+                  required
+                >
+                  <option value="">
+                    {cargandoRutinas ? "Cargando rutinas..." : "Seleccioná una rutina"}
+                  </option>
+                  {rutinas.map((rutina) => (
+                    <option key={rutina.idRutina} value={rutina.idRutina}>
+                      {rutina.nombre}{rutina.tienePdf ? "" : " (sin PDF)"}
+                    </option>
+                  ))}
+                </select>
+                <span className="mt-1.5 block text-xs text-gray-500">
+                  Al vincular n8n, un cambio de rutina será el evento que active el reenvío por WhatsApp.
+                </span>
+                {errorRutinas && (
+                  <span className="mt-2 block text-xs text-red-300">{errorRutinas}</span>
+                )}
+              </label>
               <label className="sm:col-span-2">
                 <span className="mb-2 block text-sm font-semibold text-gray-300">Estado</span>
                 <select

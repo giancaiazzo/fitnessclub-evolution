@@ -21,11 +21,8 @@ public sealed class CrearClienteRequest
     [StringLength(150)]
     public string? Direccion { get; set; }
 
-    [Required]
-    [RegularExpression(
-        @"^(adaptacion-hombre|adaptacion-mujer|rutina-hombre|rutina-mujer)$",
-        ErrorMessage = "La rutina seleccionada no es válida.")]
-    public string RutinaSeleccionada { get; set; } = string.Empty;
+    [Range(1, int.MaxValue, ErrorMessage = "Seleccioná una rutina válida.")]
+    public int IdRutina { get; set; }
 }
 
 public sealed class ActualizarClienteRequest
@@ -49,6 +46,9 @@ public sealed class ActualizarClienteRequest
 
     [Required]
     public bool? Estado { get; set; }
+
+    [Range(1, int.MaxValue, ErrorMessage = "Seleccioná una rutina válida.")]
+    public int IdRutina { get; set; }
 }
 
 public sealed class CambiarEstadoClienteRequest
@@ -68,6 +68,8 @@ public class ClienteResponse
     public string? Direccion { get; set; }
     public DateTime FechaRegistro { get; set; }
     public bool Estado { get; set; }
+    public int IdRutina { get; set; }
+    public string RutinaNombre { get; set; } = string.Empty;
 }
 
 public sealed class ClienteDetalleResponse : ClienteResponse

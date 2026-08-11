@@ -18,7 +18,13 @@ La API queda disponible en `http://localhost:5157`.
 
 `dotnet ef database update` aplica las migraciones de pagos, servicios y
 rutinas. Además de las fechas de cada cuota, agrega el almacenamiento binario
-de imágenes y PDF en PostgreSQL.
+de imágenes y PDF en PostgreSQL y crea la relación obligatoria entre cada
+cliente y su rutina actual.
+
+Si la base ya tenía clientes, la migración no intenta adivinar qué rutina les
+correspondía porque el sistema anterior no guardaba ese dato. Esos registros se
+marcan como **Pendiente de reasignación** y deben corregirse una sola vez desde
+el botón Modificar del listado de clientes.
 
 ### 2. Frontend
 
@@ -70,6 +76,12 @@ Rutinas incluye alta, listado, búsqueda, visualización, modificación y
 eliminación. El PDF se valida en el backend y admite hasta 10 páginas y 10 MB.
 Los listados reciben únicamente metadatos; la imagen o el PDF se descarga desde
 su endpoint cuando el usuario lo visualiza.
+
+El alta de clientes carga las rutinas reales de este CRUD y guarda `IdRutina`
+como clave foránea. El listado muestra la rutina asignada y el formulario de
+modificación permite reemplazarla. Una rutina no puede eliminarse mientras esté
+asignada a uno o más clientes. El futuro flujo de n8n/WhatsApp podrá utilizar el
+cambio de `IdRutina` como evento para reenviar el PDF correspondiente.
 
 Durante el desarrollo, Vite dirige automáticamente las peticiones `/api` a
 `http://localhost:5157`. Para utilizar una API publicada, copiá `.env.example`

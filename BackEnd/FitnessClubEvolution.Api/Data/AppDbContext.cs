@@ -39,6 +39,14 @@ public class AppDbContext : DbContext
                 .IsRequired();
 
             entity.HasIndex(cliente => cliente.Documento);
+
+            entity.HasIndex(cliente => cliente.IdRutina);
+
+            entity.HasOne(cliente => cliente.Rutina)
+                .WithMany(rutina => rutina.Clientes)
+                .HasForeignKey(cliente => cliente.IdRutina)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<Cuota>(entity =>

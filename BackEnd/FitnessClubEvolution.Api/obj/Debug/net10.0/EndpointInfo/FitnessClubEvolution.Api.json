@@ -1639,6 +1639,16 @@
               "null",
               "boolean"
             ]
+          },
+          "idRutina": {
+            "maximum": 2147483647,
+            "minimum": 1,
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
           }
         }
       },
@@ -1707,6 +1717,17 @@
           },
           "estado": {
             "type": "boolean"
+          },
+          "idRutina": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "rutinaNombre": {
+            "type": "string"
           }
         }
       },
@@ -1831,6 +1852,17 @@
           },
           "estado": {
             "type": "boolean"
+          },
+          "idRutina": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "rutinaNombre": {
+            "type": "string"
           }
         }
       },
@@ -1839,8 +1871,7 @@
           "nombre",
           "apellido",
           "documento",
-          "telefono",
-          "rutinaSeleccionada"
+          "telefono"
         ],
         "type": "object",
         "properties": {
@@ -1877,9 +1908,15 @@
               "string"
             ]
           },
-          "rutinaSeleccionada": {
-            "pattern": "^(adaptacion-hombre|adaptacion-mujer|rutina-hombre|rutina-mujer)$",
-            "type": "string"
+          "idRutina": {
+            "maximum": 2147483647,
+            "minimum": 1,
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
           }
         }
       },

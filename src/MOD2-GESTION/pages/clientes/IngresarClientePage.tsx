@@ -1,16 +1,23 @@
-import { useMemo, useState, type FormEvent, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type FormEvent,
+  type ReactNode,
+} from "react";
 import {
   apiFetch,
   mensajeErrorDesconocido,
   mensajeErrorHttp,
 } from "../../services/api";
 
-type RutinaCodigo =
-  | ""
-  | "adaptacion-hombre"
-  | "adaptacion-mujer"
-  | "rutina-hombre"
-  | "rutina-mujer";
+type RutinaOpcion = {
+  idRutina: number;
+  nombre: string;
+  tienePdf: boolean;
+};
 
 type FormularioCliente = {
   nombre: string;
@@ -19,10 +26,13 @@ type FormularioCliente = {
   telefono: string;
   fechaNacimiento: string;
   direccion: string;
-  rutinaSeleccionada: RutinaCodigo;
+  idRutina: string;
 };
 
-type ClienteCreado = { idCliente: number };
+type ClienteCreado = {
+  idCliente: number;
+  rutinaNombre: string;
+};
 
 const FORMULARIO_INICIAL: FormularioCliente = {
   nombre: "",
@@ -31,15 +41,8 @@ const FORMULARIO_INICIAL: FormularioCliente = {
   telefono: "",
   fechaNacimiento: "",
   direccion: "",
-  rutinaSeleccionada: "",
+  idRutina: "",
 };
-
-const RUTINAS: ReadonlyArray<{ value: Exclude<RutinaCodigo, "">; label: string }> = [
-  { value: "adaptacion-hombre", label: "Adaptación hombre" },
-  { value: "adaptacion-mujer", label: "Adaptación mujer" },
-  { value: "rutina-hombre", label: "Rutina hombre" },
-  { value: "rutina-mujer", label: "Rutina mujer" },
-];
 
 const inputClassName =
   "h-12 w-full rounded-xl border border-white/10 bg-black/25 px-4 text-sm text-white outline-none transition placeholder:text-gray-600 focus:border-lime-400/70 focus:ring-2 focus:ring-lime-400/15 disabled:cursor-not-allowed disabled:opacity-60";
@@ -59,7 +62,43 @@ export default function IngresarClientePage() {
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState("");
   const [exito, setExito] = useState("");
+  const [rutinas, setRutinas] = useState<RutinaOpcion[]>([]);
+  const [cargandoRutinas, setCargandoRutinas] = useState(true);
+  const [errorRutinas, setErrorRutinas] = useState("");
+  const cargaInicial = useRef(false);
   const fechaMaxima = useMemo(() => fechaActualParaInput(), []);
+
+  // Las opciones provienen del mismo CRUD de Rutinas; ya no hay valores fijos
+  // en el frontend que puedan quedar desincronizados de PostgreSQL.
+  const cargarRutinas = useCallback(async () => {
+    try {
+      setCargandoRutinas(true);
+      setErrorRutinas("");
+      const respuesta = await apiFetch("rutinas");
+      if (!respuesta.ok) {
+        throw new Error(
+          await mensajeErrorHttp(respuesta, "No se pudieron cargar las rutinas."),
+        );
+      }
+
+      setRutinas((await respuesta.json()) as RutinaOpcion[]);
+    } catch (errorDesconocido) {
+      setErrorRutinas(
+        mensajeErrorDesconocido(
+          errorDesconocido,
+          "No se pudieron cargar las rutinas.",
+        ),
+      );
+    } finally {
+      setCargandoRutinas(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (cargaInicial.current) return;
+    cargaInicial.current = true;
+    void cargarRutinas();
+  }, [cargarRutinas]);
 
   function actualizar<K extends keyof FormularioCliente>(
     campo: K,
@@ -83,8 +122,9 @@ export default function IngresarClientePage() {
       return;
     }
 
-    if (!formulario.rutinaSeleccionada) {
-      setError("Seleccioná la rutina que se enviará al cliente.");
+    const idRutina = Number(formulario.idRutina);
+    if (!Number.isInteger(idRutina) || idRutina <= 0) {
+      setError("Seleccioná una rutina registrada en el sistema.");
       return;
     }
 
@@ -99,7 +139,7 @@ export default function IngresarClientePage() {
           telefono: `598${formulario.telefono}`,
           fechaNacimiento: formulario.fechaNacimiento || null,
           direccion: formulario.direccion.trim() || null,
-          rutinaSeleccionada: formulario.rutinaSeleccionada,
+          idRutina,
         }),
       });
 
@@ -111,7 +151,9 @@ export default function IngresarClientePage() {
 
       const cliente = (await respuesta.json()) as ClienteCreado;
       setFormulario(FORMULARIO_INICIAL);
-      setExito(`Cliente registrado correctamente con el ID #${cliente.idCliente}.`);
+      setExito(
+        `Cliente registrado con el ID #${cliente.idCliente} y la rutina ${cliente.rutinaNombre}.`,
+      );
     } catch (errorDesconocido) {
       setError(
         mensajeErrorDesconocido(errorDesconocido, "No se pudo registrar el cliente."),
@@ -129,7 +171,8 @@ export default function IngresarClientePage() {
         </p>
         <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Ingresar cliente</h1>
         <p className="mt-3 max-w-2xl text-gray-400">
-          El ID, la fecha de registro y el estado activo se asignan automáticamente.
+          El ID, la fecha de registro y el estado activo se asignan automáticamente. La
+          rutina elegida queda vinculada al cliente en la base de datos.
         </p>
       </header>
 
@@ -244,23 +287,44 @@ export default function IngresarClientePage() {
           </Campo>
 
           <div className="sm:col-span-2">
-            <Campo etiqueta="Rutina para enviar" requerido ayuda="El PDF se enviará cuando se conecte WhatsApp.">
+            <Campo
+              etiqueta="Rutina asignada"
+              requerido
+              ayuda="La asignación se guardará ahora; el envío por WhatsApp se conectará luego con n8n."
+            >
               <select
                 className={inputClassName}
-                value={formulario.rutinaSeleccionada}
-                onChange={(event) =>
-                  actualizar("rutinaSeleccionada", event.target.value as RutinaCodigo)
-                }
-                disabled={guardando}
+                value={formulario.idRutina}
+                onChange={(event) => actualizar("idRutina", event.target.value)}
+                disabled={guardando || cargandoRutinas || rutinas.length === 0}
                 required
               >
-                <option value="">Seleccioná una rutina</option>
-                {RUTINAS.map((rutina) => (
-                  <option key={rutina.value} value={rutina.value}>
-                    {rutina.label}
+                <option value="">
+                  {cargandoRutinas ? "Cargando rutinas..." : "Seleccioná una rutina"}
+                </option>
+                {rutinas.map((rutina) => (
+                  <option key={rutina.idRutina} value={rutina.idRutina}>
+                    {rutina.nombre}{rutina.tienePdf ? "" : " (sin PDF)"}
                   </option>
                 ))}
               </select>
+              {errorRutinas && (
+                <span className="mt-2 flex flex-wrap items-center gap-2 text-xs text-red-300">
+                  {errorRutinas}
+                  <button
+                    type="button"
+                    onClick={() => void cargarRutinas()}
+                    className="font-bold text-lime-400 underline underline-offset-2"
+                  >
+                    Reintentar
+                  </button>
+                </span>
+              )}
+              {!cargandoRutinas && !errorRutinas && rutinas.length === 0 && (
+                <span className="mt-2 block text-xs text-amber-300">
+                  Primero ingresá al menos una rutina desde Gestión de rutinas.
+                </span>
+              )}
             </Campo>
           </div>
         </div>
@@ -280,7 +344,7 @@ export default function IngresarClientePage() {
           </button>
           <button
             type="submit"
-            disabled={guardando}
+            disabled={guardando || cargandoRutinas || rutinas.length === 0}
             className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-lime-400 px-6 text-sm font-black text-black transition hover:bg-lime-300 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {guardando ? (

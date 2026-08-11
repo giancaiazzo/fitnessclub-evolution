@@ -240,6 +240,19 @@ public class RutinasController : ControllerBase
             return NotFound(new { message = "No se encontró la rutina solicitada." });
         }
 
+        var clientesAsignados = await _context.Clientes.CountAsync(
+            cliente => cliente.IdRutina == id,
+            cancellationToken);
+
+        if (clientesAsignados > 0)
+        {
+            var sustantivo = clientesAsignados == 1 ? "cliente" : "clientes";
+            return Conflict(new
+            {
+                message = $"No se puede eliminar la rutina porque está asignada a {clientesAsignados} {sustantivo}. Reasignalos antes de eliminarla."
+            });
+        }
+
         _context.Rutinas.Remove(rutina);
         await _context.SaveChangesAsync(cancellationToken);
         return NoContent();

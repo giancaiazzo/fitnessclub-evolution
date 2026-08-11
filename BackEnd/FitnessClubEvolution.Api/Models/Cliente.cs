@@ -24,6 +24,12 @@ namespace FitnessClubEvolution.Api.Models
 
         public bool Estado { get; set; } = true;
 
+        // Cada cliente mantiene exactamente una rutina actual. Varias personas
+        // pueden compartir la misma rutina, por eso la clave foránea vive aquí.
+        public int IdRutina { get; set; }
+
+        public Rutina Rutina { get; set; } = null!;
+
         public ICollection<Cuota> Cuotas { get; set; } = new List<Cuota>();
 
         public ICollection<Notificacion> Notificaciones { get; set; } = new List<Notificacion>();

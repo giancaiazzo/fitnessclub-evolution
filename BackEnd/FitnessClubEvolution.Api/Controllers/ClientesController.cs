@@ -141,6 +141,15 @@ public class ClientesController : ControllerBase
             return BadRequest(new { message = "La fecha de nacimiento no puede ser futura." });
         }
 
+        var rutina = await _context.Rutinas.SingleOrDefaultAsync(
+            rutina => rutina.IdRutina == request.IdRutina,
+            cancellationToken);
+
+        if (rutina is null)
+        {
+            return BadRequest(new { message = "La rutina seleccionada no existe." });
+        }
+
         var documento = request.Documento.Trim();
         var documentoExistente = await _context.Clientes.AnyAsync(
             cliente => cliente.Documento == documento,
@@ -160,14 +169,14 @@ public class ClientesController : ControllerBase
             FechaNacimiento = request.FechaNacimiento,
             Direccion = LimpiarTextoOpcional(request.Direccion),
             FechaRegistro = DateTime.UtcNow,
-            Estado = true
+            Estado = true,
+            IdRutina = rutina.IdRutina,
+            Rutina = rutina
         };
 
         _context.Clientes.Add(cliente);
         await _context.SaveChangesAsync(cancellationToken);
 
-        // La rutina queda validada y disponible en request.RutinaSeleccionada.
-        // El PDF se asociará cuando se implemente el envío por WhatsApp.
         var respuesta = MapearCliente(cliente);
         return CreatedAtAction(nameof(ObtenerClientePorId), new { id = cliente.IdCliente }, respuesta);
     }
@@ -179,9 +188,11 @@ public class ClientesController : ControllerBase
         [FromBody] ActualizarClienteRequest request,
         CancellationToken cancellationToken)
     {
-        var cliente = await _context.Clientes.SingleOrDefaultAsync(
-            cliente => cliente.IdCliente == id,
-            cancellationToken);
+        var cliente = await _context.Clientes
+            .Include(cliente => cliente.Rutina)
+            .SingleOrDefaultAsync(
+                cliente => cliente.IdCliente == id,
+                cancellationToken);
 
         if (cliente is null)
         {
@@ -191,6 +202,15 @@ public class ClientesController : ControllerBase
         if (request.FechaNacimiento is { } nacimiento && nacimiento > FechaGimnasio.Hoy())
         {
             return BadRequest(new { message = "La fecha de nacimiento no puede ser futura." });
+        }
+
+        var rutina = await _context.Rutinas.SingleOrDefaultAsync(
+            rutina => rutina.IdRutina == request.IdRutina,
+            cancellationToken);
+
+        if (rutina is null)
+        {
+            return BadRequest(new { message = "La rutina seleccionada no existe." });
         }
 
         var documento = request.Documento.Trim();
@@ -210,6 +230,8 @@ public class ClientesController : ControllerBase
         cliente.FechaNacimiento = request.FechaNacimiento;
         cliente.Direccion = LimpiarTextoOpcional(request.Direccion);
         cliente.Estado = request.Estado!.Value;
+        cliente.IdRutina = rutina.IdRutina;
+        cliente.Rutina = rutina;
 
         await _context.SaveChangesAsync(cancellationToken);
         return Ok(MapearCliente(cliente));
@@ -269,7 +291,8 @@ public class ClientesController : ControllerBase
                 EF.Functions.ILike(cliente.Nombre, patron) ||
                 EF.Functions.ILike(cliente.Apellido, patron) ||
                 EF.Functions.ILike(cliente.Documento, patron) ||
-                EF.Functions.ILike(cliente.Telefono, patron))
+                EF.Functions.ILike(cliente.Telefono, patron) ||
+                EF.Functions.ILike(cliente.Rutina.Nombre, patron))
             .OrderByDescending(cliente => cliente.Estado)
             .ThenBy(cliente => cliente.Apellido)
             .ThenBy(cliente => cliente.Nombre)
@@ -287,9 +310,11 @@ public class ClientesController : ControllerBase
         [FromBody] CambiarEstadoClienteRequest request,
         CancellationToken cancellationToken)
     {
-        var cliente = await _context.Clientes.SingleOrDefaultAsync(
-            cliente => cliente.IdCliente == id,
-            cancellationToken);
+        var cliente = await _context.Clientes
+            .Include(cliente => cliente.Rutina)
+            .SingleOrDefaultAsync(
+                cliente => cliente.IdCliente == id,
+                cancellationToken);
 
         if (cliente is null)
         {
@@ -309,6 +334,7 @@ public class ClientesController : ControllerBase
     {
         var cliente = await _context.Clientes
             .AsNoTracking()
+            .Include(cliente => cliente.Rutina)
             .SingleOrDefaultAsync(cliente => cliente.IdCliente == id, cancellationToken);
 
         if (cliente is null)
@@ -327,6 +353,8 @@ public class ClientesController : ControllerBase
             Direccion = cliente.Direccion,
             FechaRegistro = cliente.FechaRegistro,
             Estado = cliente.Estado,
+            IdRutina = cliente.IdRutina,
+            RutinaNombre = cliente.Rutina.Nombre,
             Edad = CalcularEdad(cliente.FechaNacimiento)
         });
     }
@@ -375,7 +403,9 @@ public class ClientesController : ControllerBase
             FechaNacimiento = cliente.FechaNacimiento,
             Direccion = cliente.Direccion,
             FechaRegistro = cliente.FechaRegistro,
-            Estado = cliente.Estado
+            Estado = cliente.Estado,
+            IdRutina = cliente.IdRutina,
+            RutinaNombre = cliente.Rutina.Nombre
         };
     }
 
@@ -390,7 +420,9 @@ public class ClientesController : ControllerBase
             FechaNacimiento = cliente.FechaNacimiento,
             Direccion = cliente.Direccion,
             FechaRegistro = cliente.FechaRegistro,
-            Estado = cliente.Estado
+            Estado = cliente.Estado,
+            IdRutina = cliente.IdRutina,
+            RutinaNombre = cliente.Rutina.Nombre
         };
 
     private static EstadoPagoClienteResponse CrearEstadoPago(
