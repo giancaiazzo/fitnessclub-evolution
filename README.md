@@ -7,8 +7,17 @@ gestión para usuarios autorizados del gimnasio.
 
 ### 1. Backend
 
+La cadena de conexión no se guarda en Git. Configurala una vez mediante los
+secretos locales de .NET, reemplazando los valores de ejemplo:
+
 ```bash
 cd BackEnd/FitnessClubEvolution.Api
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=localhost;Port=5432;Database=fitnessclub_db;Username=postgres;Password=TU_CLAVE_LOCAL"
+```
+
+Después iniciá la API:
+
+```bash
 dotnet restore
 dotnet ef database update
 dotnet run --launch-profile http
@@ -86,6 +95,9 @@ cambio de `IdRutina` como evento para reenviar el PDF correspondiente.
 Durante el desarrollo, Vite dirige automáticamente las peticiones `/api` a
 `http://localhost:5157`. Para utilizar una API publicada, copiá `.env.example`
 a `.env` y completá `VITE_API_URL`.
+
+El despliegue conjunto del frontend, API, PostgreSQL, n8n y HTTPS en el VPS se
+encuentra documentado en [`DEPLOYMENT.md`](DEPLOYMENT.md).
 
 ## Estilos globales
 

@@ -1,0 +1,31 @@
+(security_headers) {
+    header {
+        -Server
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+}
+
+fcevolution.online, www.fcevolution.online {
+    import security_headers
+
+    @api path /api /api/*
+    handle @api {
+        reverse_proxy backend:8080
+    }
+
+    handle {
+        reverse_proxy frontend:80
+    }
+}
+
+api.fcevolution.online {
+    import security_headers
+    reverse_proxy backend:8080
+}
+
+n8n.fcevolution.online {
+    import security_headers
+    reverse_proxy n8n:5678
+}

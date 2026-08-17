@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# Secretos locales y de producción. Solo se versiona la plantilla.
+.env
+.env.*
+!.env.example
+
 # Archivos generados por .NET y Visual Studio. No forman parte del código y
 # pueden bloquear el watcher de Vite si se incluyen dentro del proyecto.
 **/.vs/
