@@ -33,7 +33,6 @@ services:
     restart: unless-stopped
     environment:
       ASPNETCORE_ENVIRONMENT: Production
-      ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
       Database__ApplyMigrations: "true"
       ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=fitnessclub_db;Username=fitnessclub;Password=${POSTGRES_PASSWORD:?Defina POSTGRES_PASSWORD en el archivo .env}
       Cors__AllowedOrigins__0: https://fcevolution.online
@@ -42,6 +41,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    volumes:
+      - data_protection_keys:/home/app/.aspnet/DataProtection-Keys
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/health >/dev/null || exit 1"]
       interval: 15s
@@ -120,3 +121,4 @@ volumes:
   n8n_data:
   caddy_data:
   caddy_config:
+  data_protection_keys:

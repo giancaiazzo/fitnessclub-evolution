@@ -16,7 +16,9 @@ RUN dotnet publish FitnessClubEvolution.Api.csproj \
 FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS runtime
 WORKDIR /app
 
-RUN apk add --no-cache icu-libs tzdata
+RUN apk add --no-cache icu-libs krb5-libs tzdata \
+    && mkdir -p /home/app/.aspnet/DataProtection-Keys \
+    && chown -R $APP_UID:$APP_UID /home/app/.aspnet
 
 ENV ASPNETCORE_HTTP_PORTS=8080 \
     DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false \
