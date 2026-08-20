@@ -23,6 +23,11 @@ public class EjerciciosController : ControllerBase
         _context = context;
     }
 
+    /// <summary>
+    /// MÓDULO 1: consulta ejercicios activos y proyecta metadatos, no los
+    /// binarios. Un usuario autenticado puede incluir inactivos para gestionarlos.
+    /// </summary>
+    /// <returns>HTTP 200 con ejercicios filtrados y las URLs de imagen/video disponibles.</returns>
     // GET: api/ejercicios?buscar=press&grupoMuscular=Pecho
     // El portal público solamente recibe ejercicios activos. Un administrador
     // autenticado puede solicitar también los inactivos para gestionarlos.
@@ -169,6 +174,11 @@ public class EjerciciosController : ControllerBase
             archivo.TipoContenidoImagen ?? "application/octet-stream");
     }
 
+    /// <summary>
+    /// MÓDULO 1: consulta el video del ejercicio y habilita respuestas por rango,
+    /// permitiendo al navegador adelantar sin descargar nuevamente todo el archivo.
+    /// </summary>
+    /// <returns>El video binario o HTTP 404 si está ausente/no es visible.</returns>
     // GET: api/ejercicios/5/video
     [AllowAnonymous]
     [HttpGet("{id:int}/video")]

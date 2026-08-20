@@ -23,6 +23,11 @@ public class RutinasController : ControllerBase
         _context = context;
     }
 
+    /// <summary>
+    /// MÓDULO 2: consulta metadatos de rutinas sin transferir los PDF guardados
+    /// en PostgreSQL. Devuelve una URL de descarga cuando existe contenido.
+    /// </summary>
+    /// <returns>HTTP 200 con rutinas ordenadas por fecha de carga.</returns>
     // GET: api/rutinas?buscar=adaptacion
     [HttpGet]
     public async Task<ActionResult<IReadOnlyCollection<RutinaResponse>>> ObtenerRutinas(
@@ -89,6 +94,11 @@ public class RutinasController : ControllerBase
             : Ok(rutina);
     }
 
+    /// <summary>
+    /// MÓDULOS 2 Y 3: obtiene el PDF binario de una rutina. El panel lo muestra
+    /// en línea; n8n usa un endpoint interno equivalente para enviarlo por Meta.
+    /// </summary>
+    /// <returns>El PDF o HTTP 404 cuando aún no fue cargado.</returns>
     // GET: api/rutinas/5/pdf
     [HttpGet("{id:int}/pdf")]
     public async Task<IActionResult> ObtenerPdf(
@@ -119,6 +129,11 @@ public class RutinasController : ControllerBase
         return File(archivo.ContenidoPdf, archivo.TipoContenidoPdf ?? "application/pdf");
     }
 
+    /// <summary>
+    /// MÓDULO 2: valida firma, tamaño, cantidad de páginas y nombre único antes
+    /// de almacenar el PDF y sus metadatos en PostgreSQL.
+    /// </summary>
+    /// <returns>HTTP 201 con metadatos de la rutina; 400/409 ante una validación fallida.</returns>
     // POST: api/rutinas
     [HttpPost]
     [Consumes("multipart/form-data")]

@@ -17,6 +17,8 @@ public class AppDbContext : DbContext
     public DbSet<Ejercicio> Ejercicios { get; set; } = null!;
     public DbSet<Cuota> Cuotas { get; set; } = null!;
     public DbSet<Notificacion> Notificaciones { get; set; } = null!;
+    public DbSet<MensajeWhatsapp> MensajesWhatsapp { get; set; } = null!;
+    public DbSet<SolicitudRecuperacion> SolicitudesRecuperacion { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -38,9 +40,17 @@ public class AppDbContext : DbContext
             entity.Property(cliente => cliente.Telefono)
                 .IsRequired();
 
+            entity.Property(cliente => cliente.AceptaWhatsApp)
+                .HasDefaultValue(false);
+
             entity.HasIndex(cliente => cliente.Documento);
 
             entity.HasIndex(cliente => cliente.IdRutina);
+
+            // El índice acelera la identificación que realiza el bot. No es
+            // único para que una eventual duplicación histórica no bloquee la
+            // migración; el endpoint de n8n rechaza resultados ambiguos.
+            entity.HasIndex(cliente => cliente.Telefono);
 
             entity.HasOne(cliente => cliente.Rutina)
                 .WithMany(rutina => rutina.Clientes)
@@ -79,6 +89,47 @@ public class AppDbContext : DbContext
                 cuota.IdCliente,
                 cuota.FechaVencimiento
             });
+        });
+
+        modelBuilder.Entity<Entrenador>(entity =>
+        {
+            entity.HasKey(entrenador => entrenador.IdEntrenador);
+
+            entity.Property(entrenador => entrenador.Nombre)
+                .IsRequired();
+
+            entity.Property(entrenador => entrenador.Apellido)
+                .IsRequired();
+
+            entity.Property(entrenador => entrenador.Telefono)
+                .IsRequired();
+
+            entity.Property(entrenador => entrenador.NombreUsuario)
+                .HasMaxLength(60)
+                .IsRequired();
+
+            entity.Property(entrenador => entrenador.NombreUsuarioNormalizado)
+                .HasMaxLength(60)
+                .IsRequired();
+
+            entity.Property(entrenador => entrenador.ContrasenaHash)
+                .HasMaxLength(500);
+
+            entity.Property(entrenador => entrenador.Rol)
+                .HasMaxLength(30)
+                .HasDefaultValue("Administrador")
+                .IsRequired();
+
+            entity.Property(entrenador => entrenador.Estado)
+                .HasDefaultValue(true);
+
+            entity.Property(entrenador => entrenador.FechaCreacion)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            entity.HasIndex(entrenador => entrenador.NombreUsuarioNormalizado)
+                .IsUnique();
+
+            entity.HasIndex(entrenador => entrenador.Telefono);
         });
 
         modelBuilder.Entity<Servicio>(entity =>
@@ -168,9 +219,102 @@ public class AppDbContext : DbContext
 
         modelBuilder.Entity<Notificacion>(entity =>
         {
+            entity.HasKey(notificacion => notificacion.IdNotificacion);
+
+            entity.Property(notificacion => notificacion.Tipo)
+                .HasMaxLength(50)
+                .IsRequired();
+
+            entity.Property(notificacion => notificacion.Mensaje)
+                .HasMaxLength(1000)
+                .IsRequired();
+
+            entity.Property(notificacion => notificacion.Estado)
+                .HasMaxLength(30)
+                .HasDefaultValue("Pendiente")
+                .IsRequired();
+
+            entity.Property(notificacion => notificacion.ClaveIdempotencia)
+                .HasMaxLength(160);
+
+            entity.Property(notificacion => notificacion.Canal)
+                .HasMaxLength(30)
+                .HasDefaultValue("WhatsApp")
+                .IsRequired();
+
+            entity.Property(notificacion => notificacion.Referencia)
+                .HasMaxLength(100);
+
+            entity.Property(notificacion => notificacion.IdMensajeExterno)
+                .HasMaxLength(150);
+
+            entity.Property(notificacion => notificacion.UltimoError)
+                .HasMaxLength(1000);
+
+            entity.Property(notificacion => notificacion.FechaCreacion)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
             entity.HasOne(notificacion => notificacion.Cliente)
                 .WithMany(cliente => cliente.Notificaciones)
                 .HasForeignKey(notificacion => notificacion.IdCliente)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(notificacion => notificacion.ClaveIdempotencia)
+                .IsUnique();
+
+            entity.HasIndex(notificacion => new
+            {
+                notificacion.Estado,
+                notificacion.FechaProgramada
+            });
+        });
+
+        modelBuilder.Entity<MensajeWhatsapp>(entity =>
+        {
+            entity.HasKey(mensaje => mensaje.IdMensajeWhatsapp);
+
+            entity.Property(mensaje => mensaje.FechaRecepcion)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            entity.HasIndex(mensaje => mensaje.IdMensajeMeta)
+                .IsUnique();
+
+            entity.HasIndex(mensaje => new
+            {
+                mensaje.Telefono,
+                mensaje.FechaRecepcion
+            });
+
+            entity.HasOne(mensaje => mensaje.Cliente)
+                .WithMany(cliente => cliente.MensajesWhatsapp)
+                .HasForeignKey(mensaje => mensaje.IdCliente)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<SolicitudRecuperacion>(entity =>
+        {
+            entity.HasKey(solicitud => solicitud.IdSolicitudRecuperacion);
+
+            entity.Property(solicitud => solicitud.FechaCreacion)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            entity.Property(solicitud => solicitud.Estado)
+                .HasDefaultValue("Pendiente")
+                .IsRequired();
+
+            entity.Property(solicitud => solicitud.MaxIntentos)
+                .HasDefaultValue(5);
+
+            entity.HasIndex(solicitud => new
+            {
+                solicitud.IdEntrenador,
+                solicitud.Estado,
+                solicitud.FechaExpiracion
+            });
+
+            entity.HasOne(solicitud => solicitud.Entrenador)
+                .WithMany(entrenador => entrenador.SolicitudesRecuperacion)
+                .HasForeignKey(solicitud => solicitud.IdEntrenador)
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }

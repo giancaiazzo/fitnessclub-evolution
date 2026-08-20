@@ -21,6 +21,12 @@ public class ServiciosController : ControllerBase
         _context = context;
     }
 
+    /// <summary>
+    /// MÓDULO 1: consulta el catálogo público sin cargar el binario de las
+    /// imágenes. Devuelve metadatos y una URL por imagen para mantener liviano
+    /// el listado; el filtro por nombre utiliza ILIKE de PostgreSQL.
+    /// </summary>
+    /// <returns>HTTP 200 con servicios ordenados por nombre; puede ser una lista vacía.</returns>
     // GET: api/servicios?buscar=musculacion
     // La lectura es pública porque alimenta el catálogo del módulo de clientes.
     // El atributo [Authorize] de la clase sigue protegiendo POST, PUT y DELETE.
@@ -91,6 +97,11 @@ public class ServiciosController : ControllerBase
             : Ok(servicio);
     }
 
+    /// <summary>
+    /// MÓDULO 1: consulta solamente el binario y tipo MIME de una imagen; no
+    /// vuelve a cargar el servicio completo.
+    /// </summary>
+    /// <returns>El archivo almacenado en PostgreSQL o HTTP 404 si no existe.</returns>
     // GET: api/servicios/5/imagen
     // La imagen también debe ser pública para que las tarjetas puedan mostrarla.
     [AllowAnonymous]
@@ -120,6 +131,11 @@ public class ServiciosController : ControllerBase
             imagen.TipoContenidoImagen ?? "application/octet-stream");
     }
 
+    /// <summary>
+    /// MÓDULOS 1 Y 2: valida nombre único e imagen y guarda el catálogo que
+    /// luego consume el portal público.
+    /// </summary>
+    /// <returns>HTTP 201 con metadatos; nunca devuelve el binario dentro del JSON.</returns>
     // POST: api/servicios
     [HttpPost]
     [Consumes("multipart/form-data")]

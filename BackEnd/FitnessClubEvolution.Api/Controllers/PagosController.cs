@@ -54,6 +54,11 @@ public class PagosController : ControllerBase
             : Ok(pago);
     }
 
+    /// <summary>
+    /// MÓDULO 2: verifica que el cliente exista y consulta todo su historial de
+    /// cuotas en orden descendente, incluyendo quién registró cada cobro.
+    /// </summary>
+    /// <returns>HTTP 200 con el historial (posiblemente vacío) o 404 para un cliente inexistente.</returns>
     // GET: api/pagos/cliente/5
     [HttpGet("cliente/{idCliente:int}")]
     public async Task<ActionResult<IReadOnlyCollection<PagoResponse>>> ObtenerHistorialCliente(
@@ -96,6 +101,12 @@ public class PagosController : ControllerBase
         return Ok(pagos);
     }
 
+    /// <summary>
+    /// MÓDULOS 2 Y 3: registra una cuota confirmada. Consulta el último
+    /// vencimiento y extiende un mes sin quitar días ya abonados; ese nuevo
+    /// vencimiento es el que utiliza n8n para programar cobranzas.
+    /// </summary>
+    /// <returns>HTTP 201 con el pago y el nuevo estado de cuota del cliente.</returns>
     // POST: api/pagos
     [HttpPost]
     public async Task<ActionResult<RegistrarPagoResponse>> RegistrarPago(

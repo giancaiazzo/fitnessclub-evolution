@@ -23,6 +23,9 @@ public sealed class CrearClienteRequest
 
     [Range(1, int.MaxValue, ErrorMessage = "Seleccioná una rutina válida.")]
     public int IdRutina { get; set; }
+
+    // Debe provenir de una aceptación explícita en el formulario de alta.
+    public bool AceptaWhatsApp { get; set; }
 }
 
 public sealed class ActualizarClienteRequest
@@ -49,6 +52,10 @@ public sealed class ActualizarClienteRequest
 
     [Range(1, int.MaxValue, ErrorMessage = "Seleccioná una rutina válida.")]
     public int IdRutina { get; set; }
+
+    // Es nullable para que el frontend anterior, que todavía no muestra el
+    // control de consentimiento, pueda editar la ficha sin revocarlo.
+    public bool? AceptaWhatsApp { get; set; }
 }
 
 public sealed class CambiarEstadoClienteRequest
@@ -70,6 +77,9 @@ public class ClienteResponse
     public bool Estado { get; set; }
     public int IdRutina { get; set; }
     public string RutinaNombre { get; set; } = string.Empty;
+    public bool AceptaWhatsApp { get; set; }
+    public DateTime? FechaConsentimientoWhatsApp { get; set; }
+    public DateTime? FechaBajaWhatsApp { get; set; }
 }
 
 public sealed class ClienteDetalleResponse : ClienteResponse
