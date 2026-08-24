@@ -11,10 +11,11 @@
 using System;
 using System.Reflection;
 
+[assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("FitnessClubEvolution.Api-LocalDevelopment")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("FitnessClubEvolution.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7a51b1afcf1acb24081abcfa46b4286eb11386d6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f8272bdd4e21af81d4045c306999b3b1cab12f9a")]
 [assembly: System.Reflection.AssemblyProductAttribute("FitnessClubEvolution.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FitnessClubEvolution.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

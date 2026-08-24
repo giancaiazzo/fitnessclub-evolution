@@ -37,6 +37,38 @@
   },
   {
     "ContainingType": "FitnessClubEvolution.Api.Controllers.AuthController",
+    "Method": "ConfirmarRecuperacion",
+    "RelativePath": "api/Auth/recuperacion/confirmar",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "FitnessClubEvolution.Api.Controllers.ConfirmarRecuperacionRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FitnessClubEvolution.Api.Controllers.AuthController",
+    "Method": "SolicitarRecuperacion",
+    "RelativePath": "api/Auth/recuperacion/solicitar",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "FitnessClubEvolution.Api.Controllers.SolicitarRecuperacionRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FitnessClubEvolution.Api.Controllers.AuthController",
     "Method": "ObtenerSesion",
     "RelativePath": "api/Auth/sesion",
     "HttpMethod": "GET",
@@ -561,6 +593,309 @@
     ]
   },
   {
+    "ContainingType": "FitnessClubEvolution.Api.Controllers.EntrenadoresController",
+    "Method": "CrearEntrenador",
+    "RelativePath": "api/Entrenadores",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "FitnessClubEvolution.Api.DTOs.CrearEntrenadorRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "FitnessClubEvolution.Api.DTOs.EntrenadorResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "FitnessClubEvolution.Api.Controllers.EntrenadoresController",
+    "Method": "ObtenerEntrenadorPorId",
+    "RelativePath": "api/Entrenadores/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "FitnessClubEvolution.Api.DTOs.EntrenadorResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "FitnessClubEvolution.Api.Controllers.IntegracionesN8nController",
+    "Method": "ObtenerRutinaCliente",
+    "RelativePath": "api/integraciones/n8n/clientes/{idCliente}/rutina",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "idCliente",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "FitnessClubEvolution.Api.DTOs.RutinaBotResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "FitnessClubEvolution.Api.Controllers.IntegracionesN8nController",
+    "Method": "ObtenerPdfRutinaCliente",
+    "RelativePath": "api/integraciones/n8n/clientes/{idCliente}/rutina/pdf",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "idCliente",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FitnessClubEvolution.Api.Controllers.IntegracionesN8nController",
+    "Method": "ObtenerClientePorTelefono",
+    "RelativePath": "api/integraciones/n8n/clientes/por-telefono/{telefono}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "telefono",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "FitnessClubEvolution.Api.DTOs.ClienteBotResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "FitnessClubEvolution.Api.Controllers.IntegracionesN8nController",
+    "Method": "ObtenerCobranzas",
+    "RelativePath": "api/integraciones/n8n/cobranzas",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dias",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IReadOnlyCollection\u00601[[FitnessClubEvolution.Api.DTOs.NotificacionN8nResponse, FitnessClubEvolution.Api, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "FitnessClubEvolution.Api.Controllers.IntegracionesN8nController",
+    "Method": "ReservarCobranzas",
+    "RelativePath": "api/integraciones/n8n/cobranzas/reservar",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dias",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IReadOnlyCollection\u00601[[FitnessClubEvolution.Api.DTOs.NotificacionN8nResponse, FitnessClubEvolution.Api, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "FitnessClubEvolution.Api.Controllers.IntegracionesN8nController",
+    "Method": "ActualizarConsentimiento",
+    "RelativePath": "api/integraciones/n8n/consentimiento",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "FitnessClubEvolution.Api.DTOs.ActualizarConsentimientoWhatsappRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "FitnessClubEvolution.Api.DTOs.ActualizarConsentimientoWhatsappResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "FitnessClubEvolution.Api.Controllers.IntegracionesN8nController",
+    "Method": "ReservarMensaje",
+    "RelativePath": "api/integraciones/n8n/mensajes/reservar",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "FitnessClubEvolution.Api.DTOs.ReservarMensajeWhatsappRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "FitnessClubEvolution.Api.DTOs.ReservarMensajeWhatsappResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "FitnessClubEvolution.Api.Controllers.IntegracionesN8nController",
+    "Method": "RegistrarResultadoMensaje",
+    "RelativePath": "api/integraciones/n8n/mensajes/resultado",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "FitnessClubEvolution.Api.DTOs.ResultadoMensajeWhatsappRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FitnessClubEvolution.Api.Controllers.IntegracionesN8nController",
+    "Method": "TomarNotificacion",
+    "RelativePath": "api/integraciones/n8n/notificaciones/{idNotificacion}/tomar",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "idNotificacion",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FitnessClubEvolution.Api.Controllers.IntegracionesN8nController",
+    "Method": "ObtenerPendientes",
+    "RelativePath": "api/integraciones/n8n/notificaciones/pendientes",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "tipo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "limite",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IReadOnlyCollection\u00601[[FitnessClubEvolution.Api.DTOs.NotificacionN8nResponse, FitnessClubEvolution.Api, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "FitnessClubEvolution.Api.Controllers.IntegracionesN8nController",
+    "Method": "RegistrarResultadoNotificacion",
+    "RelativePath": "api/integraciones/n8n/notificaciones/resultado",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "FitnessClubEvolution.Api.DTOs.ResultadoNotificacionRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "FitnessClubEvolution.Api.Controllers.PagosController",
     "Method": "RegistrarPago",
     "RelativePath": "api/Pagos",
@@ -984,5 +1319,21 @@
       }
     ],
     "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Program\u002B\u003C\u003Ec",
+    "Method": "\u003C\u003CMain\u003E$\u003Eb__0_5",
+    "RelativePath": "health",
+    "HttpMethod": "GET",
+    "IsController": false,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Void",
+        "MediaTypes": [],
+        "StatusCode": 200
+      }
+    ]
   }
 ]
