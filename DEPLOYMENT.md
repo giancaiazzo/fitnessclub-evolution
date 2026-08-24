@@ -18,7 +18,7 @@ cp .env.example .env
 nano .env
 ```
 
-Generá tres secretos distintos con el siguiente comando y pegá uno en cada
+Generá cuatro secretos distintos con el siguiente comando y pegá uno en cada
 variable vacía del archivo `.env`:
 
 ```bash
@@ -52,13 +52,28 @@ Después de la primera carga de n8n, abrí `https://n8n.fcevolution.online` y
 creá su cuenta propietaria. Las credenciales de Meta y OpenAI se guardan desde
 la interfaz de n8n, nunca en Git ni en el frontend.
 
+La clave `N8N_API_KEY` se configura en n8n como credencial **Header Auth** con
+el nombre `X-N8N-API-KEY`. El detalle de endpoints y workflows está en
+[`BACKEND_MODULOS.md`](BACKEND_MODULOS.md).
+
 ## Actualizaciones
 
+Si el VPS ya tenía `.env`, agregá `N8N_API_KEY` manualmente antes de recrear
+los contenedores; no reemplaces el archivo porque contiene los secretos y datos
+de la instalación actual.
+
 ```bash
+mkdir -p /opt/fitnessclub/backups
+docker compose exec -T postgres pg_dump -U fitnessclub -d fitnessclub_db \
+  > /opt/fitnessclub/backups/fitnessclub_antes_actualizar.sql
 git pull
+docker compose config --quiet
 docker compose up -d --build
 docker image prune -f
 ```
+
+Los `push` de GitHub no actualizan este VPS automáticamente. Estos comandos se
+ejecutan manualmente salvo que más adelante se configure una CI/CD específica.
 
 ## Registros y respaldo manual
 

@@ -17,6 +17,12 @@ dist-ssr
 .env.*
 !.env.example
 
+# Respaldos con datos personales o credenciales. Guardarlos fuera del repo.
+backups/
+*.sql
+*.dump
+*.bak
+
 # Archivos generados por .NET y Visual Studio. No forman parte del código y
 # pueden bloquear el watcher de Vite si se incluyen dentro del proyecto.
 **/.vs/

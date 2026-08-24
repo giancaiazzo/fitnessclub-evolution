@@ -99,6 +99,14 @@ a `.env` y completá `VITE_API_URL`.
 El despliegue conjunto del frontend, API, PostgreSQL, n8n y HTTPS en el VPS se
 encuentra documentado en [`DEPLOYMENT.md`](DEPLOYMENT.md).
 
+## Módulo 3: bot y n8n
+
+La API interna para WhatsApp, cobranzas, rutinas, consentimiento y recuperación
+está protegida por una clave exclusiva entre backend y n8n. También incorpora
+deduplicación por ID de Meta y un outbox persistente para reintentos seguros.
+El mapa de endpoints, tablas, cinco workflows y pruebas se encuentra en
+[`BACKEND_MODULOS.md`](BACKEND_MODULOS.md).
+
 ## Estilos globales
 
 Todos los estilos externos, las variables del tema y las reglas compartidas se
@@ -114,6 +122,6 @@ npm run build
 npm run lint
 ```
 
-> Antes de publicar el sistema, la contraseña administrativa debe almacenarse
-> con un hash seguro y la conexión a la base de datos debe configurarse mediante
-> secretos del entorno de despliegue.
+> Las contraseñas de usuarios se almacenan con `PasswordHasher` de ASP.NET Core;
+> las claves de PostgreSQL, n8n, Meta e IA deben permanecer en secretos del VPS
+> o en Credentials de n8n y nunca incluirse en Git.

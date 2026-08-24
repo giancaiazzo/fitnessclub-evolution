@@ -21,6 +21,11 @@ public class ClientesController : ControllerBase
         _context = context;
     }
 
+    /// <summary>
+    /// MÓDULO 2: consulta todos los clientes sin seguimiento de EF, ordenados
+    /// alfabéticamente, y proyecta solamente los campos requeridos por el listado.
+    /// </summary>
+    /// <returns>HTTP 200 con una colección de clientes; puede estar vacía.</returns>
     // GET: api/clientes
     [HttpGet]
     public async Task<ActionResult<IReadOnlyCollection<ClienteResponse>>> ObtenerClientes(
@@ -36,6 +41,11 @@ public class ClientesController : ControllerBase
         return Ok(clientes);
     }
 
+    /// <summary>
+    /// MÓDULOS 2 Y 3: consulta la última cuota confirmada de cada cliente y
+    /// calcula vigente, por vencer o vencida con la fecha local del gimnasio.
+    /// </summary>
+    /// <returns>HTTP 200 con el resumen que usa Gestión y que origina recordatorios.</returns>
     // GET: api/clientes/estado-pagos
     [HttpGet("estado-pagos")]
     public async Task<ActionResult<IReadOnlyCollection<ClientePagoResumenResponse>>> ObtenerEstadoPagosClientes(
@@ -130,6 +140,11 @@ public class ClientesController : ControllerBase
             : Ok(cliente);
     }
 
+    /// <summary>
+    /// MÓDULOS 2 Y 3: valida fecha, rutina y documento duplicado, crea el cliente
+    /// y, si aceptó WhatsApp, genera en el outbox el envío inicial de su rutina.
+    /// </summary>
+    /// <returns>HTTP 201 con el cliente creado, 409 por documento repetido o 400 por datos inválidos.</returns>
     // POST: api/clientes
     [HttpPost]
     public async Task<ActionResult<ClienteResponse>> CrearCliente(
@@ -160,6 +175,7 @@ public class ClientesController : ControllerBase
             return Conflict(new { message = "Ya existe un cliente registrado con ese documento." });
         }
 
+        var ahora = DateTime.UtcNow;
         var cliente = new Cliente
         {
             Nombre = request.Nombre.Trim(),
@@ -168,19 +184,41 @@ public class ClientesController : ControllerBase
             Telefono = request.Telefono.Trim(),
             FechaNacimiento = request.FechaNacimiento,
             Direccion = LimpiarTextoOpcional(request.Direccion),
-            FechaRegistro = DateTime.UtcNow,
+            FechaRegistro = ahora,
             Estado = true,
+            AceptaWhatsApp = request.AceptaWhatsApp,
+            FechaConsentimientoWhatsApp = request.AceptaWhatsApp ? ahora : null,
+            FechaBajaWhatsApp = null,
             IdRutina = rutina.IdRutina,
             Rutina = rutina
         };
 
+        await using var transaccion = await _context.Database
+            .BeginTransactionAsync(cancellationToken);
+
         _context.Clientes.Add(cliente);
         await _context.SaveChangesAsync(cancellationToken);
+
+        if (cliente.AceptaWhatsApp)
+        {
+            _context.Notificaciones.Add(CrearNotificacionRutina(
+                cliente,
+                rutina,
+                $"rutina:{cliente.IdCliente}:{rutina.IdRutina}:alta"));
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+
+        await transaccion.CommitAsync(cancellationToken);
 
         var respuesta = MapearCliente(cliente);
         return CreatedAtAction(nameof(ObtenerClientePorId), new { id = cliente.IdCliente }, respuesta);
     }
 
+    /// <summary>
+    /// MÓDULOS 2 Y 3: actualiza la ficha y el consentimiento; cuando cambia la
+    /// rutina crea un nuevo evento idempotente para que n8n envíe el PDF correcto.
+    /// </summary>
+    /// <returns>HTTP 200 con la ficha actualizada o errores 404/409/400.</returns>
     // PUT: api/clientes/5
     [HttpPut("{id:int}")]
     public async Task<ActionResult<ClienteResponse>> ActualizarCliente(
@@ -223,6 +261,11 @@ public class ClientesController : ControllerBase
             return Conflict(new { message = "Ya existe otro cliente registrado con ese documento." });
         }
 
+        var rutinaAnterior = cliente.IdRutina;
+        var aceptabaWhatsApp = cliente.AceptaWhatsApp;
+        var consentimientoActivado = request.AceptaWhatsApp == true && !aceptabaWhatsApp;
+        var ahora = DateTime.UtcNow;
+
         cliente.Nombre = request.Nombre.Trim();
         cliente.Apellido = request.Apellido.Trim();
         cliente.Documento = documento;
@@ -230,8 +273,31 @@ public class ClientesController : ControllerBase
         cliente.FechaNacimiento = request.FechaNacimiento;
         cliente.Direccion = LimpiarTextoOpcional(request.Direccion);
         cliente.Estado = request.Estado!.Value;
+        if (request.AceptaWhatsApp is { } aceptaWhatsApp)
+        {
+            cliente.AceptaWhatsApp = aceptaWhatsApp;
+            if (aceptaWhatsApp && !aceptabaWhatsApp)
+            {
+                cliente.FechaConsentimientoWhatsApp = ahora;
+                cliente.FechaBajaWhatsApp = null;
+            }
+            else if (!aceptaWhatsApp && aceptabaWhatsApp)
+            {
+                cliente.FechaBajaWhatsApp = ahora;
+            }
+        }
+
         cliente.IdRutina = rutina.IdRutina;
         cliente.Rutina = rutina;
+
+        if ((rutinaAnterior != rutina.IdRutina || consentimientoActivado) &&
+            cliente.AceptaWhatsApp)
+        {
+            _context.Notificaciones.Add(CrearNotificacionRutina(
+                cliente,
+                rutina,
+                $"rutina:{cliente.IdCliente}:{rutina.IdRutina}:{ahora:yyyyMMddHHmmssfff}"));
+        }
 
         await _context.SaveChangesAsync(cancellationToken);
         return Ok(MapearCliente(cliente));
@@ -355,10 +421,17 @@ public class ClientesController : ControllerBase
             Estado = cliente.Estado,
             IdRutina = cliente.IdRutina,
             RutinaNombre = cliente.Rutina.Nombre,
+            AceptaWhatsApp = cliente.AceptaWhatsApp,
+            FechaConsentimientoWhatsApp = cliente.FechaConsentimientoWhatsApp,
+            FechaBajaWhatsApp = cliente.FechaBajaWhatsApp,
             Edad = CalcularEdad(cliente.FechaNacimiento)
         });
     }
 
+    /// <summary>
+    /// MÓDULO 2: consulta la última cuota confirmada de un cliente y devuelve
+    /// fechas, días restantes/vencidos y si todavía usa la cuota inicial.
+    /// </summary>
     // GET: api/clientes/5/estado-pago
     [HttpGet("{id:int}/estado-pago")]
     public async Task<ActionResult<EstadoPagoClienteResponse>> ObtenerEstadoPago(
@@ -405,7 +478,10 @@ public class ClientesController : ControllerBase
             FechaRegistro = cliente.FechaRegistro,
             Estado = cliente.Estado,
             IdRutina = cliente.IdRutina,
-            RutinaNombre = cliente.Rutina.Nombre
+            RutinaNombre = cliente.Rutina.Nombre,
+            AceptaWhatsApp = cliente.AceptaWhatsApp,
+            FechaConsentimientoWhatsApp = cliente.FechaConsentimientoWhatsApp,
+            FechaBajaWhatsApp = cliente.FechaBajaWhatsApp
         };
     }
 
@@ -422,8 +498,32 @@ public class ClientesController : ControllerBase
             FechaRegistro = cliente.FechaRegistro,
             Estado = cliente.Estado,
             IdRutina = cliente.IdRutina,
-            RutinaNombre = cliente.Rutina.Nombre
+            RutinaNombre = cliente.Rutina.Nombre,
+            AceptaWhatsApp = cliente.AceptaWhatsApp,
+            FechaConsentimientoWhatsApp = cliente.FechaConsentimientoWhatsApp,
+            FechaBajaWhatsApp = cliente.FechaBajaWhatsApp
         };
+
+    private static Notificacion CrearNotificacionRutina(
+        Cliente cliente,
+        Rutina rutina,
+        string claveIdempotencia)
+    {
+        var ahora = DateTime.UtcNow;
+        return new Notificacion
+        {
+            IdCliente = cliente.IdCliente,
+            Cliente = cliente,
+            Tipo = "RutinaAsignada",
+            Mensaje = "Rutina asignada pendiente de envío por WhatsApp.",
+            FechaProgramada = ahora,
+            Estado = "Pendiente",
+            Canal = "WhatsApp",
+            Referencia = rutina.IdRutina.ToString(),
+            ClaveIdempotencia = claveIdempotencia,
+            FechaCreacion = ahora
+        };
+    }
 
     private static EstadoPagoClienteResponse CrearEstadoPago(
         Cliente cliente,

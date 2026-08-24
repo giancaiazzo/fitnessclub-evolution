@@ -13,6 +13,18 @@
     }
   ],
   "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "FitnessClubEvolution.Api"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Auth/login": {
       "post": {
         "tags": [
@@ -96,6 +108,70 @@
         "tags": [
           "Auth"
         ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Auth/recuperacion/solicitar": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SolicitarRecuperacionRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SolicitarRecuperacionRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SolicitarRecuperacionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/Auth/recuperacion/confirmar": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmarRecuperacionRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmarRecuperacionRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmarRecuperacionRequest"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "description": "OK"
@@ -913,6 +989,556 @@
             }
           }
         }
+      },
+      "post": {
+        "tags": [
+          "Entrenadores"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CrearEntrenadorRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CrearEntrenadorRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CrearEntrenadorRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntrenadorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntrenadorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntrenadorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Entrenadores/{id}": {
+      "get": {
+        "tags": [
+          "Entrenadores"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntrenadorResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntrenadorResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EntrenadorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/integraciones/n8n/clientes/por-telefono/{telefono}": {
+      "get": {
+        "tags": [
+          "IntegracionesN8n"
+        ],
+        "parameters": [
+          {
+            "name": "telefono",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClienteBotResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClienteBotResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClienteBotResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/integraciones/n8n/mensajes/reservar": {
+      "post": {
+        "tags": [
+          "IntegracionesN8n"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReservarMensajeWhatsappRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReservarMensajeWhatsappRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReservarMensajeWhatsappRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReservarMensajeWhatsappResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReservarMensajeWhatsappResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReservarMensajeWhatsappResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/integraciones/n8n/mensajes/resultado": {
+      "post": {
+        "tags": [
+          "IntegracionesN8n"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResultadoMensajeWhatsappRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResultadoMensajeWhatsappRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResultadoMensajeWhatsappRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/integraciones/n8n/cobranzas": {
+      "get": {
+        "tags": [
+          "IntegracionesN8n"
+        ],
+        "parameters": [
+          {
+            "name": "dias",
+            "in": "query",
+            "schema": {
+              "maximum": 30,
+              "minimum": 0,
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32",
+              "default": 3
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NotificacionN8nResponse"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NotificacionN8nResponse"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NotificacionN8nResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/integraciones/n8n/cobranzas/reservar": {
+      "post": {
+        "tags": [
+          "IntegracionesN8n"
+        ],
+        "parameters": [
+          {
+            "name": "dias",
+            "in": "query",
+            "schema": {
+              "maximum": 30,
+              "minimum": 0,
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32",
+              "default": 3
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NotificacionN8nResponse"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NotificacionN8nResponse"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NotificacionN8nResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/integraciones/n8n/notificaciones/pendientes": {
+      "get": {
+        "tags": [
+          "IntegracionesN8n"
+        ],
+        "parameters": [
+          {
+            "name": "tipo",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limite",
+            "in": "query",
+            "schema": {
+              "maximum": 100,
+              "minimum": 1,
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32",
+              "default": 50
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NotificacionN8nResponse"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NotificacionN8nResponse"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NotificacionN8nResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/integraciones/n8n/notificaciones/{idNotificacion}/tomar": {
+      "post": {
+        "tags": [
+          "IntegracionesN8n"
+        ],
+        "parameters": [
+          {
+            "name": "idNotificacion",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/integraciones/n8n/notificaciones/resultado": {
+      "post": {
+        "tags": [
+          "IntegracionesN8n"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResultadoNotificacionRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResultadoNotificacionRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResultadoNotificacionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/integraciones/n8n/consentimiento": {
+      "post": {
+        "tags": [
+          "IntegracionesN8n"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ActualizarConsentimientoWhatsappRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ActualizarConsentimientoWhatsappRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ActualizarConsentimientoWhatsappRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActualizarConsentimientoWhatsappResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActualizarConsentimientoWhatsappResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActualizarConsentimientoWhatsappResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/integraciones/n8n/clientes/{idCliente}/rutina": {
+      "get": {
+        "tags": [
+          "IntegracionesN8n"
+        ],
+        "parameters": [
+          {
+            "name": "idCliente",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/RutinaBotResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RutinaBotResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RutinaBotResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/integraciones/n8n/clientes/{idCliente}/rutina/pdf": {
+      "get": {
+        "tags": [
+          "IntegracionesN8n"
+        ],
+        "parameters": [
+          {
+            "name": "idCliente",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
       }
     },
     "/api/Pagos/{id}": {
@@ -1649,6 +2275,61 @@
               "string"
             ],
             "format": "int32"
+          },
+          "aceptaWhatsApp": {
+            "type": [
+              "null",
+              "boolean"
+            ]
+          }
+        }
+      },
+      "ActualizarConsentimientoWhatsappRequest": {
+        "required": [
+          "telefono"
+        ],
+        "type": "object",
+        "properties": {
+          "telefono": {
+            "maxLength": 20,
+            "minLength": 0,
+            "type": "string"
+          },
+          "acepta": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ActualizarConsentimientoWhatsappResponse": {
+        "type": "object",
+        "properties": {
+          "idCliente": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "telefonoNormalizado": {
+            "type": "string"
+          },
+          "aceptaWhatsApp": {
+            "type": "boolean"
+          },
+          "fechaConsentimientoUtc": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "fechaBajaUtc": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
           }
         }
       },
@@ -1662,6 +2343,70 @@
             "type": [
               "null",
               "boolean"
+            ]
+          }
+        }
+      },
+      "ClienteBotResponse": {
+        "type": "object",
+        "properties": {
+          "encontrado": {
+            "type": "boolean"
+          },
+          "ambiguo": {
+            "type": "boolean"
+          },
+          "permiteDatosPrivados": {
+            "type": "boolean"
+          },
+          "idCliente": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "nombre": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "apellido": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "telefonoNormalizado": {
+            "type": "string"
+          },
+          "estadoCliente": {
+            "type": "string"
+          },
+          "aceptaWhatsApp": {
+            "type": "boolean"
+          },
+          "cuota": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/EstadoCuotaBotResponse"
+              }
+            ]
+          },
+          "rutina": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/RutinaBotResponse"
+              }
             ]
           }
         }
@@ -1728,6 +2473,23 @@
           },
           "rutinaNombre": {
             "type": "string"
+          },
+          "aceptaWhatsApp": {
+            "type": "boolean"
+          },
+          "fechaConsentimientoWhatsApp": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "fechaBajaWhatsApp": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
           }
         }
       },
@@ -1863,6 +2625,47 @@
           },
           "rutinaNombre": {
             "type": "string"
+          },
+          "aceptaWhatsApp": {
+            "type": "boolean"
+          },
+          "fechaConsentimientoWhatsApp": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          },
+          "fechaBajaWhatsApp": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          }
+        }
+      },
+      "ConfirmarRecuperacionRequest": {
+        "required": [
+          "nombreUsuario",
+          "codigo",
+          "nuevaContrasena"
+        ],
+        "type": "object",
+        "properties": {
+          "nombreUsuario": {
+            "maxLength": 60,
+            "minLength": 2,
+            "type": "string"
+          },
+          "codigo": {
+            "pattern": "^[0-9]{6}$",
+            "type": "string"
+          },
+          "nuevaContrasena": {
+            "maxLength": 100,
+            "minLength": 8,
+            "type": "string"
           }
         }
       },
@@ -1917,6 +2720,51 @@
               "string"
             ],
             "format": "int32"
+          },
+          "aceptaWhatsApp": {
+            "type": "boolean"
+          }
+        }
+      },
+      "CrearEntrenadorRequest": {
+        "required": [
+          "nombre",
+          "apellido",
+          "telefono",
+          "nombreUsuario",
+          "contrasena",
+          "rol"
+        ],
+        "type": "object",
+        "properties": {
+          "nombre": {
+            "maxLength": 60,
+            "minLength": 2,
+            "type": "string"
+          },
+          "apellido": {
+            "maxLength": 60,
+            "minLength": 2,
+            "type": "string"
+          },
+          "telefono": {
+            "pattern": "^598\\d{8}$",
+            "type": "string"
+          },
+          "nombreUsuario": {
+            "maxLength": 60,
+            "minLength": 3,
+            "pattern": "^[A-Za-z0-9._-]+$",
+            "type": "string"
+          },
+          "contrasena": {
+            "maxLength": 100,
+            "minLength": 8,
+            "type": "string"
+          },
+          "rol": {
+            "pattern": "^(Administrador|Entrenador)$",
+            "type": "string"
           }
         }
       },
@@ -2047,6 +2895,80 @@
           }
         }
       },
+      "EntrenadorResponse": {
+        "type": "object",
+        "properties": {
+          "idEntrenador": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "nombre": {
+            "type": "string"
+          },
+          "apellido": {
+            "type": "string"
+          },
+          "telefono": {
+            "type": "string"
+          },
+          "nombreUsuario": {
+            "type": "string"
+          },
+          "rol": {
+            "type": "string"
+          },
+          "estado": {
+            "type": "boolean"
+          },
+          "fechaCreacion": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ultimoAcceso": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          }
+        }
+      },
+      "EstadoCuotaBotResponse": {
+        "type": "object",
+        "properties": {
+          "estado": {
+            "type": "string"
+          },
+          "fechaInicio": {
+            "type": "string",
+            "format": "date"
+          },
+          "fechaVencimiento": {
+            "type": "string",
+            "format": "date"
+          },
+          "diasRestantes": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "diasVencido": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          }
+        }
+      },
       "EstadoPagoClienteResponse": {
         "type": "object",
         "properties": {
@@ -2136,6 +3058,59 @@
           "mantenerSesion": {
             "type": "boolean",
             "default": false
+          }
+        }
+      },
+      "NotificacionN8nResponse": {
+        "type": "object",
+        "properties": {
+          "idNotificacion": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "tipo": {
+            "type": "string"
+          },
+          "claveIdempotencia": {
+            "type": "string"
+          },
+          "referencia": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "idCliente": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "nombreCliente": {
+            "type": "string"
+          },
+          "telefono": {
+            "type": "string"
+          },
+          "fechaVencimiento": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date"
+          },
+          "fechaProgramadaUtc": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "estado": {
+            "type": "string"
           }
         }
       },
@@ -2276,6 +3251,237 @@
           }
         }
       },
+      "ReservarMensajeWhatsappRequest": {
+        "required": [
+          "idMensajeMeta",
+          "telefono",
+          "tipo"
+        ],
+        "type": "object",
+        "properties": {
+          "idMensajeMeta": {
+            "maxLength": 150,
+            "minLength": 0,
+            "type": "string"
+          },
+          "telefono": {
+            "maxLength": 20,
+            "minLength": 0,
+            "type": "string"
+          },
+          "tipo": {
+            "maxLength": 40,
+            "minLength": 0,
+            "type": "string"
+          },
+          "resumen": {
+            "maxLength": 500,
+            "minLength": 0,
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "ReservarMensajeWhatsappResponse": {
+        "type": "object",
+        "properties": {
+          "procesar": {
+            "type": "boolean"
+          },
+          "duplicado": {
+            "type": "boolean"
+          },
+          "idMensajeWhatsapp": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "idCliente": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "idEntrenador": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "telefonoNormalizado": {
+            "type": "string"
+          },
+          "tipoAcceso": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "nombre": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "apellido": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "estadoCliente": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "aceptaWhatsApp": {
+            "type": "boolean"
+          },
+          "cuota": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/EstadoCuotaBotResponse"
+              }
+            ]
+          },
+          "rutina": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/RutinaBotResponse"
+              }
+            ]
+          }
+        }
+      },
+      "ResultadoMensajeWhatsappRequest": {
+        "required": [
+          "estado"
+        ],
+        "type": "object",
+        "properties": {
+          "idMensajeWhatsapp": {
+            "maximum": 9223372036854776000,
+            "minimum": 1,
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "estado": {
+            "maxLength": 30,
+            "minLength": 0,
+            "type": "string"
+          },
+          "error": {
+            "maxLength": 1000,
+            "minLength": 0,
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "ResultadoNotificacionRequest": {
+        "required": [
+          "estado"
+        ],
+        "type": "object",
+        "properties": {
+          "idNotificacion": {
+            "maximum": 2147483647,
+            "minimum": 1,
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "estado": {
+            "maxLength": 30,
+            "minLength": 0,
+            "type": "string"
+          },
+          "idMensajeExterno": {
+            "maxLength": 150,
+            "minLength": 0,
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "error": {
+            "maxLength": 1000,
+            "minLength": 0,
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "RutinaBotResponse": {
+        "type": "object",
+        "properties": {
+          "idRutina": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "nombre": {
+            "type": "string"
+          },
+          "nombreArchivoPdf": {
+            "type": "string"
+          },
+          "cantidadPaginas": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "tamanoBytes": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int64"
+          },
+          "pdfEndpoint": {
+            "type": "string"
+          }
+        }
+      },
       "RutinaResponse": {
         "type": "object",
         "properties": {
@@ -2393,6 +3599,7 @@
         "required": [
           "idEntrenador",
           "nombreUsuario",
+          "nombre",
           "apellido",
           "nombreCompleto",
           "rol"
@@ -2410,6 +3617,9 @@
           "nombreUsuario": {
             "type": "string"
           },
+          "nombre": {
+            "type": "string"
+          },
           "apellido": {
             "type": "string"
           },
@@ -2420,10 +3630,26 @@
             "type": "string"
           }
         }
+      },
+      "SolicitarRecuperacionRequest": {
+        "required": [
+          "nombreUsuario"
+        ],
+        "type": "object",
+        "properties": {
+          "nombreUsuario": {
+            "maxLength": 60,
+            "minLength": 2,
+            "type": "string"
+          }
+        }
       }
     }
   },
   "tags": [
+    {
+      "name": "FitnessClubEvolution.Api"
+    },
     {
       "name": "Auth"
     },
@@ -2438,6 +3664,9 @@
     },
     {
       "name": "Entrenadores"
+    },
+    {
+      "name": "IntegracionesN8n"
     },
     {
       "name": "Pagos"

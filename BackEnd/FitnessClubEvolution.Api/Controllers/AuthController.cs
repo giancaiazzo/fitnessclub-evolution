@@ -1,139 +1,411 @@
-﻿using System.Security.Claims;
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
+using System.Security.Claims;
+using System.Security.Cryptography;
 using FitnessClubEvolution.Api.Data;
+using FitnessClubEvolution.Api.Models;
+using FitnessClubEvolution.Api.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 
-namespace FitnessClubEvolution.Api.Controllers
+namespace FitnessClubEvolution.Api.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class AuthController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class AuthController : ControllerBase
+    private const int MinutosValidezCodigo = 10;
+    private readonly AppDbContext _context;
+    private readonly IPasswordHasher<Entrenador> _passwordHasher;
+    private readonly IPasswordHasher<SolicitudRecuperacion> _recoveryHasher;
+    private readonly IN8nWebhookClient _n8nWebhookClient;
+
+    public AuthController(
+        AppDbContext context,
+        IPasswordHasher<Entrenador> passwordHasher,
+        IPasswordHasher<SolicitudRecuperacion> recoveryHasher,
+        IN8nWebhookClient n8nWebhookClient)
     {
-        private readonly AppDbContext _context;
-
-        public AuthController(AppDbContext context)
-        {
-            _context = context;
-        }
-
-        [AllowAnonymous]
-        [HttpPost("login")]
-        public async Task<ActionResult<SesionResponse>> Login(
-            [FromBody] LoginRequest request)
-        {
-            var nombreUsuario = request.NombreUsuario.Trim();
-
-            if (string.IsNullOrWhiteSpace(nombreUsuario) ||
-                string.IsNullOrWhiteSpace(request.Contrasena))
-            {
-                return BadRequest(new
-                {
-                    mensaje = "Debes ingresar el usuario y la contraseña."
-                });
-            }
-
-            var nombreUsuarioNormalizado = nombreUsuario.ToLower();
-            var entrenador = await _context.Entrenadores
-                .AsNoTracking()
-                .FirstOrDefaultAsync(e =>
-                    e.Nombre.ToLower() == nombreUsuarioNormalizado);
-
-            if (entrenador is null || entrenador.Contrasena != request.Contrasena)
-            {
-                return Unauthorized(new
-                {
-                    mensaje = "El usuario o la contraseña son incorrectos."
-                });
-            }
-
-            var claims = new List<Claim>
-            {
-                new(ClaimTypes.NameIdentifier, entrenador.IdEntrenador.ToString()),
-                new(ClaimTypes.Name, entrenador.Nombre),
-                new(ClaimTypes.GivenName, entrenador.Nombre),
-                new(ClaimTypes.Surname, entrenador.Apellido),
-                new(ClaimTypes.Role, "Administrador")
-            };
-
-            var identidad = new ClaimsIdentity(
-                claims,
-                CookieAuthenticationDefaults.AuthenticationScheme);
-
-            var propiedades = new AuthenticationProperties
-            {
-                IsPersistent = request.MantenerSesion,
-                AllowRefresh = true,
-                ExpiresUtc = DateTimeOffset.UtcNow.Add(
-                    request.MantenerSesion
-                        ? TimeSpan.FromDays(7)
-                        : TimeSpan.FromHours(8))
-            };
-
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(identidad),
-                propiedades);
-
-            return Ok(CrearRespuestaSesion(
-                entrenador.IdEntrenador,
-                entrenador.Nombre,
-                entrenador.Apellido));
-        }
-
-        [Authorize]
-        [HttpGet("sesion")]
-        public ActionResult<SesionResponse> ObtenerSesion()
-        {
-            var idEntrenadorTexto = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (!int.TryParse(idEntrenadorTexto, out var idEntrenador))
-            {
-                return Unauthorized();
-            }
-
-            return Ok(CrearRespuestaSesion(
-                idEntrenador,
-                User.FindFirstValue(ClaimTypes.GivenName) ?? string.Empty,
-                User.FindFirstValue(ClaimTypes.Surname) ?? string.Empty));
-        }
-
-        [Authorize]
-        [HttpPost("logout")]
-        public async Task<IActionResult> Logout()
-        {
-            await HttpContext.SignOutAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme);
-
-            return NoContent();
-        }
-
-        private static SesionResponse CrearRespuestaSesion(
-            int idEntrenador,
-            string nombre,
-            string apellido)
-        {
-            return new SesionResponse(
-                idEntrenador,
-                nombre,
-                apellido,
-                string.Join(" ", new[] { nombre, apellido }
-                    .Where(valor => !string.IsNullOrWhiteSpace(valor))),
-                "Administrador");
-        }
+        _context = context;
+        _passwordHasher = passwordHasher;
+        _recoveryHasher = recoveryHasher;
+        _n8nWebhookClient = n8nWebhookClient;
     }
 
-    public sealed record LoginRequest(
-        string NombreUsuario,
-        string Contrasena,
-        bool MantenerSesion = false);
+    /// <summary>
+    /// MÓDULO 2: consulta un entrenador activo por nombre de usuario normalizado,
+    /// verifica el hash de contraseña y crea la cookie segura de sesión.
+    /// También migra una contraseña histórica en texto plano al primer acceso.
+    /// </summary>
+    /// <returns>Datos mínimos de la sesión; nunca devuelve contraseña ni hash.</returns>
+    [AllowAnonymous]
+    [EnableRateLimiting("Autenticacion")]
+    [HttpPost("login")]
+    public async Task<ActionResult<SesionResponse>> Login(
+        [FromBody] LoginRequest request,
+        CancellationToken cancellationToken)
+    {
+        var nombreUsuario = request.NombreUsuario.Trim();
+        if (string.IsNullOrWhiteSpace(nombreUsuario) ||
+            string.IsNullOrWhiteSpace(request.Contrasena))
+        {
+            return BadRequest(new
+            {
+                mensaje = "Debes ingresar el usuario y la contraseña."
+            });
+        }
 
-    public sealed record SesionResponse(
-        int IdEntrenador,
-        string NombreUsuario,
-        string Apellido,
-        string NombreCompleto,
-        string Rol);
+        var nombreUsuarioNormalizado = NormalizarNombreUsuario(nombreUsuario);
+        var entrenador = await _context.Entrenadores
+            .SingleOrDefaultAsync(
+                item => item.NombreUsuarioNormalizado == nombreUsuarioNormalizado,
+                cancellationToken);
+
+        if (entrenador is null || !entrenador.Estado ||
+            !VerificarContrasena(entrenador, request.Contrasena, out var actualizarHash))
+        {
+            return Unauthorized(new
+            {
+                mensaje = "El usuario o la contraseña son incorrectos."
+            });
+        }
+
+        if (actualizarHash)
+        {
+            entrenador.ContrasenaHash = _passwordHasher.HashPassword(
+                entrenador,
+                request.Contrasena);
+        }
+
+        // Después de una autenticación válida se elimina definitivamente el
+        // valor heredado en texto plano, si todavía existía.
+        entrenador.Contrasena = null;
+        entrenador.UltimoAcceso = DateTime.UtcNow;
+        await _context.SaveChangesAsync(cancellationToken);
+
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.NameIdentifier, entrenador.IdEntrenador.ToString(CultureInfo.InvariantCulture)),
+            new(ClaimTypes.Name, entrenador.NombreUsuario),
+            new(ClaimTypes.GivenName, entrenador.Nombre),
+            new(ClaimTypes.Surname, entrenador.Apellido),
+            new(ClaimTypes.Role, entrenador.Rol)
+        };
+
+        var identidad = new ClaimsIdentity(
+            claims,
+            CookieAuthenticationDefaults.AuthenticationScheme);
+        var propiedades = new AuthenticationProperties
+        {
+            IsPersistent = request.MantenerSesion,
+            AllowRefresh = true,
+            ExpiresUtc = DateTimeOffset.UtcNow.Add(
+                request.MantenerSesion
+                    ? TimeSpan.FromDays(7)
+                    : TimeSpan.FromHours(8))
+        };
+
+        await HttpContext.SignInAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            new ClaimsPrincipal(identidad),
+            propiedades);
+
+        return Ok(CrearRespuestaSesion(entrenador));
+    }
+
+    /// <summary>
+    /// MÓDULO 2: lee los claims de la cookie autenticada y devuelve quién está
+    /// usando el panel. No realiza una consulta de datos sensibles.
+    /// </summary>
+    [Authorize]
+    [HttpGet("sesion")]
+    public ActionResult<SesionResponse> ObtenerSesion()
+    {
+        var idEntrenadorTexto = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!int.TryParse(idEntrenadorTexto, out var idEntrenador))
+        {
+            return Unauthorized();
+        }
+
+        var nombre = User.FindFirstValue(ClaimTypes.GivenName) ?? string.Empty;
+        var apellido = User.FindFirstValue(ClaimTypes.Surname) ?? string.Empty;
+        return Ok(new SesionResponse(
+            idEntrenador,
+            User.FindFirstValue(ClaimTypes.Name) ?? string.Empty,
+            nombre,
+            apellido,
+            string.Join(" ", new[] { nombre, apellido }
+                .Where(valor => !string.IsNullOrWhiteSpace(valor))),
+            User.FindFirstValue(ClaimTypes.Role) ?? "Administrador"));
+    }
+
+    /// <summary>
+    /// MÓDULO 2: elimina la cookie de autenticación. Devuelve HTTP 204 porque no
+    /// hay contenido adicional que el frontend deba procesar.
+    /// </summary>
+    [Authorize]
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout()
+    {
+        await HttpContext.SignOutAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme);
+        return NoContent();
+    }
+
+    /// <summary>
+    /// MÓDULOS 2 Y 3: genera un código de un solo uso, guarda únicamente su hash
+    /// y llama al webhook de n8n para entregarlo mediante una plantilla de
+    /// autenticación de WhatsApp. La respuesta siempre es genérica para impedir
+    /// que terceros descubran qué usuarios existen.
+    /// </summary>
+    [AllowAnonymous]
+    [EnableRateLimiting("Recuperacion")]
+    [HttpPost("recuperacion/solicitar")]
+    public async Task<IActionResult> SolicitarRecuperacion(
+        [FromBody] SolicitarRecuperacionRequest request,
+        CancellationToken cancellationToken)
+    {
+        var respuestaGenerica = new
+        {
+            mensaje = "Si el usuario está activo y tiene un teléfono registrado, recibirá un código por WhatsApp."
+        };
+        var nombreUsuarioNormalizado = NormalizarNombreUsuario(request.NombreUsuario);
+        var entrenador = await _context.Entrenadores.SingleOrDefaultAsync(
+            item =>
+                item.NombreUsuarioNormalizado == nombreUsuarioNormalizado &&
+                item.Estado,
+            cancellationToken);
+
+        if (entrenador is null)
+        {
+            return Accepted(respuestaGenerica);
+        }
+
+        var telefono = NormalizarTelefono(entrenador.Telefono);
+        if (telefono is null)
+        {
+            return Accepted(respuestaGenerica);
+        }
+
+        var ahora = DateTime.UtcNow;
+        var solicitudesAnteriores = await _context.SolicitudesRecuperacion
+            .Where(solicitud =>
+                solicitud.IdEntrenador == entrenador.IdEntrenador &&
+                solicitud.Estado == "Pendiente")
+            .ToListAsync(cancellationToken);
+        foreach (var anterior in solicitudesAnteriores)
+        {
+            anterior.Estado = "Reemplazada";
+        }
+
+        var codigo = RandomNumberGenerator
+            .GetInt32(0, 1_000_000)
+            .ToString("D6", CultureInfo.InvariantCulture);
+        var solicitud = new SolicitudRecuperacion
+        {
+            IdEntrenador = entrenador.IdEntrenador,
+            FechaCreacion = ahora,
+            FechaExpiracion = ahora.AddMinutes(MinutosValidezCodigo),
+            Estado = "Pendiente",
+            Intentos = 0,
+            MaxIntentos = 5,
+            IpSolicitud = HttpContext.Connection.RemoteIpAddress?.ToString()
+        };
+        solicitud.CodigoHash = _recoveryHasher.HashPassword(solicitud, codigo);
+
+        _context.SolicitudesRecuperacion.Add(solicitud);
+        await _context.SaveChangesAsync(cancellationToken);
+
+        var resultado = await _n8nWebhookClient.EnviarRecuperacionContrasena(
+            new RecuperacionContrasenaWebhook(
+                solicitud.IdSolicitudRecuperacion,
+                telefono,
+                entrenador.NombreUsuario,
+                entrenador.Nombre,
+                codigo,
+                solicitud.FechaExpiracion),
+            cancellationToken);
+
+        // No se guarda el código en Notificaciones. El resultado del webhook se
+        // registra en la propia solicitud mediante su estado; un fallo obliga a
+        // generar una solicitud nueva y evita reutilizar códigos no entregados.
+        if (!resultado.Entregado)
+        {
+            solicitud.Estado = "ErrorEnvio";
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+
+        return Accepted(respuestaGenerica);
+    }
+
+    /// <summary>
+    /// MÓDULO 2: verifica vencimiento, intentos y hash del código; si es válido,
+    /// reemplaza la contraseña por un hash ASP.NET y consume la solicitud.
+    /// </summary>
+    /// <returns>HTTP 204 al cambiar la contraseña; 400 para códigos inválidos o vencidos.</returns>
+    [AllowAnonymous]
+    [EnableRateLimiting("Recuperacion")]
+    [HttpPost("recuperacion/confirmar")]
+    public async Task<IActionResult> ConfirmarRecuperacion(
+        [FromBody] ConfirmarRecuperacionRequest request,
+        CancellationToken cancellationToken)
+    {
+        var nombreUsuarioNormalizado = NormalizarNombreUsuario(request.NombreUsuario);
+        var entrenador = await _context.Entrenadores.SingleOrDefaultAsync(
+            item =>
+                item.NombreUsuarioNormalizado == nombreUsuarioNormalizado &&
+                item.Estado,
+            cancellationToken);
+
+        if (entrenador is null)
+        {
+            return BadRequest(new { mensaje = "El código es inválido o venció." });
+        }
+
+        var solicitud = await _context.SolicitudesRecuperacion
+            .Where(item =>
+                item.IdEntrenador == entrenador.IdEntrenador &&
+                item.Estado == "Pendiente")
+            .OrderByDescending(item => item.FechaCreacion)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (solicitud is null || solicitud.FechaExpiracion <= DateTime.UtcNow)
+        {
+            if (solicitud is not null)
+            {
+                solicitud.Estado = "Vencida";
+                await _context.SaveChangesAsync(cancellationToken);
+            }
+
+            return BadRequest(new { mensaje = "El código es inválido o venció." });
+        }
+
+        if (solicitud.Intentos >= solicitud.MaxIntentos)
+        {
+            solicitud.Estado = "Bloqueada";
+            await _context.SaveChangesAsync(cancellationToken);
+            return BadRequest(new { mensaje = "El código es inválido o venció." });
+        }
+
+        var resultado = _recoveryHasher.VerifyHashedPassword(
+            solicitud,
+            solicitud.CodigoHash,
+            request.Codigo.Trim());
+        if (resultado == PasswordVerificationResult.Failed)
+        {
+            solicitud.Intentos++;
+            if (solicitud.Intentos >= solicitud.MaxIntentos)
+            {
+                solicitud.Estado = "Bloqueada";
+            }
+
+            await _context.SaveChangesAsync(cancellationToken);
+            return BadRequest(new { mensaje = "El código es inválido o venció." });
+        }
+
+        entrenador.ContrasenaHash = _passwordHasher.HashPassword(
+            entrenador,
+            request.NuevaContrasena);
+        entrenador.Contrasena = null;
+        solicitud.Estado = "Utilizada";
+        solicitud.FechaUso = DateTime.UtcNow;
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return NoContent();
+    }
+
+    private bool VerificarContrasena(
+        Entrenador entrenador,
+        string contrasena,
+        out bool actualizarHash)
+    {
+        actualizarHash = false;
+        if (!string.IsNullOrWhiteSpace(entrenador.ContrasenaHash))
+        {
+            var resultado = _passwordHasher.VerifyHashedPassword(
+                entrenador,
+                entrenador.ContrasenaHash,
+                contrasena);
+            actualizarHash = resultado == PasswordVerificationResult.SuccessRehashNeeded;
+            return resultado != PasswordVerificationResult.Failed;
+        }
+
+        actualizarHash = entrenador.Contrasena == contrasena;
+        return actualizarHash;
+    }
+
+    private static SesionResponse CrearRespuestaSesion(Entrenador entrenador)
+    {
+        return new SesionResponse(
+            entrenador.IdEntrenador,
+            entrenador.NombreUsuario,
+            entrenador.Nombre,
+            entrenador.Apellido,
+            string.Join(" ", new[] { entrenador.Nombre, entrenador.Apellido }
+                .Where(valor => !string.IsNullOrWhiteSpace(valor))),
+            entrenador.Rol);
+    }
+
+    private static string NormalizarNombreUsuario(string valor)
+    {
+        return valor.Trim().ToUpperInvariant();
+    }
+
+    private static string? NormalizarTelefono(string? telefono)
+    {
+        if (string.IsNullOrWhiteSpace(telefono))
+        {
+            return null;
+        }
+
+        var digitos = new string(telefono.Where(char.IsDigit).ToArray());
+        if (digitos.Length == 9 && digitos.StartsWith('0'))
+        {
+            digitos = "598" + digitos[1..];
+        }
+        else if (digitos.Length == 8)
+        {
+            digitos = "598" + digitos;
+        }
+
+        return digitos.Length == 11 && digitos.StartsWith("598", StringComparison.Ordinal)
+            ? digitos
+            : null;
+    }
+}
+
+public sealed record LoginRequest(
+    string NombreUsuario,
+    string Contrasena,
+    bool MantenerSesion = false);
+
+public sealed record SesionResponse(
+    int IdEntrenador,
+    string NombreUsuario,
+    string Nombre,
+    string Apellido,
+    string NombreCompleto,
+    string Rol);
+
+public sealed class SolicitarRecuperacionRequest
+{
+    [Required, StringLength(60, MinimumLength = 2)]
+    public string NombreUsuario { get; set; } = string.Empty;
+}
+
+public sealed class ConfirmarRecuperacionRequest
+{
+    [Required, StringLength(60, MinimumLength = 2)]
+    public string NombreUsuario { get; set; } = string.Empty;
+
+    [Required, RegularExpression("^[0-9]{6}$", ErrorMessage = "El código debe contener seis números.")]
+    public string Codigo { get; set; } = string.Empty;
+
+    [Required, StringLength(100, MinimumLength = 8)]
+    public string NuevaContrasena { get; set; } = string.Empty;
 }
