@@ -62,11 +62,22 @@ La clave `N8N_API_KEY` se configura en n8n como credencial **Header Auth** con
 el nombre `X-N8N-API-KEY`. El detalle de endpoints y workflows está en
 [`BACKEND_MODULOS.md`](BACKEND_MODULOS.md).
 
+El backend despierta el envío de rutina en el momento del alta mediante
+`N8N_ROUTINE_WEBHOOK_URL`. En Docker debe conservarse la URL interna:
+
+```text
+N8N_ROUTINE_WEBHOOK_URL=http://n8n:5678/webhook/rutina-asignada
+```
+
+El workflow con ese path debe estar publicado en n8n; la URL de prueba
+`/webhook-test/` no sirve para las altas reales.
+
 ## Actualizaciones
 
-Si el VPS ya tenía `.env`, agregá manualmente `N8N_API_KEY`, las variables
-`SMTP_*` y `RECOVERY_*` antes de recrear los contenedores; no reemplaces el
-archivo porque contiene los secretos y datos de la instalación actual.
+Si el VPS ya tenía `.env`, agregá manualmente `N8N_API_KEY`,
+`N8N_ROUTINE_WEBHOOK_URL`, las variables `SMTP_*` y `RECOVERY_*` antes de
+recrear los contenedores; no reemplaces el archivo porque contiene los secretos
+y datos de la instalación actual.
 
 ```bash
 mkdir -p /opt/fitnessclub/backups

@@ -4,15 +4,15 @@ namespace FitnessClubEvolution.Api.Services;
 
 public interface IN8nWebhookClient
 {
-    Task<N8nWebhookResult> EnviarRecuperacionContrasena(
-        RecuperacionContrasenaWebhook payload,
-        CancellationToken cancellationToken);
+    Task<N8nWebhookResult> NotificarRutinaAsignada(
+        RutinaAsignadaWebhook payload,
+        CancellationToken cancellationToken = default);
 }
 
 /// <summary>
-/// Envía eventos del backend hacia workflows iniciados por Webhook. La lógica
-/// de negocio ya fue validada antes de llegar aquí; n8n únicamente orquesta el
-/// envío por WhatsApp.
+/// Despierta el workflow de rutina apenas el backend confirma el alta o el
+/// cambio. La notificación ya quedó guardada antes de esta llamada, por lo que
+/// una caída de n8n no revierte el alta ni pierde el envío pendiente.
 /// </summary>
 public sealed class N8nWebhookClient : IN8nWebhookClient
 {
@@ -30,14 +30,17 @@ public sealed class N8nWebhookClient : IN8nWebhookClient
         _logger = logger;
     }
 
-    public async Task<N8nWebhookResult> EnviarRecuperacionContrasena(
-        RecuperacionContrasenaWebhook payload,
+    public async Task<N8nWebhookResult> NotificarRutinaAsignada(
+        RutinaAsignadaWebhook payload,
         CancellationToken cancellationToken)
     {
-        var webhookUrl = _configuration["Integrations:N8n:RecoveryWebhookUrl"];
+        var webhookUrl = _configuration["Integrations:N8n:RoutineWebhookUrl"];
         if (!Uri.TryCreate(webhookUrl, UriKind.Absolute, out var uri))
         {
-            return new(false, null, "No se configuró el webhook de recuperación de n8n.");
+            _logger.LogWarning(
+                "La rutina {NotificacionId} quedó pendiente porque no se configuró Integrations:N8n:RoutineWebhookUrl.",
+                payload.IdNotificacion);
+            return new(false, null, "No se configuró el webhook de rutina de n8n.");
         }
 
         try
@@ -61,8 +64,8 @@ public sealed class N8nWebhookClient : IN8nWebhookClient
 
             var error = $"n8n respondió HTTP {(int)response.StatusCode}.";
             _logger.LogWarning(
-                "No se pudo entregar la solicitud {SolicitudId} a n8n: {Error}",
-                payload.IdSolicitud,
+                "La rutina {NotificacionId} quedó pendiente: {Error}",
+                payload.IdNotificacion,
                 error);
             return new(false, (int)response.StatusCode, error);
         }
@@ -74,21 +77,20 @@ public sealed class N8nWebhookClient : IN8nWebhookClient
         {
             _logger.LogWarning(
                 exception,
-                "No se pudo conectar con n8n para la solicitud {SolicitudId}.",
-                payload.IdSolicitud);
+                "No se pudo despertar n8n para la rutina {NotificacionId}; permanece pendiente.",
+                payload.IdNotificacion);
             return new(false, null, "No fue posible conectar con n8n.");
         }
     }
 }
 
-public sealed record RecuperacionContrasenaWebhook(
-    long IdSolicitud,
+public sealed record RutinaAsignadaWebhook(
+    int IdNotificacion,
+    int IdCliente,
     string Telefono,
-    string NombreUsuario,
-    string Nombre,
-    string Codigo,
-    DateTime FechaExpiracionUtc,
-    string Idioma = "es_UY");
+    string NombreCliente,
+    string IdRutinaEsperada,
+    string Tipo = "RutinaAsignada");
 
 public sealed record N8nWebhookResult(
     bool Entregado,

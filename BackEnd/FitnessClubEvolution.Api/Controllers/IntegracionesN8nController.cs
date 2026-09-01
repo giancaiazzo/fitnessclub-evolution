@@ -25,10 +25,14 @@ public class IntegracionesN8nController : ControllerBase
 {
     private const string PagoConfirmado = "Confirmado";
     private readonly AppDbContext _context;
+    private readonly IN8nWebhookClient _n8nWebhookClient;
 
-    public IntegracionesN8nController(AppDbContext context)
+    public IntegracionesN8nController(
+        AppDbContext context,
+        IN8nWebhookClient n8nWebhookClient)
     {
         _context = context;
+        _n8nWebhookClient = n8nWebhookClient;
     }
 
     /// <summary>
@@ -400,6 +404,9 @@ public class IntegracionesN8nController : ControllerBase
         var actualizadas = await _context.Notificaciones
             .Where(notificacion =>
                 notificacion.IdNotificacion == idNotificacion &&
+                notificacion.Cliente.Estado &&
+                notificacion.Cliente.AceptaWhatsApp &&
+                notificacion.Cliente.FechaBajaWhatsApp == null &&
                 (notificacion.Estado == "Pendiente" ||
                  notificacion.Estado == "Reservada" ||
                  notificacion.Estado == "Fallida" ||
@@ -517,9 +524,10 @@ public class IntegracionesN8nController : ControllerBase
         cliente.FechaConsentimientoWhatsApp = request.Acepta ? ahora : cliente.FechaConsentimientoWhatsApp;
         cliente.FechaBajaWhatsApp = request.Acepta ? null : ahora;
 
+        Notificacion? notificacionRutina = null;
         if (consentimientoActivado)
         {
-            _context.Notificaciones.Add(new Notificacion
+            notificacionRutina = new Notificacion
             {
                 IdCliente = cliente.IdCliente,
                 Tipo = "RutinaAsignada",
@@ -531,10 +539,23 @@ public class IntegracionesN8nController : ControllerBase
                 ClaveIdempotencia =
                     $"rutina:{cliente.IdCliente}:{cliente.IdRutina}:consentimiento:{ahora:yyyyMMddHHmmssfff}",
                 FechaCreacion = ahora
-            });
+            };
+            _context.Notificaciones.Add(notificacionRutina);
         }
 
         await _context.SaveChangesAsync(cancellationToken);
+
+        if (notificacionRutina is not null)
+        {
+            await _n8nWebhookClient.NotificarRutinaAsignada(
+                new RutinaAsignadaWebhook(
+                    notificacionRutina.IdNotificacion,
+                    cliente.IdCliente,
+                    cliente.Telefono,
+                    $"{cliente.Nombre} {cliente.Apellido}".Trim(),
+                    notificacionRutina.Referencia ?? cliente.IdRutina.ToString()),
+                CancellationToken.None);
+        }
 
         return Ok(new ActualizarConsentimientoWhatsappResponse
         {

@@ -96,8 +96,13 @@ correo real con su cuenta sin guardar esas direcciones en Git.
    → Switch registrado/activo → IA con límites o respuestas públicas → informar resultado.
 2. **Cobranzas:** Schedule diario → reservar vencimientos a 3 días → tomar cada
    notificación → plantilla aprobada → informar resultado.
-3. **Rutina asignada:** Schedule/Webhook → notificaciones pendientes tipo
-   `RutinaAsignada` → tomar → descargar PDF → enviar por Meta → informar resultado.
+3. **Rutina asignada:** el alta o cambio de rutina guarda primero una
+   notificación `RutinaAsignada` y despierta inmediatamente el Webhook
+   `POST /webhook/rutina-asignada` de n8n. El workflow toma esa notificación de
+   forma atómica → valida que siga siendo la rutina actual → descarga el PDF →
+   envía la plantilla Utility con encabezado de documento → informa resultado.
+   Un Schedule lento puede consultar `notificaciones/pendientes` únicamente
+   como recuperación ante una caída; no es el disparador normal del envío.
    La publicación de Instagram pertenece a la rama SuperAdmin del Router y exige
    una confirmación explícita antes de llamar a Graph API.
 

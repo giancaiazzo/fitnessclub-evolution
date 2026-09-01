@@ -15,10 +15,14 @@ namespace FitnessClubEvolution.Api.Controllers;
 public class ClientesController : ControllerBase
 {
     private readonly AppDbContext _context;
+    private readonly IN8nWebhookClient _n8nWebhookClient;
 
-    public ClientesController(AppDbContext context)
+    public ClientesController(
+        AppDbContext context,
+        IN8nWebhookClient n8nWebhookClient)
     {
         _context = context;
+        _n8nWebhookClient = n8nWebhookClient;
     }
 
     /// <summary>
@@ -195,20 +199,23 @@ public class ClientesController : ControllerBase
 
         await using var transaccion = await _context.Database
             .BeginTransactionAsync(cancellationToken);
+        Notificacion? notificacionRutina = null;
 
         _context.Clientes.Add(cliente);
         await _context.SaveChangesAsync(cancellationToken);
 
         if (cliente.AceptaWhatsApp)
         {
-            _context.Notificaciones.Add(CrearNotificacionRutina(
+            notificacionRutina = CrearNotificacionRutina(
                 cliente,
                 rutina,
-                $"rutina:{cliente.IdCliente}:{rutina.IdRutina}:alta"));
+                $"rutina:{cliente.IdCliente}:{rutina.IdRutina}:alta");
+            _context.Notificaciones.Add(notificacionRutina);
             await _context.SaveChangesAsync(cancellationToken);
         }
 
         await transaccion.CommitAsync(cancellationToken);
+        await DespertarEnvioRutina(notificacionRutina, cliente);
 
         var respuesta = MapearCliente(cliente);
         return CreatedAtAction(nameof(ObtenerClientePorId), new { id = cliente.IdCliente }, respuesta);
@@ -290,16 +297,19 @@ public class ClientesController : ControllerBase
         cliente.IdRutina = rutina.IdRutina;
         cliente.Rutina = rutina;
 
+        Notificacion? notificacionRutina = null;
         if ((rutinaAnterior != rutina.IdRutina || consentimientoActivado) &&
             cliente.AceptaWhatsApp)
         {
-            _context.Notificaciones.Add(CrearNotificacionRutina(
+            notificacionRutina = CrearNotificacionRutina(
                 cliente,
                 rutina,
-                $"rutina:{cliente.IdCliente}:{rutina.IdRutina}:{ahora:yyyyMMddHHmmssfff}"));
+                $"rutina:{cliente.IdCliente}:{rutina.IdRutina}:{ahora:yyyyMMddHHmmssfff}");
+            _context.Notificaciones.Add(notificacionRutina);
         }
 
         await _context.SaveChangesAsync(cancellationToken);
+        await DespertarEnvioRutina(notificacionRutina, cliente);
         return Ok(MapearCliente(cliente));
     }
 
@@ -523,6 +533,25 @@ public class ClientesController : ControllerBase
             ClaveIdempotencia = claveIdempotencia,
             FechaCreacion = ahora
         };
+    }
+
+    private async Task DespertarEnvioRutina(
+        Notificacion? notificacion,
+        Cliente cliente)
+    {
+        if (notificacion is null)
+        {
+            return;
+        }
+
+        await _n8nWebhookClient.NotificarRutinaAsignada(
+            new RutinaAsignadaWebhook(
+                notificacion.IdNotificacion,
+                cliente.IdCliente,
+                cliente.Telefono,
+                $"{cliente.Nombre} {cliente.Apellido}".Trim(),
+                notificacion.Referencia ?? cliente.IdRutina.ToString()),
+            CancellationToken.None);
     }
 
     private static EstadoPagoClienteResponse CrearEstadoPago(

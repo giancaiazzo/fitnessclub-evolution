@@ -19,6 +19,12 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<IPasswordHasher<Entrenador>, PasswordHasher<Entrenador>>();
 builder.Services.AddScoped<IPasswordHasher<SolicitudRecuperacion>, PasswordHasher<SolicitudRecuperacion>>();
 builder.Services.AddScoped<IRecoveryEmailSender, SmtpRecoveryEmailSender>();
+builder.Services.AddHttpClient<IN8nWebhookClient, N8nWebhookClient>(client =>
+{
+    // El alta ya está confirmada en PostgreSQL. Este llamado solo despierta
+    // n8n y nunca debe dejar al usuario esperando indefinidamente.
+    client.Timeout = TimeSpan.FromSeconds(5);
+});
 
 // Los límites frenan fuerza bruta y abuso de códigos sin afectar los CRUD del
 // panel. En producción puede reemplazarse el almacén en memoria por uno
