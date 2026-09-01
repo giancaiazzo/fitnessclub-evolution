@@ -49,7 +49,7 @@ oficial de ASP.NET Core y pone el campo de texto plano en `NULL`.
 | Método | Consulta/acción | Devuelve |
 |---|---|---|
 | `POST /api/auth/login` | Usuario normalizado + hash; crea cookie | Sesión sin contraseña/hash |
-| `POST /api/auth/recuperacion/solicitar` | Cuenta activa y teléfono; guarda código con hash | 202 genérico y dispara webhook de n8n |
+| `POST /api/auth/recuperacion/solicitar` | Cuenta activa y correo; guarda código con hash | 202 genérico y envía el código por SMTP |
 | `POST /api/auth/recuperacion/confirmar` | Vencimiento, intentos y hash del código | 204 al cambiar la clave |
 | `POST /api/clientes` | Rutina y documento único | Cliente creado y evento de rutina si consintió |
 | `PUT /api/clientes/{id}` | Actualiza ficha, rutina y consentimiento | Cliente actualizado y posible evento idempotente |
@@ -82,42 +82,42 @@ Todos estos endpoints exigen `X-N8N-API-KEY`:
 2. En cada nodo **HTTP Request** de n8n agregar el header
    `X-N8N-API-KEY: <valor de N8N_API_KEY>` mediante una credencial de tipo Header
    Auth. No escribir el valor directamente dentro del workflow exportado.
-3. En el Webhook `recuperacion-contrasena`, exigir el mismo header y responder
-   rápidamente con 2xx después de validar el payload.
-4. Guardar los tokens de Meta y la clave del proveedor de IA en **Credentials**
+3. Guardar los tokens de Meta y la clave del proveedor de IA en **Credentials**
    de n8n. No deben estar en nodos Code, Git, variables del frontend ni logs.
-5. Para el workflow de recuperación, desactivar el guardado de datos de
-   ejecuciones exitosas, porque el payload contiene un código temporal.
 
-## Contrato sugerido de los cinco workflows
+La recuperación administrativa ya no pasa por n8n ni Meta. El backend la envía
+por SMTP usando las variables `SMTP_*` del VPS. Los pares
+`RECOVERY_RODRIGO_*` y `RECOVERY_PAOLA_*` vinculan, al iniciar el backend, cada
+correo real con su cuenta sin guardar esas direcciones en Git.
+
+## Contrato de los workflows de n8n
 
 1. **Router entrante:** WhatsApp Trigger → reservar ID Meta → consultar teléfono
    → Switch registrado/activo → IA con límites o respuestas públicas → informar resultado.
-2. **Recuperación:** Webhook del backend → plantilla de autenticación de Meta.
-3. **Cobranzas:** Schedule diario → reservar vencimientos a 3 días → tomar cada
+2. **Cobranzas:** Schedule diario → reservar vencimientos a 3 días → tomar cada
    notificación → plantilla aprobada → informar resultado.
-4. **Rutina asignada:** Schedule/Webhook → notificaciones pendientes tipo
+3. **Rutina asignada:** Schedule/Webhook → notificaciones pendientes tipo
    `RutinaAsignada` → tomar → descargar PDF → enviar por Meta → informar resultado.
-5. **Publicación de la dueña:** WhatsApp Trigger → verificar número autorizado
-   → confirmación explícita → Graph API de Instagram. Este flujo no debe dar
-   acceso de publicación a un cliente común.
+   La publicación de Instagram pertenece a la rama SuperAdmin del Router y exige
+   una confirmación explícita antes de llamar a Graph API.
 
 El modelo de IA no decide si una persona está autorizada. El Switch debe usar
 `permiteDatosPrivados` entregado por el backend antes de ejecutar el nodo de IA.
 
 ## Crear las cuentas solicitadas sin guardar claves en Git
 
-`POST /api/entrenadores` permite crear **PaoMu** y **RodrigoGue** con hash. Se
-necesita el teléfono real de WhatsApp de cada persona para la recuperación; por
-eso no se insertan cuentas incompletas ni contraseñas en una migración. Después
-del despliegue, iniciar sesión como administrador, conservar la cookie y ejecutar
-el alta desde HTTPS/Postman. Ejemplo de cuerpo:
+`POST /api/entrenadores` permite crear **PaoMu** y **RodrigoGue** con hash. Cada
+cuenta necesita un correo único para recuperar la contraseña. No se insertan
+direcciones ni contraseñas reales en una migración. Después del despliegue,
+iniciar sesión como administrador, conservar la cookie y ejecutar el alta desde
+HTTPS/Postman. Ejemplo de cuerpo:
 
 ```json
 {
   "nombre": "Paola",
   "apellido": "Muse",
   "telefono": "598XXXXXXXX",
+  "correoElectronico": "CORREO_REAL_DE_PAOLA",
   "nombreUsuario": "PaoMu",
   "contrasena": "INGRESAR_EN_POSTMAN_NO_EN_GIT",
   "rol": "Administrador"
@@ -153,4 +153,4 @@ docker compose exec -T postgres psql -U fitnessclub -d fitnessclub_db \
 
 Antes del primer envío real, usar el número de prueba de Meta y confirmar:
 deduplicación, visitante no registrado, cliente activo, baja de consentimiento,
-cuota a tres días, rutina PDF y recuperación vencida/incorrecta.
+cuota a tres días, rutina PDF y recuperación por correo vencida/incorrecta.

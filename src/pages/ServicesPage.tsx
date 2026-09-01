@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Layout from "../layouts/Layout";
 import heroGymImage from "../MOD1-CLIENTES/assets/hero-gym.webp";
-import { classes, routines, siteData } from "../MOD1-CLIENTES/data/siteData";
+import { routines, siteData } from "../MOD1-CLIENTES/data/siteData";
 import {
   apiFetch,
   apiUrl,
@@ -19,12 +19,6 @@ const sectionShortcuts = [
     label: "Servicios",
     detail: "Todo lo disponible para acompañar tu proceso",
     icon: "ri-service-line",
-  },
-  {
-    id: "entrenamientos",
-    label: "Entrenamientos",
-    detail: "Opciones para distintos objetivos y niveles",
-    icon: "ri-run-line",
   },
   {
     id: "rutinas",
@@ -90,8 +84,8 @@ export default function ServicesPage() {
 
   return (
     <Layout
-      title={`Servicios y entrenamientos - ${siteData.name}`}
-      description="Conocé los servicios, entrenamientos y rutinas disponibles en FitnessClubEvolution"
+      title={`Servicios y rutinas - ${siteData.name}`}
+      description="Conocé los servicios y rutinas disponibles en FitnessClubEvolution"
     >
       <section className="relative overflow-hidden bg-gradient-to-br from-background via-card to-background pb-16 pt-28 sm:pb-20 sm:pt-32">
         <div className="background-dot-grid background-dot-grid--catalog pointer-events-none absolute inset-0 opacity-[0.08]" />
@@ -108,8 +102,8 @@ export default function ServicesPage() {
             </h1>
 
             <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl lg:mx-0">
-              Conocé los servicios del gimnasio, las modalidades de entrenamiento
-              y ejemplos de rutinas que pueden ajustarse a tu nivel y tus objetivos.
+              Conocé los servicios que publica el gimnasio y ejemplos de rutinas
+              que pueden ajustarse a tu nivel y tus objetivos.
             </p>
 
             <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row lg:justify-start">
@@ -146,7 +140,7 @@ export default function ServicesPage() {
               <div className="absolute inset-0 rounded-3xl bg-gradient-to-t from-background/80 via-transparent to-transparent" />
             </div>
 
-            <div className="absolute inset-x-3 bottom-3 grid grid-cols-3 gap-2 rounded-2xl border border-white/10 bg-background/85 p-3 backdrop-blur sm:inset-x-6 sm:bottom-6 sm:gap-4 sm:p-4">
+            <div className="absolute inset-x-3 bottom-3 grid grid-cols-2 gap-2 rounded-2xl border border-white/10 bg-background/85 p-3 backdrop-blur sm:inset-x-6 sm:bottom-6 sm:gap-4 sm:p-4">
               <div className="text-center">
                 <strong className="block text-xl font-black text-primary sm:text-2xl">
                   {cargandoServicios ? "—" : servicios.length}
@@ -155,15 +149,7 @@ export default function ServicesPage() {
                   servicios
                 </span>
               </div>
-              <div className="border-x border-border text-center">
-                <strong className="block text-xl font-black text-primary sm:text-2xl">
-                  {classes.length}
-                </strong>
-                <span className="text-[0.68rem] text-muted-foreground sm:text-sm">
-                  entrenamientos
-                </span>
-              </div>
-              <div className="text-center">
+              <div className="border-l border-border text-center">
                 <strong className="block text-xl font-black text-primary sm:text-2xl">
                   {routines.length}
                 </strong>
@@ -177,7 +163,7 @@ export default function ServicesPage() {
       </section>
 
       <section className="border-y border-border bg-card py-8 sm:py-10">
-        <div className="mx-auto grid max-w-7xl gap-3 px-4 sm:grid-cols-3 sm:px-6 lg:gap-5 lg:px-8">
+        <div className="mx-auto grid max-w-5xl gap-3 px-4 sm:grid-cols-2 sm:px-6 lg:gap-5 lg:px-8">
           {sectionShortcuts.map((shortcut) => (
             <button
               key={shortcut.id}
@@ -246,83 +232,7 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      <section id="entrenamientos" className="scroll-mt-24 bg-card py-16 sm:py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mx-auto mb-10 max-w-3xl text-center sm:mb-14">
-            <span className="font-bold uppercase tracking-[0.2em] text-primary">
-              Entrenamientos
-            </span>
-            <h2 className="mt-3 text-3xl font-black text-foreground sm:text-4xl lg:text-5xl">
-              Opciones para moverte, progresar y disfrutar
-            </h2>
-            <p className="mt-4 text-lg text-muted-foreground">
-              Elegí la modalidad que más se acerque a tus objetivos. El equipo puede
-              orientarte para comenzar por la alternativa adecuada.
-            </p>
-          </div>
-
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {classes.map((training, index) => (
-              <article
-                key={training.name}
-                className={`group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-background transition hover:-translate-y-1 hover:border-primary hover:shadow-xl hover:shadow-primary/10 ${
-                  index === classes.length - 1
-                    ? "sm:col-span-2 lg:col-span-1"
-                    : ""
-                }`}
-              >
-                <div className="relative aspect-[16/10] overflow-hidden bg-secondary">
-                  <img
-                    src={training.image}
-                    alt={`Entrenamiento de ${training.name}`}
-                    width={1200}
-                    height={800}
-                    className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                  <span className="absolute right-3 top-3 rounded-full bg-background/90 px-3 py-1.5 text-xs font-bold text-primary backdrop-blur">
-                    {training.difficulty}
-                  </span>
-                </div>
-
-                <div className="flex flex-1 flex-col p-5 sm:p-6">
-                  <div className="flex items-start justify-between gap-3">
-                    <h3 className="text-2xl font-bold text-foreground">
-                      {training.name}
-                    </h3>
-                    <span className="flex shrink-0 items-center gap-1 text-sm text-muted-foreground">
-                      <i className="ri-time-line text-primary" aria-hidden="true" />
-                      {training.duration}
-                    </span>
-                  </div>
-
-                  <p className="mt-3 flex-1 leading-relaxed text-muted-foreground">
-                    {training.description}
-                  </p>
-
-                  <div className="mt-5 flex items-center gap-2 border-t border-border pt-4 text-sm text-muted-foreground">
-                    <i className="ri-user-star-line text-primary" aria-hidden="true" />
-                    <span>{training.trainer}</span>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
-
-          <div className="mt-10 text-center">
-            <Link
-              to="/classes"
-              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 font-bold text-primary-foreground transition hover:bg-[#b8ef45]"
-            >
-              Ver detalles y horarios
-              <i className="ri-arrow-right-line" aria-hidden="true" />
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      <section id="rutinas" className="scroll-mt-24 bg-background py-16 sm:py-20">
+      <section id="rutinas" className="scroll-mt-24 bg-card py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto mb-10 max-w-3xl text-center sm:mb-14">
             <span className="font-bold uppercase tracking-[0.2em] text-primary">
@@ -413,8 +323,8 @@ export default function ServicesPage() {
             ¿No sabés por dónde empezar?
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-primary-foreground/85">
-            Contanos qué querés lograr y el equipo te orientará sobre los servicios,
-            entrenamientos y rutinas disponibles.
+            Contanos qué querés lograr y el equipo te orientará sobre los servicios
+            y las rutinas disponibles.
           </p>
           <Link
             to="/contact"

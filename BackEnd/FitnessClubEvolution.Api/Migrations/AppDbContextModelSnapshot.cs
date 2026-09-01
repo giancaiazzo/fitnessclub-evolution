@@ -229,6 +229,14 @@ namespace FitnessClubEvolution.Api.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
+                    b.Property<string>("CorreoElectronico")
+                        .HasMaxLength(254)
+                        .HasColumnType("character varying(254)");
+
+                    b.Property<string>("CorreoElectronicoNormalizado")
+                        .HasMaxLength(254)
+                        .HasColumnType("character varying(254)");
+
                     b.Property<bool>("Estado")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -268,6 +276,10 @@ namespace FitnessClubEvolution.Api.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("IdEntrenador");
+
+                    b.HasIndex("CorreoElectronicoNormalizado")
+                        .IsUnique()
+                        .HasFilter("\"CorreoElectronicoNormalizado\" IS NOT NULL");
 
                     b.HasIndex("NombreUsuarioNormalizado")
                         .IsUnique();

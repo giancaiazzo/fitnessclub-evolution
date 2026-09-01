@@ -7,6 +7,7 @@ import ContactPage from "./pages/ContactPage";
 import PricingPage from "./pages/PricingPage";
 import ServicesPage from "./pages/ServicesPage";
 import SignIn from "./MOD2-GESTION/pages/auth/SignIn";
+import PasswordRecovery from "./MOD2-GESTION/pages/auth/PasswordRecovery";
 import GestionDashboard from "./MOD2-GESTION/pages/dashboard/GestionDashboard";
 import IngresarClientePage from "./MOD2-GESTION/pages/clientes/IngresarClientePage";
 import ListadoClientesPage from "./MOD2-GESTION/pages/clientes/ListadoClientesPage";
@@ -37,6 +38,7 @@ function App() {
         <Route path="/calc-imc" element={<CalcIMC />} />
         <Route path="/tour-virtual" element={<TourVirtual />} />
         <Route path="/SignIn" element={<SignIn />} />
+        <Route path="/recuperar-contrasena" element={<PasswordRecovery />} />
 
         <Route
           path="/gestion"

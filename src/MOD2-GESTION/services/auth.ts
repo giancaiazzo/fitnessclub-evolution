@@ -12,6 +12,12 @@ export type Credenciales = {
   mantenerSesion: boolean;
 };
 
+export type ConfirmarRecuperacion = {
+  correoElectronico: string;
+  codigo: string;
+  nuevaContrasena: string;
+};
+
 const apiConfigurada = import.meta.env.VITE_API_URL?.trim();
 const API_URL = (apiConfigurada || "/api").replace(/\/$/, "");
 
@@ -21,6 +27,23 @@ async function leerError(response: Response) {
     return body.mensaje;
   } catch {
     return undefined;
+  }
+}
+
+async function enviarJson(ruta: string, body: object): Promise<Response> {
+  try {
+    return await fetch(`${API_URL}/${ruta}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(body),
+    });
+  } catch {
+    throw new Error(
+      "No se pudo conectar con la API. Verifica que el backend esté ejecutándose.",
+    );
   }
 }
 
@@ -80,5 +103,35 @@ export async function cerrarSesion(): Promise<void> {
     });
   } catch {
     // La sesión también se elimina del estado local si la API no está disponible.
+  }
+}
+
+export async function solicitarRecuperacion(
+  correoElectronico: string,
+): Promise<string> {
+  const response = await enviarJson("auth/recuperacion/solicitar", {
+    correoElectronico,
+  });
+
+  if (!response.ok) {
+    const mensaje = await leerError(response);
+    throw new Error(mensaje || "No fue posible solicitar la recuperación.");
+  }
+
+  const body = (await response.json()) as { mensaje?: string };
+  return (
+    body.mensaje ||
+    "Si el correo está asociado a una cuenta activa, recibirás un código para continuar."
+  );
+}
+
+export async function confirmarRecuperacion(
+  datos: ConfirmarRecuperacion,
+): Promise<void> {
+  const response = await enviarJson("auth/recuperacion/confirmar", datos);
+
+  if (!response.ok) {
+    const mensaje = await leerError(response);
+    throw new Error(mensaje || "El código es inválido o venció.");
   }
 }

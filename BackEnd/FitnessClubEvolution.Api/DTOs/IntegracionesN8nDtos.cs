@@ -23,15 +23,7 @@ public sealed class ReservarMensajeWhatsappResponse
     public bool Duplicado { get; set; }
     public long? IdMensajeWhatsapp { get; set; }
     public int? IdCliente { get; set; }
-    public int? IdEntrenador { get; set; }
     public string TelefonoNormalizado { get; set; } = string.Empty;
-    public string? TipoAcceso { get; set; }
-    public string? Nombre { get; set; }
-    public string? Apellido { get; set; }
-    public string? EstadoCliente { get; set; }
-    public bool AceptaWhatsApp { get; set; }
-    public EstadoCuotaBotResponse? Cuota { get; set; }
-    public RutinaBotResponse? Rutina { get; set; }
 }
 
 public sealed class ResultadoMensajeWhatsappRequest

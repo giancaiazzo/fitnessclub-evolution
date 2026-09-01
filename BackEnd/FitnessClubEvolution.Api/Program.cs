@@ -18,10 +18,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<IPasswordHasher<Entrenador>, PasswordHasher<Entrenador>>();
 builder.Services.AddScoped<IPasswordHasher<SolicitudRecuperacion>, PasswordHasher<SolicitudRecuperacion>>();
-builder.Services.AddHttpClient<IN8nWebhookClient, N8nWebhookClient>(client =>
-{
-    client.Timeout = TimeSpan.FromSeconds(10);
-});
+builder.Services.AddScoped<IRecoveryEmailSender, SmtpRecoveryEmailSender>();
 
 // Los límites frenan fuerza bruta y abuso de códigos sin afectar los CRUD del
 // panel. En producción puede reemplazarse el almacén en memoria por uno
@@ -116,6 +113,17 @@ if (builder.Configuration.GetValue("Database:ApplyMigrations", false))
         app.Logger.LogInformation(
             "Se migraron {Cantidad} credenciales históricas a hash.",
             credencialesMigradas);
+    }
+
+    var correosVinculados = await RecoveryAccountEmailSync.Ejecutar(
+        dbContext,
+        builder.Configuration,
+        app.Logger);
+    if (correosVinculados > 0)
+    {
+        app.Logger.LogInformation(
+            "Se vincularon {Cantidad} correos de recuperación administrativa.",
+            correosVinculados);
     }
 }
 

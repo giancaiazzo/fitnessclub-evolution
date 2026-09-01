@@ -27,6 +27,12 @@ openssl rand -hex 32
 
 No completes `VITE_API_URL`: dentro del VPS el frontend utiliza `/api`.
 
+Para habilitar la recuperación de contraseña completá también `SMTP_HOST`,
+`SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_FROM_ADDRESS` y los dos
+correos `RECOVERY_*_EMAIL`. Usá credenciales SMTP o una contraseña de aplicación,
+nunca la contraseña personal de la casilla. Si los usuarios no se llaman
+`RodrigoGue` y `PaoMu`, ajustá también `RECOVERY_*_USERNAME`.
+
 Validá la configuración y levantá los servicios:
 
 ```bash
@@ -58,9 +64,9 @@ el nombre `X-N8N-API-KEY`. El detalle de endpoints y workflows está en
 
 ## Actualizaciones
 
-Si el VPS ya tenía `.env`, agregá `N8N_API_KEY` manualmente antes de recrear
-los contenedores; no reemplaces el archivo porque contiene los secretos y datos
-de la instalación actual.
+Si el VPS ya tenía `.env`, agregá manualmente `N8N_API_KEY`, las variables
+`SMTP_*` y `RECOVERY_*` antes de recrear los contenedores; no reemplaces el
+archivo porque contiene los secretos y datos de la instalación actual.
 
 ```bash
 mkdir -p /opt/fitnessclub/backups

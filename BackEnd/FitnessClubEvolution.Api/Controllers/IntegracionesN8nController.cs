@@ -24,7 +24,6 @@ namespace FitnessClubEvolution.Api.Controllers;
 public class IntegracionesN8nController : ControllerBase
 {
     private const string PagoConfirmado = "Confirmado";
-    private const string RolAdministrador = "Administrador";
     private readonly AppDbContext _context;
 
     public IntegracionesN8nController(AppDbContext context)
@@ -128,10 +127,9 @@ public class IntegracionesN8nController : ControllerBase
     }
 
     /// <summary>
-    /// Reserva un mensaje entrante usando el ID único entregado por Meta y, en
-    /// la misma operación, clasifica al remitente como Visitante, Cliente,
-    /// SuperAdmin o SinAcceso. La primera ejecución recibe Procesar=true;
-    /// cualquier reintento posterior recibe Duplicado=true y debe finalizar.
+    /// Reserva un mensaje entrante usando el ID único entregado por Meta. La
+    /// primera ejecución recibe Procesar=true; cualquier reintento posterior
+    /// recibe Duplicado=true y debe finalizar sin responder otra vez.
     /// </summary>
     [HttpPost("mensajes/reservar")]
     public async Task<ActionResult<ReservarMensajeWhatsappResponse>> ReservarMensaje(
@@ -167,9 +165,12 @@ public class IntegracionesN8nController : ControllerBase
             });
         }
 
-        var perfilAcceso = await ResolverAccesoMensaje(
-            telefonoNormalizado,
-            cancellationToken);
+        var idsCliente = await _context.Clientes
+            .AsNoTracking()
+            .Where(cliente => cliente.Telefono == telefonoNormalizado)
+            .Select(cliente => cliente.IdCliente)
+            .Take(2)
+            .ToListAsync(cancellationToken);
 
         var mensaje = new MensajeWhatsapp
         {
@@ -180,7 +181,7 @@ public class IntegracionesN8nController : ControllerBase
             Resumen = Limpiar(request.Resumen),
             EstadoProcesamiento = "Reservado",
             FechaRecepcion = DateTime.UtcNow,
-            IdCliente = perfilAcceso.IdCliente
+            IdCliente = idsCliente.Count == 1 ? idsCliente[0] : null
         };
 
         _context.MensajesWhatsapp.Add(mensaje);
@@ -210,16 +211,8 @@ public class IntegracionesN8nController : ControllerBase
             Procesar = true,
             Duplicado = false,
             IdMensajeWhatsapp = mensaje.IdMensajeWhatsapp,
-            IdCliente = perfilAcceso.IdCliente,
-            IdEntrenador = perfilAcceso.IdEntrenador,
-            TelefonoNormalizado = telefonoNormalizado,
-            TipoAcceso = perfilAcceso.TipoAcceso,
-            Nombre = perfilAcceso.Nombre,
-            Apellido = perfilAcceso.Apellido,
-            EstadoCliente = perfilAcceso.EstadoCliente,
-            AceptaWhatsApp = perfilAcceso.AceptaWhatsApp,
-            Cuota = perfilAcceso.Cuota,
-            Rutina = perfilAcceso.Rutina
+            IdCliente = mensaje.IdCliente,
+            TelefonoNormalizado = telefonoNormalizado
         });
     }
 
@@ -613,136 +606,6 @@ public class IntegracionesN8nController : ControllerBase
             Path.GetFileName(archivo.NombreArchivoPdf));
     }
 
-    /// <summary>
-    /// Resuelve en una sola consulta lógica el acceso del remitente. Los
-    /// administradores activos tienen prioridad incluso si también figuran
-    /// como clientes. Los teléfonos ambiguos nunca reciben datos privados.
-    /// </summary>
-    private async Task<PerfilAccesoMensaje> ResolverAccesoMensaje(
-        string telefonoNormalizado,
-        CancellationToken cancellationToken)
-    {
-        var administradores = await _context.Entrenadores
-            .AsNoTracking()
-            .Where(entrenador =>
-                entrenador.Telefono == telefonoNormalizado &&
-                entrenador.Estado &&
-                entrenador.Rol == RolAdministrador)
-            .Select(entrenador => new
-            {
-                entrenador.IdEntrenador,
-                entrenador.Nombre,
-                entrenador.Apellido
-            })
-            .Take(2)
-            .ToListAsync(cancellationToken);
-
-        var clientes = await _context.Clientes
-            .AsNoTracking()
-            .Include(cliente => cliente.Rutina)
-            .Where(cliente => cliente.Telefono == telefonoNormalizado)
-            .OrderByDescending(cliente => cliente.Estado)
-            .Take(2)
-            .ToListAsync(cancellationToken);
-
-        var idCliente = clientes.Count == 1
-            ? clientes[0].IdCliente
-            : (int?)null;
-
-        if (administradores.Count > 1)
-        {
-            return new PerfilAccesoMensaje(
-                "SinAcceso",
-                IdCliente: idCliente,
-                EstadoCliente: "Ambiguo");
-        }
-
-        if (administradores.Count == 1)
-        {
-            var administrador = administradores[0];
-            return new PerfilAccesoMensaje(
-                "SuperAdmin",
-                IdCliente: idCliente,
-                IdEntrenador: administrador.IdEntrenador,
-                Nombre: administrador.Nombre,
-                Apellido: administrador.Apellido);
-        }
-
-        if (clientes.Count == 0)
-        {
-            return new PerfilAccesoMensaje("Visitante");
-        }
-
-        if (clientes.Count > 1)
-        {
-            return new PerfilAccesoMensaje(
-                "SinAcceso",
-                EstadoCliente: "Ambiguo");
-        }
-
-        var cliente = clientes[0];
-        var ultimaCuota = await _context.Cuotas
-            .AsNoTracking()
-            .Where(cuota =>
-                cuota.IdCliente == cliente.IdCliente &&
-                cuota.EstadoPago == PagoConfirmado)
-            .OrderByDescending(cuota => cuota.FechaVencimiento)
-            .ThenByDescending(cuota => cuota.FechaPago)
-            .Select(cuota => new
-            {
-                cuota.FechaInicio,
-                cuota.FechaVencimiento
-            })
-            .FirstOrDefaultAsync(cancellationToken);
-
-        var estadoCuota = CrearEstadoCuota(
-            cliente.FechaRegistro,
-            ultimaCuota?.FechaInicio,
-            ultimaCuota?.FechaVencimiento);
-        var estadoCliente = !cliente.Estado
-            ? "Inactivo"
-            : estadoCuota.DiasVencido > 0
-                ? "Vencido"
-                : "Activo";
-
-        if (estadoCliente != "Activo")
-        {
-            return new PerfilAccesoMensaje(
-                "SinAcceso",
-                IdCliente: cliente.IdCliente,
-                Nombre: cliente.Nombre,
-                Apellido: cliente.Apellido,
-                EstadoCliente: estadoCliente,
-                Cuota: estadoCuota);
-        }
-
-        RutinaBotResponse? rutina = null;
-        if (cliente.Rutina is not null)
-        {
-            rutina = new RutinaBotResponse
-            {
-                IdRutina = cliente.Rutina.IdRutina,
-                Nombre = cliente.Rutina.Nombre,
-                NombreArchivoPdf = cliente.Rutina.NombreArchivoPdf,
-                CantidadPaginas = cliente.Rutina.CantidadPaginas,
-                TamanoBytes = cliente.Rutina.TamanoBytes,
-                PdfEndpoint =
-                    $"/api/integraciones/n8n/clientes/{cliente.IdCliente}/rutina/pdf"
-            };
-        }
-
-        return new PerfilAccesoMensaje(
-            "Cliente",
-            IdCliente: cliente.IdCliente,
-            Nombre: cliente.Nombre,
-            Apellido: cliente.Apellido,
-            EstadoCliente: estadoCliente,
-            AceptaWhatsApp:
-                cliente.AceptaWhatsApp && cliente.FechaBajaWhatsApp is null,
-            Cuota: estadoCuota,
-            Rutina: rutina);
-    }
-
     private async Task<List<CandidatoCobranza>> ObtenerCandidatosCobranza(
         int dias,
         CancellationToken cancellationToken)
@@ -876,15 +739,4 @@ public class IntegracionesN8nController : ControllerBase
         string Telefono,
         DateOnly FechaVencimiento,
         string ClaveIdempotencia);
-
-    private sealed record PerfilAccesoMensaje(
-        string TipoAcceso,
-        int? IdCliente = null,
-        int? IdEntrenador = null,
-        string? Nombre = null,
-        string? Apellido = null,
-        string? EstadoCliente = null,
-        bool AceptaWhatsApp = false,
-        EstadoCuotaBotResponse? Cuota = null,
-        RutinaBotResponse? Rutina = null);
 }
