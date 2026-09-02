@@ -10,8 +10,9 @@ public interface IN8nWebhookClient
 }
 
 /// <summary>
-/// Despierta el workflow de rutina apenas el backend confirma el alta o el
-/// cambio. La notificación ya quedó guardada antes de esta llamada, por lo que
+/// Despierta el workflow de rutina apenas el backend confirma el alta inicial
+/// o un cambio de la rutina asignada. La notificación ya quedó guardada antes
+/// de esta llamada, por lo que
 /// una caída de n8n no revierte el alta ni pierde el envío pendiente.
 /// </summary>
 public sealed class N8nWebhookClient : IN8nWebhookClient

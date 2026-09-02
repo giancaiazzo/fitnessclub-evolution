@@ -53,6 +53,24 @@ public sealed class ClienteBotResponse
     public RutinaBotResponse? Rutina { get; set; }
 }
 
+public sealed class AccesoBotResponse
+{
+    public string TipoAcceso { get; set; } = "SinAcceso";
+    public string? Motivo { get; set; }
+    public bool Encontrado { get; set; }
+    public bool Ambiguo { get; set; }
+    public bool PermiteDatosPrivados { get; set; }
+    public int? IdCliente { get; set; }
+    public int? IdEntrenador { get; set; }
+    public string? Nombre { get; set; }
+    public string? Apellido { get; set; }
+    public string TelefonoNormalizado { get; set; } = string.Empty;
+    public string EstadoCliente { get; set; } = "NoRegistrado";
+    public bool AceptaWhatsApp { get; set; }
+    public EstadoCuotaBotResponse? Cuota { get; set; }
+    public RutinaBotResponse? Rutina { get; set; }
+}
+
 public sealed class EstadoCuotaBotResponse
 {
     public string Estado { get; set; } = "Vigente";

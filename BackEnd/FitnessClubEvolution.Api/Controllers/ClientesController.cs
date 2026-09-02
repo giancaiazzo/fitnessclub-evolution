@@ -222,8 +222,8 @@ public class ClientesController : ControllerBase
     }
 
     /// <summary>
-    /// MÓDULOS 2 Y 3: actualiza la ficha y el consentimiento; cuando cambia la
-    /// rutina crea un nuevo evento idempotente para que n8n envíe el PDF correcto.
+    /// MÓDULOS 2 Y 3: actualiza la ficha, la rutina y el consentimiento. Si
+    /// cambia la rutina asignada, crea un nuevo envío automático para ese cliente.
     /// </summary>
     /// <returns>HTTP 200 con la ficha actualizada o errores 404/409/400.</returns>
     // PUT: api/clientes/5
@@ -270,7 +270,6 @@ public class ClientesController : ControllerBase
 
         var rutinaAnterior = cliente.IdRutina;
         var aceptabaWhatsApp = cliente.AceptaWhatsApp;
-        var consentimientoActivado = request.AceptaWhatsApp == true && !aceptabaWhatsApp;
         var ahora = DateTime.UtcNow;
 
         cliente.Nombre = request.Nombre.Trim();
@@ -298,8 +297,7 @@ public class ClientesController : ControllerBase
         cliente.Rutina = rutina;
 
         Notificacion? notificacionRutina = null;
-        if ((rutinaAnterior != rutina.IdRutina || consentimientoActivado) &&
-            cliente.AceptaWhatsApp)
+        if (rutinaAnterior != rutina.IdRutina && cliente.AceptaWhatsApp)
         {
             notificacionRutina = CrearNotificacionRutina(
                 cliente,

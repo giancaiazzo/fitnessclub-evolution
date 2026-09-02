@@ -25,14 +25,10 @@ public class IntegracionesN8nController : ControllerBase
 {
     private const string PagoConfirmado = "Confirmado";
     private readonly AppDbContext _context;
-    private readonly IN8nWebhookClient _n8nWebhookClient;
 
-    public IntegracionesN8nController(
-        AppDbContext context,
-        IN8nWebhookClient n8nWebhookClient)
+    public IntegracionesN8nController(AppDbContext context)
     {
         _context = context;
-        _n8nWebhookClient = n8nWebhookClient;
     }
 
     /// <summary>
@@ -52,6 +48,98 @@ public class IntegracionesN8nController : ControllerBase
             return BadRequest(new { message = "El teléfono no tiene un formato válido." });
         }
 
+        var respuesta = await ConsultarClientePorTelefono(
+            telefonoNormalizado,
+            cancellationToken);
+
+        return Ok(respuesta);
+    }
+
+    /// <summary>
+    /// Identifica el nivel de acceso de un teléfono para el Router de WhatsApp.
+    /// Los administradores activos tienen prioridad sobre un eventual registro
+    /// de cliente; los demás casos se clasifican sin exponer datos privados.
+    /// </summary>
+    /// <returns>
+    /// HTTP 200 con TipoAcceso=SuperAdmin, Cliente, ClienteMoroso, Visitante o
+    /// SinAcceso. Devuelve HTTP 400 si el teléfono no tiene un formato válido.
+    /// </returns>
+    [HttpGet("acceso/por-telefono/{telefono}")]
+    public async Task<ActionResult<AccesoBotResponse>> ObtenerAccesoPorTelefono(
+        string telefono,
+        CancellationToken cancellationToken)
+    {
+        var telefonoNormalizado = NormalizarTelefono(telefono);
+        if (telefonoNormalizado is null)
+        {
+            return BadRequest(new { message = "El teléfono no tiene un formato válido." });
+        }
+
+        var administradoresActivos = await _context.Entrenadores
+            .AsNoTracking()
+            .Where(entrenador =>
+                entrenador.Estado &&
+                entrenador.Rol == "Administrador")
+            .OrderBy(entrenador => entrenador.IdEntrenador)
+            .Select(entrenador => new
+            {
+                entrenador.IdEntrenador,
+                entrenador.Nombre,
+                entrenador.Apellido,
+                entrenador.Telefono
+            })
+            .ToListAsync(cancellationToken);
+
+        // Las cuentas administrativas pueden ser históricas y conservar el
+        // formato local 09x; se normalizan en memoria porque son muy pocas.
+        var administradores = administradoresActivos
+            .Where(entrenador =>
+                NormalizarTelefono(entrenador.Telefono) == telefonoNormalizado)
+            .Take(2)
+            .ToList();
+
+        if (administradores.Count > 1)
+        {
+            return Ok(new AccesoBotResponse
+            {
+                TipoAcceso = "SinAcceso",
+                Motivo = "AdministradorAmbiguo",
+                Encontrado = true,
+                Ambiguo = true,
+                PermiteDatosPrivados = false,
+                TelefonoNormalizado = telefonoNormalizado,
+                EstadoCliente = "Ambiguo"
+            });
+        }
+
+        if (administradores.Count == 1)
+        {
+            var administrador = administradores[0];
+            return Ok(new AccesoBotResponse
+            {
+                TipoAcceso = "SuperAdmin",
+                Encontrado = true,
+                Ambiguo = false,
+                PermiteDatosPrivados = true,
+                IdEntrenador = administrador.IdEntrenador,
+                Nombre = administrador.Nombre,
+                Apellido = administrador.Apellido,
+                TelefonoNormalizado = telefonoNormalizado,
+                EstadoCliente = "AdministradorActivo"
+            });
+        }
+
+        var cliente = await ConsultarClientePorTelefono(
+            telefonoNormalizado,
+            cancellationToken);
+
+        return Ok(CrearAccesoCliente(cliente));
+    }
+
+    private async Task<ClienteBotResponse> ConsultarClientePorTelefono(
+        string telefonoNormalizado,
+        CancellationToken cancellationToken)
+    {
         var clientes = await _context.Clientes
             .AsNoTracking()
             .Include(cliente => cliente.Rutina)
@@ -62,23 +150,23 @@ public class IntegracionesN8nController : ControllerBase
 
         if (clientes.Count == 0)
         {
-            return Ok(new ClienteBotResponse
+            return new ClienteBotResponse
             {
                 Encontrado = false,
                 TelefonoNormalizado = telefonoNormalizado
-            });
+            };
         }
 
         if (clientes.Count > 1)
         {
-            return Ok(new ClienteBotResponse
+            return new ClienteBotResponse
             {
                 Encontrado = true,
                 Ambiguo = true,
                 PermiteDatosPrivados = false,
                 TelefonoNormalizado = telefonoNormalizado,
                 EstadoCliente = "Ambiguo"
-            });
+            };
         }
 
         var cliente = clientes[0];
@@ -106,7 +194,7 @@ public class IntegracionesN8nController : ControllerBase
                 ? "Vencido"
                 : "Activo";
 
-        return Ok(new ClienteBotResponse
+        return new ClienteBotResponse
         {
             Encontrado = true,
             Ambiguo = false,
@@ -127,7 +215,7 @@ public class IntegracionesN8nController : ControllerBase
                 TamanoBytes = cliente.Rutina.TamanoBytes,
                 PdfEndpoint = $"/api/integraciones/n8n/clientes/{cliente.IdCliente}/rutina/pdf"
             }
-        });
+        };
     }
 
     /// <summary>
@@ -519,43 +607,11 @@ public class IntegracionesN8nController : ControllerBase
 
         var cliente = clientes[0];
         var ahora = DateTime.UtcNow;
-        var consentimientoActivado = request.Acepta && !cliente.AceptaWhatsApp;
         cliente.AceptaWhatsApp = request.Acepta;
         cliente.FechaConsentimientoWhatsApp = request.Acepta ? ahora : cliente.FechaConsentimientoWhatsApp;
         cliente.FechaBajaWhatsApp = request.Acepta ? null : ahora;
 
-        Notificacion? notificacionRutina = null;
-        if (consentimientoActivado)
-        {
-            notificacionRutina = new Notificacion
-            {
-                IdCliente = cliente.IdCliente,
-                Tipo = "RutinaAsignada",
-                Mensaje = "Rutina actual pendiente de envío después del consentimiento.",
-                FechaProgramada = ahora,
-                Estado = "Pendiente",
-                Canal = "WhatsApp",
-                Referencia = cliente.IdRutina.ToString(),
-                ClaveIdempotencia =
-                    $"rutina:{cliente.IdCliente}:{cliente.IdRutina}:consentimiento:{ahora:yyyyMMddHHmmssfff}",
-                FechaCreacion = ahora
-            };
-            _context.Notificaciones.Add(notificacionRutina);
-        }
-
         await _context.SaveChangesAsync(cancellationToken);
-
-        if (notificacionRutina is not null)
-        {
-            await _n8nWebhookClient.NotificarRutinaAsignada(
-                new RutinaAsignadaWebhook(
-                    notificacionRutina.IdNotificacion,
-                    cliente.IdCliente,
-                    cliente.Telefono,
-                    $"{cliente.Nombre} {cliente.Apellido}".Trim(),
-                    notificacionRutina.Referencia ?? cliente.IdRutina.ToString()),
-                CancellationToken.None);
-        }
 
         return Ok(new ActualizarConsentimientoWhatsappResponse
         {
@@ -711,6 +767,83 @@ public class IntegracionesN8nController : ControllerBase
             FechaVencimiento = vencimiento,
             DiasRestantes = Math.Max(0, diferencia),
             DiasVencido = diferencia < 0 ? Math.Abs(diferencia) : 0
+        };
+    }
+
+    private static AccesoBotResponse CrearAccesoCliente(ClienteBotResponse cliente)
+    {
+        if (!cliente.Encontrado)
+        {
+            return new AccesoBotResponse
+            {
+                TipoAcceso = "Visitante",
+                Motivo = "NoRegistrado",
+                Encontrado = false,
+                Ambiguo = false,
+                PermiteDatosPrivados = false,
+                TelefonoNormalizado = cliente.TelefonoNormalizado,
+                EstadoCliente = "NoRegistrado"
+            };
+        }
+
+        if (cliente.Ambiguo)
+        {
+            return new AccesoBotResponse
+            {
+                TipoAcceso = "SinAcceso",
+                Motivo = "ClienteAmbiguo",
+                Encontrado = true,
+                Ambiguo = true,
+                PermiteDatosPrivados = false,
+                TelefonoNormalizado = cliente.TelefonoNormalizado,
+                EstadoCliente = "Ambiguo"
+            };
+        }
+
+        if (cliente.EstadoCliente == "Vencido")
+        {
+            return new AccesoBotResponse
+            {
+                TipoAcceso = "ClienteMoroso",
+                Motivo = "CuotaVencida",
+                Encontrado = true,
+                Ambiguo = false,
+                PermiteDatosPrivados = false,
+                TelefonoNormalizado = cliente.TelefonoNormalizado,
+                EstadoCliente = cliente.EstadoCliente
+            };
+        }
+
+        if (!cliente.PermiteDatosPrivados || cliente.EstadoCliente != "Activo")
+        {
+            return new AccesoBotResponse
+            {
+                TipoAcceso = "SinAcceso",
+                Motivo = cliente.EstadoCliente == "Inactivo"
+                    ? "ClienteInactivo"
+                    : "EstadoNoAutorizado",
+                Encontrado = true,
+                Ambiguo = false,
+                PermiteDatosPrivados = false,
+                TelefonoNormalizado = cliente.TelefonoNormalizado,
+                EstadoCliente = cliente.EstadoCliente
+            };
+        }
+
+        return new AccesoBotResponse
+        {
+            TipoAcceso = "Cliente",
+            Encontrado = true,
+            Ambiguo = false,
+            PermiteDatosPrivados = true,
+            IdCliente = cliente.IdCliente,
+            Nombre = cliente.Nombre,
+            Apellido = cliente.Apellido,
+            TelefonoNormalizado = cliente.TelefonoNormalizado,
+            EstadoCliente = cliente.EstadoCliente,
+            AceptaWhatsApp = cliente.AceptaWhatsApp,
+            Cuota = cliente.Cuota,
+            Rutina = cliente.Rutina
         };
     }
 

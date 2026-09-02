@@ -66,6 +66,7 @@ Todos estos endpoints exigen `X-N8N-API-KEY`:
 | Método | Uso en n8n | Devuelve |
 |---|---|---|
 | `POST /api/integraciones/n8n/mensajes/reservar` | Primer nodo tras WhatsApp Trigger | `procesar=true` una sola vez por ID de Meta |
+| `GET /api/integraciones/n8n/acceso/por-telefono/{tel}` | Clasificar el remitente antes del primer Switch | `SuperAdmin`, `Cliente`, `ClienteMoroso`, `Visitante` o `SinAcceso` |
 | `POST /api/integraciones/n8n/mensajes/resultado` | Último nodo del workflow | 204 y estado de auditoría |
 | `GET /api/integraciones/n8n/clientes/por-telefono/{tel}` | Autorizar funciones privadas | cliente, cuota, rutina, consentimiento y bandera de acceso |
 | `POST /api/integraciones/n8n/cobranzas/reservar?dias=3` | Cron diario | avisos nuevos; nunca repite la misma cuota |
@@ -96,8 +97,9 @@ correo real con su cuenta sin guardar esas direcciones en Git.
    → Switch registrado/activo → IA con límites o respuestas públicas → informar resultado.
 2. **Cobranzas:** Schedule diario → reservar vencimientos a 3 días → tomar cada
    notificación → plantilla aprobada → informar resultado.
-3. **Rutina asignada:** el alta o cambio de rutina guarda primero una
-   notificación `RutinaAsignada` y despierta inmediatamente el Webhook
+3. **Rutina asignada:** el alta inicial de un cliente con consentimiento o un
+   cambio posterior de su rutina asignada guarda una notificación
+   `RutinaAsignada` y despierta inmediatamente el Webhook
    `POST /webhook/rutina-asignada` de n8n. El workflow toma esa notificación de
    forma atómica → valida que siga siendo la rutina actual → descarga el PDF →
    envía la plantilla Utility con encabezado de documento → informa resultado.
