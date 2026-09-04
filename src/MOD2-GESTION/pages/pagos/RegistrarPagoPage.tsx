@@ -299,7 +299,6 @@ export default function RegistrarPagoPage() {
       if (!termino) return true;
 
       return [
-        item.idCliente.toString(),
         item.nombre,
         item.apellido,
         `${item.nombre} ${item.apellido}`,
@@ -449,7 +448,7 @@ export default function RegistrarPagoPage() {
               value={busqueda}
               onChange={(event) => setBusqueda(event.target.value)}
               className={`${inputClassName} pl-11`}
-              placeholder="Nombre, apellido, documento o ID..."
+              placeholder="Nombre, apellido o documento..."
             />
           </label>
           <button
@@ -505,7 +504,7 @@ export default function RegistrarPagoPage() {
                         <div>
                           <p className="font-semibold text-white">{item.nombre} {item.apellido}</p>
                           <p className="mt-0.5 text-xs text-gray-500">
-                            CI {item.documento} · ID #{item.idCliente}
+                            CI {item.documento}
                           </p>
                         </div>
                       </div>

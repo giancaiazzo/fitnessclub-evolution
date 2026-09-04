@@ -31,7 +31,6 @@ type FormularioCliente = {
 };
 
 type ClienteCreado = {
-  idCliente: number;
   rutinaNombre: string;
 };
 
@@ -155,7 +154,7 @@ export default function IngresarClientePage() {
       const cliente = (await respuesta.json()) as ClienteCreado;
       setFormulario(FORMULARIO_INICIAL);
       setExito(
-        `Cliente registrado con el ID #${cliente.idCliente} y la rutina ${cliente.rutinaNombre}.`,
+        `Cliente registrado correctamente con la rutina ${cliente.rutinaNombre}.`,
       );
     } catch (errorDesconocido) {
       setError(
@@ -174,8 +173,8 @@ export default function IngresarClientePage() {
         </p>
         <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Ingresar cliente</h1>
         <p className="mt-3 max-w-2xl text-gray-400">
-          El ID, la fecha de registro y el estado activo se asignan automáticamente. La
-          rutina elegida queda vinculada al cliente en la base de datos.
+          La fecha de registro y el estado activo se asignan automáticamente. La rutina
+          elegida queda vinculada al cliente en la base de datos.
         </p>
       </header>
 

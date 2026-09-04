@@ -131,7 +131,6 @@ export default function IngresarServicioPage() {
         </h1>
         <p className="mt-3 max-w-2xl text-gray-400">
           Cargá la información comercial y una imagen para promocionar el servicio.
-          También quedará disponible al registrar pagos.
         </p>
       </header>
 

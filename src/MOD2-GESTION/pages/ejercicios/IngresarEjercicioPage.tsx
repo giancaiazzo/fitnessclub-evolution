@@ -21,7 +21,6 @@ const INICIAL = {
   nombre: "",
   grupoMuscular: "",
   descripcion: "",
-  estado: true,
 };
 
 export default function IngresarEjercicioPage() {
@@ -125,7 +124,7 @@ export default function IngresarEjercicioPage() {
     datos.append("nombre", formulario.nombre.trim());
     datos.append("grupoMuscular", formulario.grupoMuscular);
     datos.append("descripcion", formulario.descripcion.trim());
-    datos.append("estado", formulario.estado.toString());
+    datos.append("estado", "true");
     datos.append("imagenPreview", imagen);
     datos.append("videoTutorial", video);
     datos.append("duracionVideoSegundos", duracionVideo.toString());
@@ -341,23 +340,6 @@ export default function IngresarEjercicioPage() {
             </span>
           </label>
 
-          <label className="flex items-center gap-3 rounded-2xl border border-white/10 bg-black/20 p-4 sm:col-span-2">
-            <input
-              type="checkbox"
-              checked={formulario.estado}
-              onChange={(event) =>
-                setFormulario({ ...formulario, estado: event.target.checked })
-              }
-              disabled={bloqueado}
-              className="size-5 accent-lime-400"
-            />
-            <span>
-              <strong className="block text-sm text-white">Visible para clientes</strong>
-              <span className="text-xs text-gray-500">
-                Si está activo aparecerá automáticamente en la sección Ejercicios.
-              </span>
-            </span>
-          </label>
         </div>
 
         <footer className="flex justify-end border-t border-white/[0.08] bg-black/15 px-5 py-4 sm:px-8">

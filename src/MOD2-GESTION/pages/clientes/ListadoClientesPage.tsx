@@ -167,7 +167,6 @@ export default function ListadoClientesPage() {
     if (!termino) return clientes;
     return clientes.filter((cliente) =>
       [
-        cliente.idCliente.toString(),
         cliente.nombre,
         cliente.apellido,
         `${cliente.nombre} ${cliente.apellido}`,
@@ -322,7 +321,7 @@ export default function ListadoClientesPage() {
               value={busqueda}
               onChange={(event) => setBusqueda(event.target.value)}
               className={`${inputClassName} pl-11`}
-              placeholder="Nombre, rutina, documento, teléfono o ID..."
+              placeholder="Nombre, rutina, documento o teléfono..."
             />
           </label>
           <button
@@ -350,11 +349,10 @@ export default function ListadoClientesPage() {
           />
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[1120px] text-left">
+            <table className="w-full min-w-[1040px] text-left">
               <thead className="bg-black/20 text-xs uppercase tracking-wider text-gray-500">
                 <tr>
                   {[
-                    "ID",
                     "Cliente",
                     "Documento",
                     "Teléfono",
@@ -370,7 +368,6 @@ export default function ListadoClientesPage() {
               <tbody className="divide-y divide-white/[0.07]">
                 {clientesFiltrados.map((cliente) => (
                   <tr key={cliente.idCliente} className="transition hover:bg-white/[0.025]">
-                    <td className="px-5 py-4 text-sm font-black text-lime-400">#{cliente.idCliente}</td>
                     <td className="px-5 py-4">
                       <p className="font-semibold text-white">{cliente.nombre} {cliente.apellido}</p>
                       <p className="mt-0.5 max-w-52 truncate text-xs text-gray-500">
@@ -425,7 +422,10 @@ export default function ListadoClientesPage() {
       </section>
 
       {clienteEditar && edicion && (
-        <Modal titulo={`Modificar cliente #${clienteEditar.idCliente}`} onCerrar={() => !guardando && setClienteEditar(null)}>
+        <Modal
+          titulo={`Modificar cliente · ${clienteEditar.nombre} ${clienteEditar.apellido}`}
+          onCerrar={() => !guardando && setClienteEditar(null)}
+        >
           <form onSubmit={guardarEdicion}>
             <div className="grid gap-4 p-5 sm:grid-cols-2 sm:p-6">
               <InputEdicion etiqueta="Nombre" value={edicion.nombre} onChange={(valor) => setEdicion({ ...edicion, nombre: valor })} />
