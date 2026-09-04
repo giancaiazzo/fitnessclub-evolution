@@ -25,6 +25,7 @@ type Cliente = {
   estado: boolean;
   idRutina: number;
   rutinaNombre: string;
+  aceptaWhatsApp: boolean;
 };
 
 type RutinaOpcion = {
@@ -42,6 +43,7 @@ type FormularioEdicion = {
   direccion: string;
   estado: boolean;
   idRutina: string;
+  aceptaWhatsApp: boolean;
 };
 
 const inputClassName =
@@ -189,6 +191,7 @@ export default function ListadoClientesPage() {
       direccion: cliente.direccion ?? "",
       estado: cliente.estado,
       idRutina: cliente.idRutina.toString(),
+      aceptaWhatsApp: cliente.aceptaWhatsApp,
     });
   }
 
@@ -454,11 +457,35 @@ export default function ListadoClientesPage() {
                   ))}
                 </select>
                 <span className="mt-1.5 block text-xs text-gray-500">
-                  Al vincular n8n, un cambio de rutina será el evento que active el reenvío por WhatsApp.
+                  Al guardar una rutina diferente, se enviará automáticamente si el consentimiento está activo.
                 </span>
                 {errorRutinas && (
                   <span className="mt-2 block text-xs text-red-300">{errorRutinas}</span>
                 )}
+              </label>
+              <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-lime-400/20 bg-lime-400/[0.06] p-4 sm:col-span-2">
+                <input
+                  type="checkbox"
+                  checked={edicion.aceptaWhatsApp}
+                  onChange={(event) =>
+                    setEdicion({ ...edicion, aceptaWhatsApp: event.target.checked })
+                  }
+                  disabled={guardando}
+                  className="mt-1 h-5 w-5 shrink-0 accent-lime-400"
+                />
+                <span>
+                  <span className="block text-sm font-bold text-white">
+                    Consentimiento para comunicaciones por WhatsApp
+                  </span>
+                  <span className="mt-1 block text-sm leading-6 text-gray-300">
+                    Acepto recibir por WhatsApp mi rutina, avisos de vencimiento y
+                    comunicaciones operativas de FitnessClubEvolution. Puedo solicitar la
+                    baja respondiendo SALIR.
+                  </span>
+                  <span className="mt-1 block text-xs text-gray-500">
+                    Al desmarcarla, se detienen los futuros envíos automáticos.
+                  </span>
+                </span>
               </label>
               <label className="sm:col-span-2">
                 <span className="mb-2 block text-sm font-semibold text-gray-300">Estado</span>

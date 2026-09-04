@@ -27,6 +27,7 @@ type FormularioCliente = {
   fechaNacimiento: string;
   direccion: string;
   idRutina: string;
+  aceptaWhatsApp: boolean;
 };
 
 type ClienteCreado = {
@@ -42,6 +43,7 @@ const FORMULARIO_INICIAL: FormularioCliente = {
   fechaNacimiento: "",
   direccion: "",
   idRutina: "",
+  aceptaWhatsApp: false,
 };
 
 const inputClassName =
@@ -140,6 +142,7 @@ export default function IngresarClientePage() {
           fechaNacimiento: formulario.fechaNacimiento || null,
           direccion: formulario.direccion.trim() || null,
           idRutina,
+          aceptaWhatsApp: formulario.aceptaWhatsApp,
         }),
       });
 
@@ -290,7 +293,7 @@ export default function IngresarClientePage() {
             <Campo
               etiqueta="Rutina asignada"
               requerido
-              ayuda="La asignación se guardará ahora; el envío por WhatsApp se conectará luego con n8n."
+              ayuda="Si el consentimiento está activo, la rutina se enviará automáticamente al guardar el cliente."
             >
               <select
                 className={inputClassName}
@@ -327,6 +330,29 @@ export default function IngresarClientePage() {
               )}
             </Campo>
           </div>
+
+          <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-lime-400/20 bg-lime-400/[0.06] p-4 sm:col-span-2">
+            <input
+              type="checkbox"
+              checked={formulario.aceptaWhatsApp}
+              onChange={(event) => actualizar("aceptaWhatsApp", event.target.checked)}
+              disabled={guardando}
+              className="mt-1 h-5 w-5 shrink-0 accent-lime-400"
+            />
+            <span>
+              <span className="block text-sm font-bold text-white">
+                Consentimiento para comunicaciones por WhatsApp
+              </span>
+              <span className="mt-1 block text-sm leading-6 text-gray-300">
+                Acepto recibir por WhatsApp mi rutina, avisos de vencimiento y
+                comunicaciones operativas de FitnessClubEvolution. Puedo solicitar la
+                baja respondiendo SALIR.
+              </span>
+              <span className="mt-1 block text-xs text-gray-500">
+                Marcá esta opción únicamente si el cliente brindó su autorización.
+              </span>
+            </span>
+          </label>
         </div>
 
         <footer className="flex flex-col-reverse gap-3 border-t border-white/[0.08] bg-black/15 px-5 py-4 sm:flex-row sm:justify-end sm:px-8">
