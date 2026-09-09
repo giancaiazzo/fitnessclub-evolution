@@ -21,6 +21,18 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<IPasswordHasher<Entrenador>, PasswordHasher<Entrenador>>();
 builder.Services.AddScoped<IPasswordHasher<SolicitudRecuperacion>, PasswordHasher<SolicitudRecuperacion>>();
 builder.Services.AddScoped<IRecoveryEmailSender, SmtpRecoveryEmailSender>();
+builder.Services
+    .AddOptions<MorosidadAutomaticaOptions>()
+    .BindConfiguration(MorosidadAutomaticaOptions.SectionName)
+    .Validate(
+        options => options.DiasGracia is >= 1 and <= 30,
+        "Los días de gracia de morosidad deben estar entre 1 y 30.")
+    .Validate(
+        options => options.IntervaloMinutos is >= 15 and <= 1440,
+        "El intervalo de morosidad debe estar entre 15 y 1440 minutos.")
+    .ValidateOnStart();
+builder.Services.AddScoped<IMorosidadAutomaticaService, MorosidadAutomaticaService>();
+builder.Services.AddHostedService<MorosidadAutomaticaWorker>();
 builder.Services.AddHttpClient<IN8nWebhookClient, N8nWebhookClient>(client =>
 {
     // El alta ya está confirmada en PostgreSQL. Este llamado solo despierta

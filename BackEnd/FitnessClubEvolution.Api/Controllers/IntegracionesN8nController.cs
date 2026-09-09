@@ -27,15 +27,40 @@ public class IntegracionesN8nController : ControllerBase
     private readonly AppDbContext _context;
     private readonly IHikvisionAccessService _hikvision;
     private readonly IHikvisionClientAccessCoordinator _hikvisionAccess;
+    private readonly IMorosidadAutomaticaService _morosidadAutomatica;
 
     public IntegracionesN8nController(
         AppDbContext context,
         IHikvisionAccessService hikvision,
-        IHikvisionClientAccessCoordinator hikvisionAccess)
+        IHikvisionClientAccessCoordinator hikvisionAccess,
+        IMorosidadAutomaticaService morosidadAutomatica)
     {
         _context = context;
         _hikvision = hikvision;
         _hikvisionAccess = hikvisionAccess;
+        _morosidadAutomatica = morosidadAutomatica;
+    }
+
+    /// <summary>
+    /// Previsualiza qué clientes activos cumplen el plazo para una baja lógica
+    /// automática. Es una consulta segura: no cambia datos ni llama a Hikvision.
+    /// </summary>
+    [HttpGet("morosidad/candidatos")]
+    public async Task<ActionResult<MorosidadPreviewResult>> PrevisualizarMorosidad(
+        CancellationToken cancellationToken)
+    {
+        return Ok(await _morosidadAutomatica.Previsualizar(cancellationToken));
+    }
+
+    /// <summary>
+    /// Ejecuta bajo demanda la misma revisión idempotente que corre dentro del
+    /// backend. Conserva todo el historial y solo cambia Estado a inactivo.
+    /// </summary>
+    [HttpPost("morosidad/procesar")]
+    public async Task<ActionResult<MorosidadProcessingResult>> ProcesarMorosidad(
+        CancellationToken cancellationToken)
+    {
+        return Ok(await _morosidadAutomatica.Procesar(cancellationToken));
     }
 
     /// <summary>

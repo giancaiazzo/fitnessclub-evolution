@@ -37,6 +37,9 @@ services:
       ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=fitnessclub_db;Username=fitnessclub;Password=${POSTGRES_PASSWORD:?Defina POSTGRES_PASSWORD en el archivo .env}
       Integrations__N8n__ApiKey: ${N8N_API_KEY:?Defina N8N_API_KEY en el archivo .env}
       Integrations__N8n__RoutineWebhookUrl: ${N8N_ROUTINE_WEBHOOK_URL:-http://n8n:5678/webhook/rutina-asignada}
+      Clientes__MorosidadAutomatica__Enabled: ${MOROSIDAD_AUTOMATICA_ENABLED:-false}
+      Clientes__MorosidadAutomatica__DiasGracia: ${MOROSIDAD_DIAS_GRACIA:-3}
+      Clientes__MorosidadAutomatica__IntervaloMinutos: ${MOROSIDAD_INTERVALO_MINUTOS:-60}
       Integrations__Hikvision__Enabled: ${HIKVISION_ENABLED:-false}
       Integrations__Hikvision__BaseUrl: ${HIKVISION_BASE_URL:-}
       Integrations__Hikvision__Username: ${HIKVISION_USERNAME:-}
