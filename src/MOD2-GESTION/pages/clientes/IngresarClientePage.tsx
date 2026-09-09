@@ -26,6 +26,7 @@ type FormularioCliente = {
   telefono: string;
   fechaNacimiento: string;
   direccion: string;
+  hikvisionEmployeeNo: string;
   idRutina: string;
   aceptaWhatsApp: boolean;
 };
@@ -41,6 +42,7 @@ const FORMULARIO_INICIAL: FormularioCliente = {
   telefono: "",
   fechaNacimiento: "",
   direccion: "",
+  hikvisionEmployeeNo: "",
   idRutina: "",
   aceptaWhatsApp: false,
 };
@@ -140,6 +142,7 @@ export default function IngresarClientePage() {
           telefono: `598${formulario.telefono}`,
           fechaNacimiento: formulario.fechaNacimiento || null,
           direccion: formulario.direccion.trim() || null,
+          hikvisionEmployeeNo: formulario.hikvisionEmployeeNo.trim() || null,
           idRutina,
           aceptaWhatsApp: formulario.aceptaWhatsApp,
         }),
@@ -287,6 +290,25 @@ export default function IngresarClientePage() {
               disabled={guardando}
             />
           </Campo>
+
+          <div className="sm:col-span-2">
+            <Campo
+              etiqueta="Código de acceso Hikvision"
+              ayuda="Opcional. Es el employeeNo de la persona ya registrada con rostro o huella en el equipo."
+            >
+              <input
+                className={inputClassName}
+                value={formulario.hikvisionEmployeeNo}
+                onChange={(event) =>
+                  actualizar("hikvisionEmployeeNo", event.target.value.slice(0, 32))
+                }
+                maxLength={32}
+                autoComplete="off"
+                placeholder="Ej.: 02"
+                disabled={guardando}
+              />
+            </Campo>
+          </div>
 
           <div className="sm:col-span-2">
             <Campo

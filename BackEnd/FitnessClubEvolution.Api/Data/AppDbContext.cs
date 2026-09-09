@@ -43,6 +43,12 @@ public class AppDbContext : DbContext
             entity.Property(cliente => cliente.AceptaWhatsApp)
                 .HasDefaultValue(false);
 
+            entity.Property(cliente => cliente.HikvisionEmployeeNo)
+                .HasMaxLength(32);
+
+            entity.Property(cliente => cliente.UltimoErrorHikvision)
+                .HasMaxLength(1000);
+
             entity.HasIndex(cliente => cliente.Documento);
 
             entity.HasIndex(cliente => cliente.IdRutina);
@@ -51,6 +57,10 @@ public class AppDbContext : DbContext
             // único para que una eventual duplicación histórica no bloquee la
             // migración; el endpoint de n8n rechaza resultados ambiguos.
             entity.HasIndex(cliente => cliente.Telefono);
+
+            entity.HasIndex(cliente => cliente.HikvisionEmployeeNo)
+                .IsUnique()
+                .HasFilter("\"HikvisionEmployeeNo\" IS NOT NULL");
 
             entity.HasOne(cliente => cliente.Rutina)
                 .WithMany(rutina => rutina.Clientes)

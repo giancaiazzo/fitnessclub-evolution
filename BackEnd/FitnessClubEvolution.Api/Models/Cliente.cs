@@ -33,6 +33,21 @@ namespace FitnessClubEvolution.Api.Models
 
         public DateTime? FechaBajaWhatsApp { get; set; }
 
+        // Identificador estable de la persona dentro del controlador Hikvision.
+        // No es el IdCliente de PostgreSQL: corresponde a employeeNo en ISAPI.
+        public string? HikvisionEmployeeNo { get; set; }
+
+        // Estos campos dejan trazabilidad del último intento de sincronización.
+        // Si el equipo está temporalmente fuera de línea, el negocio continúa y
+        // la reconciliación diaria puede volver a intentarlo.
+        public bool? AccesoHikvisionHabilitado { get; set; }
+
+        public DateOnly? FechaVencimientoAccesoHikvision { get; set; }
+
+        public DateTime? FechaUltimaSincronizacionHikvision { get; set; }
+
+        public string? UltimoErrorHikvision { get; set; }
+
         // Cada cliente mantiene exactamente una rutina actual. Varias personas
         // pueden compartir la misma rutina, por eso la clave foránea vive aquí.
         public int IdRutina { get; set; }

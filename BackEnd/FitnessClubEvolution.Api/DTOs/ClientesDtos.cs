@@ -21,6 +21,9 @@ public sealed class CrearClienteRequest
     [StringLength(150)]
     public string? Direccion { get; set; }
 
+    [StringLength(32)]
+    public string? HikvisionEmployeeNo { get; set; }
+
     [Range(1, int.MaxValue, ErrorMessage = "Seleccioná una rutina válida.")]
     public int IdRutina { get; set; }
 
@@ -46,6 +49,9 @@ public sealed class ActualizarClienteRequest
 
     [StringLength(150)]
     public string? Direccion { get; set; }
+
+    [StringLength(32)]
+    public string? HikvisionEmployeeNo { get; set; }
 
     [Required]
     public bool? Estado { get; set; }
@@ -80,6 +86,11 @@ public class ClienteResponse
     public bool AceptaWhatsApp { get; set; }
     public DateTime? FechaConsentimientoWhatsApp { get; set; }
     public DateTime? FechaBajaWhatsApp { get; set; }
+    public string? HikvisionEmployeeNo { get; set; }
+    public bool? AccesoHikvisionHabilitado { get; set; }
+    public DateOnly? FechaVencimientoAccesoHikvision { get; set; }
+    public DateTime? FechaUltimaSincronizacionHikvision { get; set; }
+    public string? UltimoErrorHikvision { get; set; }
 }
 
 public sealed class ClienteDetalleResponse : ClienteResponse

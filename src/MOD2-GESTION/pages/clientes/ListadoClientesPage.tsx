@@ -26,6 +26,10 @@ type Cliente = {
   idRutina: number;
   rutinaNombre: string;
   aceptaWhatsApp: boolean;
+  hikvisionEmployeeNo: string | null;
+  accesoHikvisionHabilitado: boolean | null;
+  fechaVencimientoAccesoHikvision: string | null;
+  ultimoErrorHikvision: string | null;
 };
 
 type RutinaOpcion = {
@@ -41,6 +45,7 @@ type FormularioEdicion = {
   telefono: string;
   fechaNacimiento: string;
   direccion: string;
+  hikvisionEmployeeNo: string;
   estado: boolean;
   idRutina: string;
   aceptaWhatsApp: boolean;
@@ -173,6 +178,7 @@ export default function ListadoClientesPage() {
         cliente.documento,
         cliente.telefono,
         cliente.rutinaNombre,
+        cliente.hikvisionEmployeeNo ?? "",
       ].some((dato) => dato.toLocaleLowerCase("es-UY").includes(termino)),
     );
   }, [busqueda, clientes]);
@@ -188,6 +194,7 @@ export default function ListadoClientesPage() {
       telefono: telefonoLocal(cliente.telefono),
       fechaNacimiento: cliente.fechaNacimiento ?? "",
       direccion: cliente.direccion ?? "",
+      hikvisionEmployeeNo: cliente.hikvisionEmployeeNo ?? "",
       estado: cliente.estado,
       idRutina: cliente.idRutina.toString(),
       aceptaWhatsApp: cliente.aceptaWhatsApp,
@@ -225,6 +232,7 @@ export default function ListadoClientesPage() {
           telefono: `598${edicion.telefono}`,
           fechaNacimiento: edicion.fechaNacimiento || null,
           direccion: edicion.direccion.trim() || null,
+          hikvisionEmployeeNo: edicion.hikvisionEmployeeNo.trim() || null,
           idRutina,
         }),
       });
@@ -373,6 +381,16 @@ export default function ListadoClientesPage() {
                       <p className="mt-0.5 max-w-52 truncate text-xs text-gray-500">
                         {cliente.direccion || "Sin dirección"}
                       </p>
+                      {cliente.hikvisionEmployeeNo && (
+                        <p className={`mt-1 text-xs ${cliente.ultimoErrorHikvision ? "text-amber-300" : "text-lime-300"}`}>
+                          <i className="ri-fingerprint-line mr-1" />
+                          Hikvision {cliente.hikvisionEmployeeNo} · {cliente.ultimoErrorHikvision
+                            ? "sincronización pendiente"
+                            : cliente.accesoHikvisionHabilitado
+                              ? "acceso habilitado"
+                              : "acceso bloqueado"}
+                        </p>
+                      )}
                     </td>
                     <td className="px-5 py-4 text-sm text-gray-300">{cliente.documento}</td>
                     <td className="px-5 py-4 text-sm text-gray-300">{formatearTelefono(cliente.telefono)}</td>
@@ -434,6 +452,32 @@ export default function ListadoClientesPage() {
               <InputEdicion etiqueta="Teléfono (+598)" value={edicion.telefono} onChange={(valor) => setEdicion({ ...edicion, telefono: soloDigitos(valor, 8) })} />
               <InputEdicion etiqueta="Fecha de nacimiento" type="date" value={edicion.fechaNacimiento} onChange={(valor) => setEdicion({ ...edicion, fechaNacimiento: valor })} />
               <InputEdicion etiqueta="Dirección" value={edicion.direccion} onChange={(valor) => setEdicion({ ...edicion, direccion: valor })} />
+              <label className="sm:col-span-2">
+                <span className="mb-2 block text-sm font-semibold text-gray-300">
+                  Código de acceso Hikvision
+                </span>
+                <input
+                  className={inputClassName}
+                  value={edicion.hikvisionEmployeeNo}
+                  onChange={(event) =>
+                    setEdicion({
+                      ...edicion,
+                      hikvisionEmployeeNo: event.target.value.slice(0, 32),
+                    })
+                  }
+                  maxLength={32}
+                  placeholder="Ej.: 02"
+                  disabled={guardando}
+                />
+                <span className="mt-1.5 block text-xs text-gray-500">
+                  Debe coincidir con el employeeNo de la persona enrolada en el controlador.
+                </span>
+                {clienteEditar.ultimoErrorHikvision && (
+                  <span className="mt-1.5 block text-xs text-amber-300">
+                    Última sincronización pendiente: {clienteEditar.ultimoErrorHikvision}
+                  </span>
+                )}
+              </label>
               <label className="sm:col-span-2">
                 <span className="mb-2 block text-sm font-semibold text-gray-300">
                   Rutina asignada

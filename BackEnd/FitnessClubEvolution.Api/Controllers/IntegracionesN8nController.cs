@@ -25,10 +25,74 @@ public class IntegracionesN8nController : ControllerBase
 {
     private const string PagoConfirmado = "Confirmado";
     private readonly AppDbContext _context;
+    private readonly IHikvisionAccessService _hikvision;
+    private readonly IHikvisionClientAccessCoordinator _hikvisionAccess;
 
-    public IntegracionesN8nController(AppDbContext context)
+    public IntegracionesN8nController(
+        AppDbContext context,
+        IHikvisionAccessService hikvision,
+        IHikvisionClientAccessCoordinator hikvisionAccess)
     {
         _context = context;
+        _hikvision = hikvision;
+        _hikvisionAccess = hikvisionAccess;
+    }
+
+    /// <summary>
+    /// Comprueba desde el backend que el controlador remoto responde por ISAPI.
+    /// Nunca devuelve credenciales ni datos de personas enroladas.
+    /// </summary>
+    [HttpGet("hikvision/estado")]
+    public async Task<ActionResult<HikvisionDeviceResult>> ObtenerEstadoHikvision(
+        CancellationToken cancellationToken)
+    {
+        var result = await _hikvision.ProbarConexion(cancellationToken);
+        return result.Success
+            ? Ok(result)
+            : StatusCode(StatusCodes.Status503ServiceUnavailable, result);
+    }
+
+    /// <summary>
+    /// Recalcula el acceso de todos los clientes vinculados. Este endpoint se
+    /// ejecuta diariamente desde n8n y también permite reparar una caída de red.
+    /// </summary>
+    [HttpPost("hikvision/reconciliar")]
+    public async Task<ActionResult<HikvisionReconciliationResult>> ReconciliarHikvision(
+        CancellationToken cancellationToken)
+    {
+        var result = await _hikvisionAccess.Reconciliar(cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Fuerza la sincronización de un único cliente para altas, diagnóstico y
+    /// pruebas controladas sin modificar a las demás personas del equipo.
+    /// </summary>
+    [HttpPost("hikvision/clientes/{idCliente:int}/sincronizar")]
+    public async Task<ActionResult<HikvisionClientSyncResult>> SincronizarClienteHikvision(
+        int idCliente,
+        CancellationToken cancellationToken)
+    {
+        var cliente = await _context.Clientes.SingleOrDefaultAsync(
+            item => item.IdCliente == idCliente,
+            cancellationToken);
+        if (cliente is null)
+        {
+            return NotFound(new { message = "No se encontró el cliente solicitado." });
+        }
+
+        if (string.IsNullOrWhiteSpace(cliente.HikvisionEmployeeNo))
+        {
+            return BadRequest(new { message = "El cliente no tiene un código Hikvision vinculado." });
+        }
+
+        var result = await _hikvisionAccess.SincronizarCliente(
+            cliente,
+            null,
+            cancellationToken);
+        return result.Success
+            ? Ok(result)
+            : StatusCode(StatusCodes.Status503ServiceUnavailable, result);
     }
 
     /// <summary>

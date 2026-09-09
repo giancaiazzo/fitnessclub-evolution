@@ -16,13 +16,16 @@ public class ClientesController : ControllerBase
 {
     private readonly AppDbContext _context;
     private readonly IN8nWebhookClient _n8nWebhookClient;
+    private readonly IHikvisionClientAccessCoordinator _hikvisionAccess;
 
     public ClientesController(
         AppDbContext context,
-        IN8nWebhookClient n8nWebhookClient)
+        IN8nWebhookClient n8nWebhookClient,
+        IHikvisionClientAccessCoordinator hikvisionAccess)
     {
         _context = context;
         _n8nWebhookClient = n8nWebhookClient;
+        _hikvisionAccess = hikvisionAccess;
     }
 
     /// <summary>
@@ -179,6 +182,13 @@ public class ClientesController : ControllerBase
             return Conflict(new { message = "Ya existe un cliente registrado con ese documento." });
         }
 
+        var hikvisionEmployeeNo = LimpiarTextoOpcional(request.HikvisionEmployeeNo);
+        if (hikvisionEmployeeNo is not null &&
+            await ExisteCodigoHikvision(hikvisionEmployeeNo, null, cancellationToken))
+        {
+            return Conflict(new { message = "Ese código Hikvision ya está vinculado a otro cliente." });
+        }
+
         var ahora = DateTime.UtcNow;
         var cliente = new Cliente
         {
@@ -193,6 +203,7 @@ public class ClientesController : ControllerBase
             AceptaWhatsApp = request.AceptaWhatsApp,
             FechaConsentimientoWhatsApp = request.AceptaWhatsApp ? ahora : null,
             FechaBajaWhatsApp = null,
+            HikvisionEmployeeNo = hikvisionEmployeeNo,
             IdRutina = rutina.IdRutina,
             Rutina = rutina
         };
@@ -216,6 +227,7 @@ public class ClientesController : ControllerBase
 
         await transaccion.CommitAsync(cancellationToken);
         await DespertarEnvioRutina(notificacionRutina, cliente);
+        await _hikvisionAccess.SincronizarCliente(cliente, null, cancellationToken);
 
         var respuesta = MapearCliente(cliente);
         return CreatedAtAction(nameof(ObtenerClientePorId), new { id = cliente.IdCliente }, respuesta);
@@ -268,6 +280,32 @@ public class ClientesController : ControllerBase
             return Conflict(new { message = "Ya existe otro cliente registrado con ese documento." });
         }
 
+        var hikvisionEmployeeNo = LimpiarTextoOpcional(request.HikvisionEmployeeNo);
+        if (hikvisionEmployeeNo is not null &&
+            await ExisteCodigoHikvision(hikvisionEmployeeNo, id, cancellationToken))
+        {
+            return Conflict(new { message = "Ese código Hikvision ya está vinculado a otro cliente." });
+        }
+
+        var codigoHikvisionAnterior = LimpiarTextoOpcional(cliente.HikvisionEmployeeNo);
+        var cambiaCodigoHikvision = !string.Equals(
+            codigoHikvisionAnterior,
+            hikvisionEmployeeNo,
+            StringComparison.OrdinalIgnoreCase);
+        if (cambiaCodigoHikvision && codigoHikvisionAnterior is not null)
+        {
+            var desvinculacion = await _hikvisionAccess.DeshabilitarCodigoActual(
+                cliente,
+                cancellationToken);
+            if (!desvinculacion.Success)
+            {
+                return StatusCode(StatusCodes.Status503ServiceUnavailable, new
+                {
+                    message = "No se cambió el código porque Hikvision no confirmó el bloqueo del vínculo anterior. Reintentá cuando el equipo esté disponible."
+                });
+            }
+        }
+
         var rutinaAnterior = cliente.IdRutina;
         var aceptabaWhatsApp = cliente.AceptaWhatsApp;
         var ahora = DateTime.UtcNow;
@@ -278,6 +316,14 @@ public class ClientesController : ControllerBase
         cliente.Telefono = request.Telefono.Trim();
         cliente.FechaNacimiento = request.FechaNacimiento;
         cliente.Direccion = LimpiarTextoOpcional(request.Direccion);
+        cliente.HikvisionEmployeeNo = hikvisionEmployeeNo;
+        if (cambiaCodigoHikvision && hikvisionEmployeeNo is null)
+        {
+            cliente.AccesoHikvisionHabilitado = null;
+            cliente.FechaVencimientoAccesoHikvision = null;
+            cliente.FechaUltimaSincronizacionHikvision = null;
+            cliente.UltimoErrorHikvision = null;
+        }
         cliente.Estado = request.Estado!.Value;
         if (request.AceptaWhatsApp is { } aceptaWhatsApp)
         {
@@ -308,6 +354,7 @@ public class ClientesController : ControllerBase
 
         await _context.SaveChangesAsync(cancellationToken);
         await DespertarEnvioRutina(notificacionRutina, cliente);
+        await _hikvisionAccess.SincronizarCliente(cliente, null, cancellationToken);
         return Ok(MapearCliente(cliente));
     }
 
@@ -338,6 +385,22 @@ public class ClientesController : ControllerBase
             });
         }
 
+        if (!string.IsNullOrWhiteSpace(cliente.HikvisionEmployeeNo))
+        {
+            cliente.Estado = false;
+            var sincronizacion = await _hikvisionAccess.SincronizarCliente(
+                cliente,
+                null,
+                cancellationToken);
+            if (!sincronizacion.Success)
+            {
+                return StatusCode(StatusCodes.Status503ServiceUnavailable, new
+                {
+                    message = "El cliente quedó inactivo, pero no se eliminó porque Hikvision no confirmó el bloqueo. Reintentá cuando el equipo esté disponible."
+                });
+            }
+        }
+
         _context.Clientes.Remove(cliente);
         await _context.SaveChangesAsync(cancellationToken);
         return NoContent();
@@ -366,6 +429,8 @@ public class ClientesController : ControllerBase
                 EF.Functions.ILike(cliente.Apellido, patron) ||
                 EF.Functions.ILike(cliente.Documento, patron) ||
                 EF.Functions.ILike(cliente.Telefono, patron) ||
+                (cliente.HikvisionEmployeeNo != null &&
+                 EF.Functions.ILike(cliente.HikvisionEmployeeNo, patron)) ||
                 EF.Functions.ILike(cliente.Rutina.Nombre, patron))
             .OrderByDescending(cliente => cliente.Estado)
             .ThenBy(cliente => cliente.Apellido)
@@ -397,6 +462,7 @@ public class ClientesController : ControllerBase
 
         cliente.Estado = request.Estado!.Value;
         await _context.SaveChangesAsync(cancellationToken);
+        await _hikvisionAccess.SincronizarCliente(cliente, null, cancellationToken);
         return Ok(MapearCliente(cliente));
     }
 
@@ -432,6 +498,11 @@ public class ClientesController : ControllerBase
             AceptaWhatsApp = cliente.AceptaWhatsApp,
             FechaConsentimientoWhatsApp = cliente.FechaConsentimientoWhatsApp,
             FechaBajaWhatsApp = cliente.FechaBajaWhatsApp,
+            HikvisionEmployeeNo = cliente.HikvisionEmployeeNo,
+            AccesoHikvisionHabilitado = cliente.AccesoHikvisionHabilitado,
+            FechaVencimientoAccesoHikvision = cliente.FechaVencimientoAccesoHikvision,
+            FechaUltimaSincronizacionHikvision = cliente.FechaUltimaSincronizacionHikvision,
+            UltimoErrorHikvision = cliente.UltimoErrorHikvision,
             Edad = CalcularEdad(cliente.FechaNacimiento)
         });
     }
@@ -489,7 +560,12 @@ public class ClientesController : ControllerBase
             RutinaNombre = cliente.Rutina.Nombre,
             AceptaWhatsApp = cliente.AceptaWhatsApp,
             FechaConsentimientoWhatsApp = cliente.FechaConsentimientoWhatsApp,
-            FechaBajaWhatsApp = cliente.FechaBajaWhatsApp
+            FechaBajaWhatsApp = cliente.FechaBajaWhatsApp,
+            HikvisionEmployeeNo = cliente.HikvisionEmployeeNo,
+            AccesoHikvisionHabilitado = cliente.AccesoHikvisionHabilitado,
+            FechaVencimientoAccesoHikvision = cliente.FechaVencimientoAccesoHikvision,
+            FechaUltimaSincronizacionHikvision = cliente.FechaUltimaSincronizacionHikvision,
+            UltimoErrorHikvision = cliente.UltimoErrorHikvision
         };
     }
 
@@ -509,8 +585,23 @@ public class ClientesController : ControllerBase
             RutinaNombre = cliente.Rutina.Nombre,
             AceptaWhatsApp = cliente.AceptaWhatsApp,
             FechaConsentimientoWhatsApp = cliente.FechaConsentimientoWhatsApp,
-            FechaBajaWhatsApp = cliente.FechaBajaWhatsApp
+            FechaBajaWhatsApp = cliente.FechaBajaWhatsApp,
+            HikvisionEmployeeNo = cliente.HikvisionEmployeeNo,
+            AccesoHikvisionHabilitado = cliente.AccesoHikvisionHabilitado,
+            FechaVencimientoAccesoHikvision = cliente.FechaVencimientoAccesoHikvision,
+            FechaUltimaSincronizacionHikvision = cliente.FechaUltimaSincronizacionHikvision,
+            UltimoErrorHikvision = cliente.UltimoErrorHikvision
         };
+
+    private Task<bool> ExisteCodigoHikvision(
+        string employeeNo,
+        int? idClienteExcluido,
+        CancellationToken cancellationToken) =>
+        _context.Clientes.AnyAsync(
+            cliente =>
+                cliente.HikvisionEmployeeNo == employeeNo &&
+                (!idClienteExcluido.HasValue || cliente.IdCliente != idClienteExcluido.Value),
+            cancellationToken);
 
     private static Notificacion CrearNotificacionRutina(
         Cliente cliente,
