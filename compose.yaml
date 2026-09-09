@@ -36,13 +36,32 @@ services:
       Database__ApplyMigrations: "true"
       ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=fitnessclub_db;Username=fitnessclub;Password=${POSTGRES_PASSWORD:?Defina POSTGRES_PASSWORD en el archivo .env}
       Integrations__N8n__ApiKey: ${N8N_API_KEY:?Defina N8N_API_KEY en el archivo .env}
-      Integrations__N8n__RecoveryWebhookUrl: http://n8n:5678/webhook/recuperacion-contrasena
+      Integrations__N8n__RoutineWebhookUrl: ${N8N_ROUTINE_WEBHOOK_URL:-http://n8n:5678/webhook/rutina-asignada}
+      Integrations__Hikvision__Enabled: ${HIKVISION_ENABLED:-false}
+      Integrations__Hikvision__BaseUrl: ${HIKVISION_BASE_URL:-}
+      Integrations__Hikvision__Username: ${HIKVISION_USERNAME:-}
+      Integrations__Hikvision__Password: ${HIKVISION_PASSWORD:-}
+      Integrations__Hikvision__AllowInvalidCertificate: ${HIKVISION_ALLOW_INVALID_CERTIFICATE:-false}
+      Integrations__Hikvision__TimeoutSeconds: ${HIKVISION_TIMEOUT_SECONDS:-10}
+      Email__Smtp__Host: ${SMTP_HOST:-}
+      Email__Smtp__Port: ${SMTP_PORT:-587}
+      Email__Smtp__UseSsl: ${SMTP_USE_SSL:-true}
+      Email__Smtp__UserName: ${SMTP_USERNAME:-}
+      Email__Smtp__Password: ${SMTP_PASSWORD:-}
+      Email__Smtp__FromAddress: ${SMTP_FROM_ADDRESS:-}
+      Email__Smtp__FromName: ${SMTP_FROM_NAME:-FitnessClubEvolution}
+      RecoveryAccounts__Rodrigo__UserName: ${RECOVERY_RODRIGO_USERNAME:-RodrigoGue}
+      RecoveryAccounts__Rodrigo__Email: ${RECOVERY_RODRIGO_EMAIL:-}
+      RecoveryAccounts__Paola__UserName: ${RECOVERY_PAOLA_USERNAME:-PaoMu}
+      RecoveryAccounts__Paola__Email: ${RECOVERY_PAOLA_EMAIL:-}
       Cors__AllowedOrigins__0: https://fcevolution.online
       Cors__AllowedOrigins__1: https://www.fcevolution.online
       TZ: America/Montevideo
     depends_on:
       postgres:
         condition: service_healthy
+      n8n:
+        condition: service_started
     volumes:
       - data_protection_keys:/home/app/.aspnet/DataProtection-Keys
     healthcheck:

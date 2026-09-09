@@ -64,6 +64,10 @@ public class EntrenadoresController : ControllerBase
     {
         var nombreUsuario = request.NombreUsuario.Trim();
         var nombreUsuarioNormalizado = nombreUsuario.ToUpperInvariant();
+        var correoElectronico = string.IsNullOrWhiteSpace(request.CorreoElectronico)
+            ? null
+            : request.CorreoElectronico.Trim();
+        var correoElectronicoNormalizado = correoElectronico?.ToUpperInvariant();
         var existe = await _context.Entrenadores.AnyAsync(
             entrenador => entrenador.NombreUsuarioNormalizado == nombreUsuarioNormalizado,
             cancellationToken);
@@ -73,11 +77,24 @@ public class EntrenadoresController : ControllerBase
             return Conflict(new { message = "Ya existe una cuenta con ese nombre de usuario." });
         }
 
+        if (correoElectronicoNormalizado is not null)
+        {
+            var existeCorreo = await _context.Entrenadores.AnyAsync(
+                entrenador => entrenador.CorreoElectronicoNormalizado == correoElectronicoNormalizado,
+                cancellationToken);
+            if (existeCorreo)
+            {
+                return Conflict(new { message = "Ya existe una cuenta con ese correo electrónico." });
+            }
+        }
+
         var entrenador = new Entrenador
         {
             Nombre = request.Nombre.Trim(),
             Apellido = request.Apellido.Trim(),
             Telefono = request.Telefono.Trim(),
+            CorreoElectronico = correoElectronico,
+            CorreoElectronicoNormalizado = correoElectronicoNormalizado,
             NombreUsuario = nombreUsuario,
             NombreUsuarioNormalizado = nombreUsuarioNormalizado,
             Rol = request.Rol,
@@ -117,6 +134,7 @@ public class EntrenadoresController : ControllerBase
                 Nombre = item.Nombre,
                 Apellido = item.Apellido,
                 Telefono = item.Telefono,
+                CorreoElectronico = item.CorreoElectronico,
                 NombreUsuario = item.NombreUsuario,
                 Rol = item.Rol,
                 Estado = item.Estado,
@@ -138,6 +156,7 @@ public class EntrenadoresController : ControllerBase
             Nombre = entrenador.Nombre,
             Apellido = entrenador.Apellido,
             Telefono = entrenador.Telefono,
+            CorreoElectronico = entrenador.CorreoElectronico,
             NombreUsuario = entrenador.NombreUsuario,
             Rol = entrenador.Rol,
             Estado = entrenador.Estado,

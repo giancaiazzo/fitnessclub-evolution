@@ -27,6 +27,12 @@ openssl rand -hex 32
 
 No completes `VITE_API_URL`: dentro del VPS el frontend utiliza `/api`.
 
+Para habilitar la recuperación de contraseña completá también `SMTP_HOST`,
+`SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_FROM_ADDRESS` y los dos
+correos `RECOVERY_*_EMAIL`. Usá credenciales SMTP o una contraseña de aplicación,
+nunca la contraseña personal de la casilla. Si los usuarios no se llaman
+`RodrigoGue` y `PaoMu`, ajustá también `RECOVERY_*_USERNAME`.
+
 Validá la configuración y levantá los servicios:
 
 ```bash
@@ -56,11 +62,22 @@ La clave `N8N_API_KEY` se configura en n8n como credencial **Header Auth** con
 el nombre `X-N8N-API-KEY`. El detalle de endpoints y workflows está en
 [`BACKEND_MODULOS.md`](BACKEND_MODULOS.md).
 
+El backend despierta el envío de rutina en el momento del alta mediante
+`N8N_ROUTINE_WEBHOOK_URL`. En Docker debe conservarse la URL interna:
+
+```text
+N8N_ROUTINE_WEBHOOK_URL=http://n8n:5678/webhook/rutina-asignada
+```
+
+El workflow con ese path debe estar publicado en n8n; la URL de prueba
+`/webhook-test/` no sirve para las altas reales.
+
 ## Actualizaciones
 
-Si el VPS ya tenía `.env`, agregá `N8N_API_KEY` manualmente antes de recrear
-los contenedores; no reemplaces el archivo porque contiene los secretos y datos
-de la instalación actual.
+Si el VPS ya tenía `.env`, agregá manualmente `N8N_API_KEY`,
+`N8N_ROUTINE_WEBHOOK_URL`, las variables `SMTP_*` y `RECOVERY_*` antes de
+recrear los contenedores; no reemplaces el archivo porque contiene los secretos
+y datos de la instalación actual.
 
 ```bash
 mkdir -p /opt/fitnessclub/backups

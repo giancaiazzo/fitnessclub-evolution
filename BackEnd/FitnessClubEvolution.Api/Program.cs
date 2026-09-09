@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using System.Net;
 using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,10 +20,42 @@ builder.Services.AddOpenApi();
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<IPasswordHasher<Entrenador>, PasswordHasher<Entrenador>>();
 builder.Services.AddScoped<IPasswordHasher<SolicitudRecuperacion>, PasswordHasher<SolicitudRecuperacion>>();
+builder.Services.AddScoped<IRecoveryEmailSender, SmtpRecoveryEmailSender>();
 builder.Services.AddHttpClient<IN8nWebhookClient, N8nWebhookClient>(client =>
 {
-    client.Timeout = TimeSpan.FromSeconds(10);
+    // El alta ya está confirmada en PostgreSQL. Este llamado solo despierta
+    // n8n y nunca debe dejar al usuario esperando indefinidamente.
+    client.Timeout = TimeSpan.FromSeconds(5);
 });
+builder.Services.Configure<HikvisionOptions>(
+    builder.Configuration.GetSection("Integrations:Hikvision"));
+builder.Services.AddScoped<IHikvisionClientAccessCoordinator, HikvisionClientAccessCoordinator>();
+builder.Services
+    .AddHttpClient<IHikvisionAccessService, HikvisionAccessService>((services, client) =>
+    {
+        var options = services.GetRequiredService<IOptions<HikvisionOptions>>().Value;
+        client.Timeout = TimeSpan.FromSeconds(Math.Clamp(options.TimeoutSeconds, 3, 30));
+    })
+    .ConfigurePrimaryHttpMessageHandler(services =>
+    {
+        var options = services.GetRequiredService<IOptions<HikvisionOptions>>().Value;
+        var handler = new HttpClientHandler
+        {
+            Credentials = new NetworkCredential(options.Username, options.Password),
+            PreAuthenticate = false,
+            AllowAutoRedirect = false
+        };
+
+        // El controlador usa un certificado propio. Esta excepción solo afecta
+        // al HttpClient dedicado a la URL fija configurada para Hikvision.
+        if (options.AllowInvalidCertificate)
+        {
+            handler.ServerCertificateCustomValidationCallback =
+                HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+        }
+
+        return handler;
+    });
 
 // Los límites frenan fuerza bruta y abuso de códigos sin afectar los CRUD del
 // panel. En producción puede reemplazarse el almacén en memoria por uno
@@ -116,6 +150,17 @@ if (builder.Configuration.GetValue("Database:ApplyMigrations", false))
         app.Logger.LogInformation(
             "Se migraron {Cantidad} credenciales históricas a hash.",
             credencialesMigradas);
+    }
+
+    var correosVinculados = await RecoveryAccountEmailSync.Ejecutar(
+        dbContext,
+        builder.Configuration,
+        app.Logger);
+    if (correosVinculados > 0)
+    {
+        app.Logger.LogInformation(
+            "Se vincularon {Cantidad} correos de recuperación administrativa.",
+            correosVinculados);
     }
 }
 

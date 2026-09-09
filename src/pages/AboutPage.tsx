@@ -152,11 +152,11 @@ export default function AboutPage() {
   <section className="bg-card py-16 sm:py-20">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <h2 className="mb-4 text-center text-3xl font-black text-foreground sm:text-4xl">
-        Entrenadores profesionales
+        Nuestro equipo
       </h2>
 
       <p className="mx-auto mb-10 max-w-2xl text-center text-lg text-muted-foreground sm:mb-12 sm:text-xl">
-        Conocé a nuestro equipo de profesionales, comprometidos con tu progreso.
+        Conocé a quienes hacen de FitnessClubEvolution una comunidad cercana.
       </p>
 
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
@@ -193,7 +193,7 @@ export default function AboutPage() {
                 </p>
 
                 <p className="text-muted-foreground/70 text-xs">
-                  {trainer.experience} de experiencia
+                  {trainer.experience}
                 </p>
               </div>
 

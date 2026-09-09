@@ -43,6 +43,12 @@ public class AppDbContext : DbContext
             entity.Property(cliente => cliente.AceptaWhatsApp)
                 .HasDefaultValue(false);
 
+            entity.Property(cliente => cliente.HikvisionEmployeeNo)
+                .HasMaxLength(32);
+
+            entity.Property(cliente => cliente.UltimoErrorHikvision)
+                .HasMaxLength(1000);
+
             entity.HasIndex(cliente => cliente.Documento);
 
             entity.HasIndex(cliente => cliente.IdRutina);
@@ -51,6 +57,10 @@ public class AppDbContext : DbContext
             // único para que una eventual duplicación histórica no bloquee la
             // migración; el endpoint de n8n rechaza resultados ambiguos.
             entity.HasIndex(cliente => cliente.Telefono);
+
+            entity.HasIndex(cliente => cliente.HikvisionEmployeeNo)
+                .IsUnique()
+                .HasFilter("\"HikvisionEmployeeNo\" IS NOT NULL");
 
             entity.HasOne(cliente => cliente.Rutina)
                 .WithMany(rutina => rutina.Clientes)
@@ -104,6 +114,12 @@ public class AppDbContext : DbContext
             entity.Property(entrenador => entrenador.Telefono)
                 .IsRequired();
 
+            entity.Property(entrenador => entrenador.CorreoElectronico)
+                .HasMaxLength(254);
+
+            entity.Property(entrenador => entrenador.CorreoElectronicoNormalizado)
+                .HasMaxLength(254);
+
             entity.Property(entrenador => entrenador.NombreUsuario)
                 .HasMaxLength(60)
                 .IsRequired();
@@ -128,6 +144,10 @@ public class AppDbContext : DbContext
 
             entity.HasIndex(entrenador => entrenador.NombreUsuarioNormalizado)
                 .IsUnique();
+
+            entity.HasIndex(entrenador => entrenador.CorreoElectronicoNormalizado)
+                .IsUnique()
+                .HasFilter("\"CorreoElectronicoNormalizado\" IS NOT NULL");
 
             entity.HasIndex(entrenador => entrenador.Telefono);
         });

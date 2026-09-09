@@ -26,11 +26,12 @@ type FormularioCliente = {
   telefono: string;
   fechaNacimiento: string;
   direccion: string;
+  hikvisionEmployeeNo: string;
   idRutina: string;
+  aceptaWhatsApp: boolean;
 };
 
 type ClienteCreado = {
-  idCliente: number;
   rutinaNombre: string;
 };
 
@@ -41,7 +42,9 @@ const FORMULARIO_INICIAL: FormularioCliente = {
   telefono: "",
   fechaNacimiento: "",
   direccion: "",
+  hikvisionEmployeeNo: "",
   idRutina: "",
+  aceptaWhatsApp: false,
 };
 
 const inputClassName =
@@ -139,7 +142,9 @@ export default function IngresarClientePage() {
           telefono: `598${formulario.telefono}`,
           fechaNacimiento: formulario.fechaNacimiento || null,
           direccion: formulario.direccion.trim() || null,
+          hikvisionEmployeeNo: formulario.hikvisionEmployeeNo.trim() || null,
           idRutina,
+          aceptaWhatsApp: formulario.aceptaWhatsApp,
         }),
       });
 
@@ -152,7 +157,7 @@ export default function IngresarClientePage() {
       const cliente = (await respuesta.json()) as ClienteCreado;
       setFormulario(FORMULARIO_INICIAL);
       setExito(
-        `Cliente registrado con el ID #${cliente.idCliente} y la rutina ${cliente.rutinaNombre}.`,
+        `Cliente registrado correctamente con la rutina ${cliente.rutinaNombre}.`,
       );
     } catch (errorDesconocido) {
       setError(
@@ -171,8 +176,8 @@ export default function IngresarClientePage() {
         </p>
         <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Ingresar cliente</h1>
         <p className="mt-3 max-w-2xl text-gray-400">
-          El ID, la fecha de registro y el estado activo se asignan automáticamente. La
-          rutina elegida queda vinculada al cliente en la base de datos.
+          La fecha de registro y el estado activo se asignan automáticamente. La rutina
+          elegida queda vinculada al cliente en la base de datos.
         </p>
       </header>
 
@@ -288,9 +293,28 @@ export default function IngresarClientePage() {
 
           <div className="sm:col-span-2">
             <Campo
+              etiqueta="Código de acceso Hikvision"
+              ayuda="Opcional. Es el employeeNo de la persona ya registrada con rostro o huella en el equipo."
+            >
+              <input
+                className={inputClassName}
+                value={formulario.hikvisionEmployeeNo}
+                onChange={(event) =>
+                  actualizar("hikvisionEmployeeNo", event.target.value.slice(0, 32))
+                }
+                maxLength={32}
+                autoComplete="off"
+                placeholder="Ej.: 02"
+                disabled={guardando}
+              />
+            </Campo>
+          </div>
+
+          <div className="sm:col-span-2">
+            <Campo
               etiqueta="Rutina asignada"
               requerido
-              ayuda="La asignación se guardará ahora; el envío por WhatsApp se conectará luego con n8n."
+              ayuda="Si el consentimiento está activo, la rutina se enviará automáticamente al guardar el cliente."
             >
               <select
                 className={inputClassName}
@@ -327,6 +351,29 @@ export default function IngresarClientePage() {
               )}
             </Campo>
           </div>
+
+          <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-lime-400/20 bg-lime-400/[0.06] p-4 sm:col-span-2">
+            <input
+              type="checkbox"
+              checked={formulario.aceptaWhatsApp}
+              onChange={(event) => actualizar("aceptaWhatsApp", event.target.checked)}
+              disabled={guardando}
+              className="mt-1 h-5 w-5 shrink-0 accent-lime-400"
+            />
+            <span>
+              <span className="block text-sm font-bold text-white">
+                Consentimiento para comunicaciones por WhatsApp
+              </span>
+              <span className="mt-1 block text-sm leading-6 text-gray-300">
+                Acepto recibir por WhatsApp mi rutina, avisos de vencimiento y
+                comunicaciones operativas de FitnessClubEvolution. Puedo solicitar la
+                baja respondiendo SALIR.
+              </span>
+              <span className="mt-1 block text-xs text-gray-500">
+                Marcá esta opción únicamente si el cliente brindó su autorización.
+              </span>
+            </span>
+          </label>
         </div>
 
         <footer className="flex flex-col-reverse gap-3 border-t border-white/[0.08] bg-black/15 px-5 py-4 sm:flex-row sm:justify-end sm:px-8">

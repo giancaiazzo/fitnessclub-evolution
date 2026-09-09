@@ -24,12 +24,75 @@ namespace FitnessClubEvolution.Api.Controllers;
 public class IntegracionesN8nController : ControllerBase
 {
     private const string PagoConfirmado = "Confirmado";
-    private const string RolAdministrador = "Administrador";
     private readonly AppDbContext _context;
+    private readonly IHikvisionAccessService _hikvision;
+    private readonly IHikvisionClientAccessCoordinator _hikvisionAccess;
 
-    public IntegracionesN8nController(AppDbContext context)
+    public IntegracionesN8nController(
+        AppDbContext context,
+        IHikvisionAccessService hikvision,
+        IHikvisionClientAccessCoordinator hikvisionAccess)
     {
         _context = context;
+        _hikvision = hikvision;
+        _hikvisionAccess = hikvisionAccess;
+    }
+
+    /// <summary>
+    /// Comprueba desde el backend que el controlador remoto responde por ISAPI.
+    /// Nunca devuelve credenciales ni datos de personas enroladas.
+    /// </summary>
+    [HttpGet("hikvision/estado")]
+    public async Task<ActionResult<HikvisionDeviceResult>> ObtenerEstadoHikvision(
+        CancellationToken cancellationToken)
+    {
+        var result = await _hikvision.ProbarConexion(cancellationToken);
+        return result.Success
+            ? Ok(result)
+            : StatusCode(StatusCodes.Status503ServiceUnavailable, result);
+    }
+
+    /// <summary>
+    /// Recalcula el acceso de todos los clientes vinculados. Este endpoint se
+    /// ejecuta diariamente desde n8n y también permite reparar una caída de red.
+    /// </summary>
+    [HttpPost("hikvision/reconciliar")]
+    public async Task<ActionResult<HikvisionReconciliationResult>> ReconciliarHikvision(
+        CancellationToken cancellationToken)
+    {
+        var result = await _hikvisionAccess.Reconciliar(cancellationToken);
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Fuerza la sincronización de un único cliente para altas, diagnóstico y
+    /// pruebas controladas sin modificar a las demás personas del equipo.
+    /// </summary>
+    [HttpPost("hikvision/clientes/{idCliente:int}/sincronizar")]
+    public async Task<ActionResult<HikvisionClientSyncResult>> SincronizarClienteHikvision(
+        int idCliente,
+        CancellationToken cancellationToken)
+    {
+        var cliente = await _context.Clientes.SingleOrDefaultAsync(
+            item => item.IdCliente == idCliente,
+            cancellationToken);
+        if (cliente is null)
+        {
+            return NotFound(new { message = "No se encontró el cliente solicitado." });
+        }
+
+        if (string.IsNullOrWhiteSpace(cliente.HikvisionEmployeeNo))
+        {
+            return BadRequest(new { message = "El cliente no tiene un código Hikvision vinculado." });
+        }
+
+        var result = await _hikvisionAccess.SincronizarCliente(
+            cliente,
+            null,
+            cancellationToken);
+        return result.Success
+            ? Ok(result)
+            : StatusCode(StatusCodes.Status503ServiceUnavailable, result);
     }
 
     /// <summary>
@@ -49,6 +112,98 @@ public class IntegracionesN8nController : ControllerBase
             return BadRequest(new { message = "El teléfono no tiene un formato válido." });
         }
 
+        var respuesta = await ConsultarClientePorTelefono(
+            telefonoNormalizado,
+            cancellationToken);
+
+        return Ok(respuesta);
+    }
+
+    /// <summary>
+    /// Identifica el nivel de acceso de un teléfono para el Router de WhatsApp.
+    /// Los administradores activos tienen prioridad sobre un eventual registro
+    /// de cliente; los demás casos se clasifican sin exponer datos privados.
+    /// </summary>
+    /// <returns>
+    /// HTTP 200 con TipoAcceso=SuperAdmin, Cliente, ClienteMoroso, Visitante o
+    /// SinAcceso. Devuelve HTTP 400 si el teléfono no tiene un formato válido.
+    /// </returns>
+    [HttpGet("acceso/por-telefono/{telefono}")]
+    public async Task<ActionResult<AccesoBotResponse>> ObtenerAccesoPorTelefono(
+        string telefono,
+        CancellationToken cancellationToken)
+    {
+        var telefonoNormalizado = NormalizarTelefono(telefono);
+        if (telefonoNormalizado is null)
+        {
+            return BadRequest(new { message = "El teléfono no tiene un formato válido." });
+        }
+
+        var administradoresActivos = await _context.Entrenadores
+            .AsNoTracking()
+            .Where(entrenador =>
+                entrenador.Estado &&
+                entrenador.Rol == "Administrador")
+            .OrderBy(entrenador => entrenador.IdEntrenador)
+            .Select(entrenador => new
+            {
+                entrenador.IdEntrenador,
+                entrenador.Nombre,
+                entrenador.Apellido,
+                entrenador.Telefono
+            })
+            .ToListAsync(cancellationToken);
+
+        // Las cuentas administrativas pueden ser históricas y conservar el
+        // formato local 09x; se normalizan en memoria porque son muy pocas.
+        var administradores = administradoresActivos
+            .Where(entrenador =>
+                NormalizarTelefono(entrenador.Telefono) == telefonoNormalizado)
+            .Take(2)
+            .ToList();
+
+        if (administradores.Count > 1)
+        {
+            return Ok(new AccesoBotResponse
+            {
+                TipoAcceso = "SinAcceso",
+                Motivo = "AdministradorAmbiguo",
+                Encontrado = true,
+                Ambiguo = true,
+                PermiteDatosPrivados = false,
+                TelefonoNormalizado = telefonoNormalizado,
+                EstadoCliente = "Ambiguo"
+            });
+        }
+
+        if (administradores.Count == 1)
+        {
+            var administrador = administradores[0];
+            return Ok(new AccesoBotResponse
+            {
+                TipoAcceso = "SuperAdmin",
+                Encontrado = true,
+                Ambiguo = false,
+                PermiteDatosPrivados = true,
+                IdEntrenador = administrador.IdEntrenador,
+                Nombre = administrador.Nombre,
+                Apellido = administrador.Apellido,
+                TelefonoNormalizado = telefonoNormalizado,
+                EstadoCliente = "AdministradorActivo"
+            });
+        }
+
+        var cliente = await ConsultarClientePorTelefono(
+            telefonoNormalizado,
+            cancellationToken);
+
+        return Ok(CrearAccesoCliente(cliente));
+    }
+
+    private async Task<ClienteBotResponse> ConsultarClientePorTelefono(
+        string telefonoNormalizado,
+        CancellationToken cancellationToken)
+    {
         var clientes = await _context.Clientes
             .AsNoTracking()
             .Include(cliente => cliente.Rutina)
@@ -59,23 +214,23 @@ public class IntegracionesN8nController : ControllerBase
 
         if (clientes.Count == 0)
         {
-            return Ok(new ClienteBotResponse
+            return new ClienteBotResponse
             {
                 Encontrado = false,
                 TelefonoNormalizado = telefonoNormalizado
-            });
+            };
         }
 
         if (clientes.Count > 1)
         {
-            return Ok(new ClienteBotResponse
+            return new ClienteBotResponse
             {
                 Encontrado = true,
                 Ambiguo = true,
                 PermiteDatosPrivados = false,
                 TelefonoNormalizado = telefonoNormalizado,
                 EstadoCliente = "Ambiguo"
-            });
+            };
         }
 
         var cliente = clientes[0];
@@ -103,7 +258,7 @@ public class IntegracionesN8nController : ControllerBase
                 ? "Vencido"
                 : "Activo";
 
-        return Ok(new ClienteBotResponse
+        return new ClienteBotResponse
         {
             Encontrado = true,
             Ambiguo = false,
@@ -124,14 +279,13 @@ public class IntegracionesN8nController : ControllerBase
                 TamanoBytes = cliente.Rutina.TamanoBytes,
                 PdfEndpoint = $"/api/integraciones/n8n/clientes/{cliente.IdCliente}/rutina/pdf"
             }
-        });
+        };
     }
 
     /// <summary>
-    /// Reserva un mensaje entrante usando el ID único entregado por Meta y, en
-    /// la misma operación, clasifica al remitente como Visitante, Cliente,
-    /// SuperAdmin o SinAcceso. La primera ejecución recibe Procesar=true;
-    /// cualquier reintento posterior recibe Duplicado=true y debe finalizar.
+    /// Reserva un mensaje entrante usando el ID único entregado por Meta. La
+    /// primera ejecución recibe Procesar=true; cualquier reintento posterior
+    /// recibe Duplicado=true y debe finalizar sin responder otra vez.
     /// </summary>
     [HttpPost("mensajes/reservar")]
     public async Task<ActionResult<ReservarMensajeWhatsappResponse>> ReservarMensaje(
@@ -167,9 +321,12 @@ public class IntegracionesN8nController : ControllerBase
             });
         }
 
-        var perfilAcceso = await ResolverAccesoMensaje(
-            telefonoNormalizado,
-            cancellationToken);
+        var idsCliente = await _context.Clientes
+            .AsNoTracking()
+            .Where(cliente => cliente.Telefono == telefonoNormalizado)
+            .Select(cliente => cliente.IdCliente)
+            .Take(2)
+            .ToListAsync(cancellationToken);
 
         var mensaje = new MensajeWhatsapp
         {
@@ -180,7 +337,7 @@ public class IntegracionesN8nController : ControllerBase
             Resumen = Limpiar(request.Resumen),
             EstadoProcesamiento = "Reservado",
             FechaRecepcion = DateTime.UtcNow,
-            IdCliente = perfilAcceso.IdCliente
+            IdCliente = idsCliente.Count == 1 ? idsCliente[0] : null
         };
 
         _context.MensajesWhatsapp.Add(mensaje);
@@ -210,16 +367,8 @@ public class IntegracionesN8nController : ControllerBase
             Procesar = true,
             Duplicado = false,
             IdMensajeWhatsapp = mensaje.IdMensajeWhatsapp,
-            IdCliente = perfilAcceso.IdCliente,
-            IdEntrenador = perfilAcceso.IdEntrenador,
-            TelefonoNormalizado = telefonoNormalizado,
-            TipoAcceso = perfilAcceso.TipoAcceso,
-            Nombre = perfilAcceso.Nombre,
-            Apellido = perfilAcceso.Apellido,
-            EstadoCliente = perfilAcceso.EstadoCliente,
-            AceptaWhatsApp = perfilAcceso.AceptaWhatsApp,
-            Cuota = perfilAcceso.Cuota,
-            Rutina = perfilAcceso.Rutina
+            IdCliente = mensaje.IdCliente,
+            TelefonoNormalizado = telefonoNormalizado
         });
     }
 
@@ -407,6 +556,9 @@ public class IntegracionesN8nController : ControllerBase
         var actualizadas = await _context.Notificaciones
             .Where(notificacion =>
                 notificacion.IdNotificacion == idNotificacion &&
+                notificacion.Cliente.Estado &&
+                notificacion.Cliente.AceptaWhatsApp &&
+                notificacion.Cliente.FechaBajaWhatsApp == null &&
                 (notificacion.Estado == "Pendiente" ||
                  notificacion.Estado == "Reservada" ||
                  notificacion.Estado == "Fallida" ||
@@ -519,27 +671,9 @@ public class IntegracionesN8nController : ControllerBase
 
         var cliente = clientes[0];
         var ahora = DateTime.UtcNow;
-        var consentimientoActivado = request.Acepta && !cliente.AceptaWhatsApp;
         cliente.AceptaWhatsApp = request.Acepta;
         cliente.FechaConsentimientoWhatsApp = request.Acepta ? ahora : cliente.FechaConsentimientoWhatsApp;
         cliente.FechaBajaWhatsApp = request.Acepta ? null : ahora;
-
-        if (consentimientoActivado)
-        {
-            _context.Notificaciones.Add(new Notificacion
-            {
-                IdCliente = cliente.IdCliente,
-                Tipo = "RutinaAsignada",
-                Mensaje = "Rutina actual pendiente de envío después del consentimiento.",
-                FechaProgramada = ahora,
-                Estado = "Pendiente",
-                Canal = "WhatsApp",
-                Referencia = cliente.IdRutina.ToString(),
-                ClaveIdempotencia =
-                    $"rutina:{cliente.IdCliente}:{cliente.IdRutina}:consentimiento:{ahora:yyyyMMddHHmmssfff}",
-                FechaCreacion = ahora
-            });
-        }
 
         await _context.SaveChangesAsync(cancellationToken);
 
@@ -611,136 +745,6 @@ public class IntegracionesN8nController : ControllerBase
             archivo.ContenidoPdf,
             archivo.TipoContenidoPdf ?? "application/pdf",
             Path.GetFileName(archivo.NombreArchivoPdf));
-    }
-
-    /// <summary>
-    /// Resuelve en una sola consulta lógica el acceso del remitente. Los
-    /// administradores activos tienen prioridad incluso si también figuran
-    /// como clientes. Los teléfonos ambiguos nunca reciben datos privados.
-    /// </summary>
-    private async Task<PerfilAccesoMensaje> ResolverAccesoMensaje(
-        string telefonoNormalizado,
-        CancellationToken cancellationToken)
-    {
-        var administradores = await _context.Entrenadores
-            .AsNoTracking()
-            .Where(entrenador =>
-                entrenador.Telefono == telefonoNormalizado &&
-                entrenador.Estado &&
-                entrenador.Rol == RolAdministrador)
-            .Select(entrenador => new
-            {
-                entrenador.IdEntrenador,
-                entrenador.Nombre,
-                entrenador.Apellido
-            })
-            .Take(2)
-            .ToListAsync(cancellationToken);
-
-        var clientes = await _context.Clientes
-            .AsNoTracking()
-            .Include(cliente => cliente.Rutina)
-            .Where(cliente => cliente.Telefono == telefonoNormalizado)
-            .OrderByDescending(cliente => cliente.Estado)
-            .Take(2)
-            .ToListAsync(cancellationToken);
-
-        var idCliente = clientes.Count == 1
-            ? clientes[0].IdCliente
-            : (int?)null;
-
-        if (administradores.Count > 1)
-        {
-            return new PerfilAccesoMensaje(
-                "SinAcceso",
-                IdCliente: idCliente,
-                EstadoCliente: "Ambiguo");
-        }
-
-        if (administradores.Count == 1)
-        {
-            var administrador = administradores[0];
-            return new PerfilAccesoMensaje(
-                "SuperAdmin",
-                IdCliente: idCliente,
-                IdEntrenador: administrador.IdEntrenador,
-                Nombre: administrador.Nombre,
-                Apellido: administrador.Apellido);
-        }
-
-        if (clientes.Count == 0)
-        {
-            return new PerfilAccesoMensaje("Visitante");
-        }
-
-        if (clientes.Count > 1)
-        {
-            return new PerfilAccesoMensaje(
-                "SinAcceso",
-                EstadoCliente: "Ambiguo");
-        }
-
-        var cliente = clientes[0];
-        var ultimaCuota = await _context.Cuotas
-            .AsNoTracking()
-            .Where(cuota =>
-                cuota.IdCliente == cliente.IdCliente &&
-                cuota.EstadoPago == PagoConfirmado)
-            .OrderByDescending(cuota => cuota.FechaVencimiento)
-            .ThenByDescending(cuota => cuota.FechaPago)
-            .Select(cuota => new
-            {
-                cuota.FechaInicio,
-                cuota.FechaVencimiento
-            })
-            .FirstOrDefaultAsync(cancellationToken);
-
-        var estadoCuota = CrearEstadoCuota(
-            cliente.FechaRegistro,
-            ultimaCuota?.FechaInicio,
-            ultimaCuota?.FechaVencimiento);
-        var estadoCliente = !cliente.Estado
-            ? "Inactivo"
-            : estadoCuota.DiasVencido > 0
-                ? "Vencido"
-                : "Activo";
-
-        if (estadoCliente != "Activo")
-        {
-            return new PerfilAccesoMensaje(
-                "SinAcceso",
-                IdCliente: cliente.IdCliente,
-                Nombre: cliente.Nombre,
-                Apellido: cliente.Apellido,
-                EstadoCliente: estadoCliente,
-                Cuota: estadoCuota);
-        }
-
-        RutinaBotResponse? rutina = null;
-        if (cliente.Rutina is not null)
-        {
-            rutina = new RutinaBotResponse
-            {
-                IdRutina = cliente.Rutina.IdRutina,
-                Nombre = cliente.Rutina.Nombre,
-                NombreArchivoPdf = cliente.Rutina.NombreArchivoPdf,
-                CantidadPaginas = cliente.Rutina.CantidadPaginas,
-                TamanoBytes = cliente.Rutina.TamanoBytes,
-                PdfEndpoint =
-                    $"/api/integraciones/n8n/clientes/{cliente.IdCliente}/rutina/pdf"
-            };
-        }
-
-        return new PerfilAccesoMensaje(
-            "Cliente",
-            IdCliente: cliente.IdCliente,
-            Nombre: cliente.Nombre,
-            Apellido: cliente.Apellido,
-            EstadoCliente: estadoCliente,
-            AceptaWhatsApp:
-                cliente.AceptaWhatsApp && cliente.FechaBajaWhatsApp is null,
-            Cuota: estadoCuota,
-            Rutina: rutina);
     }
 
     private async Task<List<CandidatoCobranza>> ObtenerCandidatosCobranza(
@@ -830,6 +834,83 @@ public class IntegracionesN8nController : ControllerBase
         };
     }
 
+    private static AccesoBotResponse CrearAccesoCliente(ClienteBotResponse cliente)
+    {
+        if (!cliente.Encontrado)
+        {
+            return new AccesoBotResponse
+            {
+                TipoAcceso = "Visitante",
+                Motivo = "NoRegistrado",
+                Encontrado = false,
+                Ambiguo = false,
+                PermiteDatosPrivados = false,
+                TelefonoNormalizado = cliente.TelefonoNormalizado,
+                EstadoCliente = "NoRegistrado"
+            };
+        }
+
+        if (cliente.Ambiguo)
+        {
+            return new AccesoBotResponse
+            {
+                TipoAcceso = "SinAcceso",
+                Motivo = "ClienteAmbiguo",
+                Encontrado = true,
+                Ambiguo = true,
+                PermiteDatosPrivados = false,
+                TelefonoNormalizado = cliente.TelefonoNormalizado,
+                EstadoCliente = "Ambiguo"
+            };
+        }
+
+        if (cliente.EstadoCliente == "Vencido")
+        {
+            return new AccesoBotResponse
+            {
+                TipoAcceso = "ClienteMoroso",
+                Motivo = "CuotaVencida",
+                Encontrado = true,
+                Ambiguo = false,
+                PermiteDatosPrivados = false,
+                TelefonoNormalizado = cliente.TelefonoNormalizado,
+                EstadoCliente = cliente.EstadoCliente
+            };
+        }
+
+        if (!cliente.PermiteDatosPrivados || cliente.EstadoCliente != "Activo")
+        {
+            return new AccesoBotResponse
+            {
+                TipoAcceso = "SinAcceso",
+                Motivo = cliente.EstadoCliente == "Inactivo"
+                    ? "ClienteInactivo"
+                    : "EstadoNoAutorizado",
+                Encontrado = true,
+                Ambiguo = false,
+                PermiteDatosPrivados = false,
+                TelefonoNormalizado = cliente.TelefonoNormalizado,
+                EstadoCliente = cliente.EstadoCliente
+            };
+        }
+
+        return new AccesoBotResponse
+        {
+            TipoAcceso = "Cliente",
+            Encontrado = true,
+            Ambiguo = false,
+            PermiteDatosPrivados = true,
+            IdCliente = cliente.IdCliente,
+            Nombre = cliente.Nombre,
+            Apellido = cliente.Apellido,
+            TelefonoNormalizado = cliente.TelefonoNormalizado,
+            EstadoCliente = cliente.EstadoCliente,
+            AceptaWhatsApp = cliente.AceptaWhatsApp,
+            Cuota = cliente.Cuota,
+            Rutina = cliente.Rutina
+        };
+    }
+
     private static NotificacionN8nResponse MapearCandidatoSinReserva(CandidatoCobranza candidato)
     {
         return new NotificacionN8nResponse
@@ -876,15 +957,4 @@ public class IntegracionesN8nController : ControllerBase
         string Telefono,
         DateOnly FechaVencimiento,
         string ClaveIdempotencia);
-
-    private sealed record PerfilAccesoMensaje(
-        string TipoAcceso,
-        int? IdCliente = null,
-        int? IdEntrenador = null,
-        string? Nombre = null,
-        string? Apellido = null,
-        string? EstadoCliente = null,
-        bool AceptaWhatsApp = false,
-        EstadoCuotaBotResponse? Cuota = null,
-        RutinaBotResponse? Rutina = null);
 }

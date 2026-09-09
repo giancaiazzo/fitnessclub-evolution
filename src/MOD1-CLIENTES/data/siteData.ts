@@ -135,7 +135,7 @@ export const classes = [
       "Mejora la postura",
       "Permite progresar de forma controlada",
     ],
-    trainer: "Gabriel Guerrero",
+    trainer: "Paola Muse, Rodrigo Guerrero y Gabriel Guerrero",
     whatToExpect: "Ejercicios guiados, corrección técnica y planificación progresiva",
   },
   {
@@ -152,25 +152,8 @@ export const classes = [
       "Desarrolla fuerza funcional",
       "Entrenamiento desafiante y motivador",
     ],
-    trainer: "Rodrigo Guerrero",
+    trainer: "Paola Muse",
     whatToExpect: "Alta intensidad, ejercicios variados y trabajo en comunidad",
-  },
-  {
-    name: "Taekwondo",
-    description: "Disciplina marcial para mejorar técnica, coordinación y condición física",
-    detailedDescription:
-      "Actividad enfocada en el aprendizaje técnico, la disciplina y el desarrollo físico. El taekwondo permite mejorar la coordinación, la flexibilidad, la concentración y la confianza personal.",
-    duration: "60 min",
-    difficulty: "Todos los niveles",
-    image: trainingSpaceImage,
-    benefits: [
-      "Mejora la coordinación",
-      "Aumenta la flexibilidad",
-      "Fortalece la disciplina",
-      "Desarrolla confianza y concentración",
-    ],
-    trainer: "Benjamin Guerrero",
-    whatToExpect: "Técnica, práctica guiada, disciplina y trabajo físico",
   },
   {
     name: "Rehabilitación y salud",
@@ -349,14 +332,13 @@ export const faqs = [
 ];
 
 export const classSchedule = [
-  { time: "06:00", class: "Entrenamiento funcional", trainer: "Rodrigo Guerrero" },
-  { time: "07:00", class: "Musculación", trainer: "Gabriel Guerrero" },
-  { time: "08:00", class: "Rehabilitación y salud", trainer: "Paola Muse" },
-  { time: "09:00", class: "CrossFit", trainer: "Rodrigo Guerrero" },
-  { time: "12:00", class: "Musculación", trainer: "Gabriel Guerrero" },
-  { time: "17:00", class: "Entrenamiento funcional", trainer: "Rodrigo Guerrero" },
-  { time: "18:00", class: "CrossFit", trainer: "Rodrigo Guerrero" },
-  { time: "19:00", class: "Taekwondo", trainer: "Benjamin Guerrero" },
+  { time: "Lun, mié y vie · 06:30–07:30", class: "CrossFit", trainer: "Paola Muse" },
+  { time: "Lun a vie · 08:00–11:00", class: "Musculación", trainer: "Paola Muse" },
+  {
+    time: "Lun a vie · 11:00 al cierre",
+    class: "Musculación y acompañamiento en sala",
+    trainer: "Paola Muse y Rodrigo Guerrero · apoyo en musculación: Gabriel Guerrero",
+  },
 ];
 
 export const successStories = [
@@ -394,7 +376,7 @@ export const successStories = [
 
 export const statistics = [
   { number: "200+", label: "Clientes activos", icon: "ri-user-line" },
-  { number: "4", label: "Entrenadores", icon: "ri-user-star-line" },
+  { number: "4", label: "Integrantes del equipo", icon: "ri-user-star-line" },
   { number: "10+", label: "Actividades disponibles", icon: "ri-calendar-check-line" },
   { number: "2012", label: "Año de fundación", icon: "ri-award-line" },
   { number: "98%", label: "Compromiso con el cliente", icon: "ri-heart-line" },
@@ -403,65 +385,47 @@ export const statistics = [
 
 export const fullSchedule = {
   monday: [
-    { time: "06:00", class: "Entrenamiento funcional", trainer: "Rodrigo Guerrero" },
-    { time: "07:00", class: "Musculación", trainer: "Gabriel Guerrero" },
-    { time: "08:00", class: "Rehabilitación y salud", trainer: "Paola Muse" },
-    { time: "09:00", class: "CrossFit", trainer: "Rodrigo Guerrero" },
-    { time: "12:00", class: "Musculación", trainer: "Gabriel Guerrero" },
-    { time: "17:00", class: "Entrenamiento funcional", trainer: "Rodrigo Guerrero" },
-    { time: "18:00", class: "CrossFit", trainer: "Rodrigo Guerrero" },
-    { time: "19:00", class: "Taekwondo", trainer: "Benjamin Guerrero" },
+    { time: "06:30–07:30", class: "CrossFit", trainer: "Paola Muse" },
+    { time: "08:00–11:00", class: "Musculación", trainer: "Paola Muse" },
+    {
+      time: "11:00 al cierre",
+      class: "Musculación y acompañamiento",
+      trainer: "Paola Muse y Rodrigo Guerrero · apoyo: Gabriel Guerrero",
+    },
   ],
   tuesday: [
-    { time: "06:00", class: "Musculación", trainer: "Gabriel Guerrero" },
-    { time: "07:00", class: "Entrenamiento funcional", trainer: "Rodrigo Guerrero" },
-    { time: "08:00", class: "Rehabilitación y salud", trainer: "Paola Muse" },
-    { time: "09:00", class: "CrossFit", trainer: "Rodrigo Guerrero" },
-    { time: "12:00", class: "Musculación", trainer: "Gabriel Guerrero" },
-    { time: "17:00", class: "CrossFit", trainer: "Rodrigo Guerrero" },
-    { time: "18:00", class: "Entrenamiento funcional", trainer: "Rodrigo Guerrero" },
-    { time: "19:00", class: "Taekwondo", trainer: "Benjamin Guerrero" },
+    { time: "08:00–11:00", class: "Musculación", trainer: "Paola Muse" },
+    {
+      time: "11:00 al cierre",
+      class: "Musculación y acompañamiento",
+      trainer: "Paola Muse y Rodrigo Guerrero · apoyo: Gabriel Guerrero",
+    },
   ],
   wednesday: [
-    { time: "06:00", class: "Entrenamiento funcional", trainer: "Rodrigo Guerrero" },
-    { time: "07:00", class: "Musculación", trainer: "Gabriel Guerrero" },
-    { time: "08:00", class: "Rehabilitación y salud", trainer: "Paola Muse" },
-    { time: "09:00", class: "CrossFit", trainer: "Rodrigo Guerrero" },
-    { time: "12:00", class: "Musculación", trainer: "Gabriel Guerrero" },
-    { time: "17:00", class: "Entrenamiento funcional", trainer: "Rodrigo Guerrero" },
-    { time: "18:00", class: "CrossFit", trainer: "Rodrigo Guerrero" },
-    { time: "19:00", class: "Taekwondo", trainer: "Benjamin Guerrero" },
+    { time: "06:30–07:30", class: "CrossFit", trainer: "Paola Muse" },
+    { time: "08:00–11:00", class: "Musculación", trainer: "Paola Muse" },
+    {
+      time: "11:00 al cierre",
+      class: "Musculación y acompañamiento",
+      trainer: "Paola Muse y Rodrigo Guerrero · apoyo: Gabriel Guerrero",
+    },
   ],
   thursday: [
-    { time: "06:00", class: "Musculación", trainer: "Gabriel Guerrero" },
-    { time: "07:00", class: "Entrenamiento funcional", trainer: "Rodrigo Guerrero" },
-    { time: "08:00", class: "Rehabilitación y salud", trainer: "Paola Muse" },
-    { time: "09:00", class: "CrossFit", trainer: "Rodrigo Guerrero" },
-    { time: "12:00", class: "Musculación", trainer: "Gabriel Guerrero" },
-    { time: "17:00", class: "CrossFit", trainer: "Rodrigo Guerrero" },
-    { time: "18:00", class: "Entrenamiento funcional", trainer: "Rodrigo Guerrero" },
-    { time: "19:00", class: "Taekwondo", trainer: "Benjamin Guerrero" },
+    { time: "08:00–11:00", class: "Musculación", trainer: "Paola Muse" },
+    {
+      time: "11:00 al cierre",
+      class: "Musculación y acompañamiento",
+      trainer: "Paola Muse y Rodrigo Guerrero · apoyo: Gabriel Guerrero",
+    },
   ],
   friday: [
-    { time: "06:00", class: "Entrenamiento funcional", trainer: "Rodrigo Guerrero" },
-    { time: "07:00", class: "Musculación", trainer: "Gabriel Guerrero" },
-    { time: "08:00", class: "Rehabilitación y salud", trainer: "Paola Muse" },
-    { time: "09:00", class: "CrossFit", trainer: "Rodrigo Guerrero" },
-    { time: "12:00", class: "Musculación", trainer: "Gabriel Guerrero" },
-    { time: "17:00", class: "Entrenamiento funcional", trainer: "Rodrigo Guerrero" },
-    { time: "18:00", class: "CrossFit", trainer: "Rodrigo Guerrero" },
-    { time: "19:00", class: "Taekwondo", trainer: "Benjamin Guerrero" },
-  ],
-  saturday: [
-    { time: "08:00", class: "Entrenamiento funcional", trainer: "Rodrigo Guerrero" },
-    { time: "09:00", class: "Musculación", trainer: "Gabriel Guerrero" },
-    { time: "10:00", class: "Rehabilitación y salud", trainer: "Paola Muse" },
-    { time: "11:00", class: "Taekwondo", trainer: "Benjamin Guerrero" },
-  ],
-  sunday: [
-    { time: "09:00", class: "Rehabilitación y salud", trainer: "Paola Muse" },
-    { time: "10:00", class: "Musculación", trainer: "Gabriel Guerrero" },
-    { time: "11:00", class: "Entrenamiento funcional", trainer: "Rodrigo Guerrero" },
+    { time: "06:30–07:30", class: "CrossFit", trainer: "Paola Muse" },
+    { time: "08:00–11:00", class: "Musculación", trainer: "Paola Muse" },
+    {
+      time: "11:00 al cierre",
+      class: "Musculación y acompañamiento",
+      trainer: "Paola Muse y Rodrigo Guerrero · apoyo: Gabriel Guerrero",
+    },
   ],
 };
 
@@ -494,13 +458,13 @@ export const trainers = [
     certifications: ["Musculación", "Entrenamiento de fuerza", "Técnica de ejercicios"],
   },
   {
-    name: "Benjamin Guerrero",
-    role: "Entrenador",
-    specialization: "Taekwondo, disciplina y preparación física",
-    experience: "Amplia experiencia",
+    name: "Benjamín Guerrero",
+    role: "Apoyo moral a los clientes",
+    specialization: "Motivación, cercanía y buena energía",
+    experience: "Parte de la familia FitnessClubEvolution",
     bio:
-      "Benjamin integra el equipo de entrenadores de FitnessClubEvolution, aportando trabajo técnico, disciplina y preparación física en las actividades del gimnasio.",
-    certifications: ["Taekwondo", "Preparación física", "Disciplina deportiva"],
+      "Benjamín es hijo de Rodrigo y Paola. No trabaja de manera directa en el gimnasio, pero acompaña a la comunidad desde un lugar muy especial: es el encargado del apoyo moral a los clientes y de recibirlos siempre con una sonrisa.",
+    certifications: ["Motivación", "Buena energía", "Una sonrisa siempre"],
   },
 ];
 

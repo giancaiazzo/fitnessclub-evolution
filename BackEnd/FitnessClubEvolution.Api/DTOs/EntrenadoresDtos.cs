@@ -13,6 +13,9 @@ public sealed class CrearEntrenadorRequest
     [Required, RegularExpression(@"^598\d{8}$", ErrorMessage = "El teléfono debe incluir 598 seguido de 8 números.")]
     public string Telefono { get; set; } = string.Empty;
 
+    [EmailAddress, StringLength(254)]
+    public string? CorreoElectronico { get; set; }
+
     [Required, StringLength(60, MinimumLength = 3)]
     [RegularExpression(@"^[A-Za-z0-9._-]+$", ErrorMessage = "El usuario solo puede contener letras, números, punto, guion y guion bajo.")]
     public string NombreUsuario { get; set; } = string.Empty;
@@ -30,6 +33,7 @@ public sealed class EntrenadorResponse
     public string Nombre { get; set; } = string.Empty;
     public string Apellido { get; set; } = string.Empty;
     public string Telefono { get; set; } = string.Empty;
+    public string? CorreoElectronico { get; set; }
     public string NombreUsuario { get; set; } = string.Empty;
     public string Rol { get; set; } = string.Empty;
     public bool Estado { get; set; }
