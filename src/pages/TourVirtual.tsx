@@ -5,7 +5,7 @@ import { siteData } from "../MOD1-CLIENTES/data/siteData";
 import entradaImg from "../MOD1-CLIENTES/virtualtour/1.jpg";
 import musculacionImg from "../MOD1-CLIENTES/virtualtour/2.jpg";
 import funcionalImg from "../MOD1-CLIENTES/virtualtour/3.jpg";
-import vestuariosImg from "../MOD1-CLIENTES/virtualtour/4.jpg";
+import maquinasImg from "../MOD1-CLIENTES/virtualtour/4.jpg";
 
 import "pannellum/build/pannellum.js";
 
@@ -35,7 +35,7 @@ export default function TourVirtual() {
 
       scenes: {
         entrada: {
-          title: "Entrada del gimnasio",
+          title: "Entrada y recepción",
           type: "equirectangular",
           panorama: entradaImg,
           pitch: 0,
@@ -53,14 +53,14 @@ export default function TourVirtual() {
               pitch: -3,
               yaw: -35,
               type: "scene",
-              text: "Ir a zona funcional",
-              sceneId: "funcional",
+              text: "Ir al sector de máquinas",
+              sceneId: "maquinas",
             },
           ],
         },
 
         musculacion: {
-          title: "Zona de musculación",
+          title: "Sala de musculación",
           type: "equirectangular",
           panorama: musculacionImg,
           pitch: 0,
@@ -109,8 +109,8 @@ export default function TourVirtual() {
               pitch: -3,
               yaw: 35,
               type: "scene",
-              text: "Ir a vestuarios",
-              sceneId: "vestuarios",
+              text: "Ir al sector de máquinas",
+              sceneId: "maquinas",
             },
             {
               pitch: 4,
@@ -121,24 +121,24 @@ export default function TourVirtual() {
           ],
         },
 
-        vestuarios: {
-          title: "Vestuarios",
+        maquinas: {
+          title: "Sector de máquinas",
           type: "equirectangular",
-          panorama: vestuariosImg,
+          panorama: maquinasImg,
           pitch: 0,
           yaw: 0,
           hfov: 100,
           hotSpots: [
             {
               pitch: -2,
-              yaw: 180,
+              yaw: 35,
               type: "scene",
-              text: "Volver a zona funcional",
-              sceneId: "funcional",
+              text: "Ir a la sala de musculación",
+              sceneId: "musculacion",
             },
             {
               pitch: -3,
-              yaw: -120,
+              yaw: 170,
               type: "scene",
               text: "Volver a la entrada",
               sceneId: "entrada",

@@ -1,7 +1,7 @@
-import gymEquipmentImage from "../assets/gym-equipment.webp";
-import mobilityTrainingImage from "../assets/mobility-training.webp";
-import strengthTrainingImage from "../assets/strength-training.webp";
-import trainingSpaceImage from "../assets/training-space.webp";
+import gymEquipmentImage from "../assets/mancuernas.webp";
+import mobilityTrainingImage from "../assets/zona-funcional.webp";
+import strengthTrainingImage from "../assets/pesos-libres.webp";
+import trainingSpaceImage from "../assets/zona-boxeo.webp";
 
 export const siteData = {
   name: "FitnessClubEvolution",
@@ -111,7 +111,7 @@ export const classes = [
       "Una clase pensada para trabajar el cuerpo de forma integral mediante movimientos funcionales, circuitos y ejercicios variados. Ideal para mejorar el rendimiento físico general, ganar resistencia y fortalecer distintos grupos musculares.",
     duration: "45 min",
     difficulty: "Intermedio",
-    image: strengthTrainingImage,
+    image: mobilityTrainingImage,
     benefits: [
       "Mejora la resistencia",
       "Aumenta la fuerza funcional",
@@ -248,7 +248,7 @@ export const facilities = [
   {
     title: "Zona funcional",
     description: "Área preparada para circuitos, movilidad y ejercicios dinámicos",
-    image: strengthTrainingImage,
+    image: mobilityTrainingImage,
   },
   {
     title: "Espacio de clases grupales",

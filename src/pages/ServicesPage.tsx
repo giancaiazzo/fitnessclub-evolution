@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Layout from "../layouts/Layout";
-import heroGymImage from "../MOD1-CLIENTES/assets/hero-gym.webp";
+import heroGymImage from "../MOD1-CLIENTES/assets/sala-principal.webp";
 import { routines, siteData } from "../MOD1-CLIENTES/data/siteData";
 import {
   apiFetch,
@@ -130,7 +130,7 @@ export default function ServicesPage() {
             <div className="aspect-[4/3] overflow-hidden rounded-3xl border border-primary/20 bg-card shadow-2xl shadow-black/30">
               <img
                 src={heroGymImage}
-                alt="Sala de entrenamiento equipada con pesas y máquinas"
+                alt="Sala de entrenamiento de FitnessClubEvolution equipada con pesas y máquinas"
                 width={1400}
                 height={1000}
                 className="h-full w-full object-cover"

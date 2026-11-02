@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { siteData } from "../data/siteData";
-import heroGymImage from "../assets/hero-gym.webp";
+import heroGymImage from "../assets/sala-principal.webp";
 
 const heroStats = [
   { value: "200+", label: "clientes activos" },
@@ -68,7 +68,7 @@ export default function Hero() {
             <div className="aspect-[4/3] overflow-hidden rounded-3xl border-2 border-border bg-card shadow-2xl shadow-black/30 lg:aspect-square">
               <img
                 src={heroGymImage}
-                alt="Sector de musculación de un gimnasio equipado"
+                alt="Sala principal de FitnessClubEvolution, con sus máquinas y pasillo central"
                 width={1400}
                 height={1000}
                 className="h-full w-full object-cover"

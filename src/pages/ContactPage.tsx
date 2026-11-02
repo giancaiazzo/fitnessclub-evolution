@@ -1,6 +1,7 @@
 import ContactForm from "../MOD1-CLIENTES/components/ContactForm";
 import Layout from "../layouts/Layout";
 import { contactInfo, siteData, socialLinks } from "../MOD1-CLIENTES/data/siteData";
+import facadeImage from "../MOD1-CLIENTES/assets/fachada.webp";
 
 
 
@@ -254,17 +255,30 @@ export default function ContactPage() {
         </p>
       </div>
 
-      <div className="aspect-video rounded-lg overflow-hidden border border-border">
-        <iframe
-          title="Ubicación de FitnessClubEvolution"
-          src="https://www.google.com/maps?q=Fit%20Evolution%2C%20Dr.%20Luis%20Alberto%20de%20Herrera%20231%2C%2050000%20Salto%2C%20Departamento%20de%20Salto&output=embed"
-          width="100%"
-          height="100%"
-          className="map-frame"
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-          allowFullScreen
-        ></iframe>
+      <div className="grid gap-6 lg:grid-cols-2">
+        <div className="aspect-[4/3] overflow-hidden rounded-xl border border-border bg-background">
+          <img
+            src={facadeImage}
+            alt="Fachada y entrada de FitnessClubEvolution en Dr. Luis Alberto de Herrera 231, Salto"
+            width={1200}
+            height={1600}
+            className="h-full w-full object-cover object-[center_65%]"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+        <div className="aspect-[4/3] overflow-hidden rounded-xl border border-border">
+          <iframe
+            title="Ubicación de FitnessClubEvolution"
+            src="https://www.google.com/maps?q=Fit%20Evolution%2C%20Dr.%20Luis%20Alberto%20de%20Herrera%20231%2C%2050000%20Salto%2C%20Departamento%20de%20Salto&output=embed"
+            width="100%"
+            height="100%"
+            className="map-frame"
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            allowFullScreen
+          ></iframe>
+        </div>
       </div>
 
       <div className="mt-6 flex justify-center">
