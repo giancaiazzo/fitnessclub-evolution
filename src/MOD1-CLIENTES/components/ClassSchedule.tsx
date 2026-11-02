@@ -52,9 +52,7 @@ export default function ClassSchedule() {
                     <th className="px-5 py-4 text-left text-sm font-bold uppercase tracking-wider text-foreground lg:px-6">
                       Entrenador
                     </th>
-                    <th className="px-5 py-4 text-left text-sm font-bold uppercase tracking-wider text-foreground lg:px-6">
-                      Consulta
-                    </th>
+
                   </tr>
                 </thead>
 
@@ -80,15 +78,7 @@ export default function ClassSchedule() {
                       <td className="px-5 py-4 text-muted-foreground lg:px-6">
                         {schedule.trainer}
                       </td>
-                      <td className="px-5 py-4 lg:px-6">
-                        <Link
-                          to="/contact"
-                          className="inline-flex items-center gap-2 font-semibold text-primary transition-colors hover:text-[#b8ef45]"
-                        >
-                          Consultar
-                          <i className="ri-arrow-right-line" aria-hidden="true" />
-                        </Link>
-                      </td>
+
                     </tr>
                   ))}
                 </tbody>

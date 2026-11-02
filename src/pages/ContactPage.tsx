@@ -1,25 +1,22 @@
-import ContactForm from "../MOD1-CLIENTES/components/ContactForm";
 import Layout from "../layouts/Layout";
 import { contactInfo, siteData, socialLinks } from "../MOD1-CLIENTES/data/siteData";
 import facadeImage from "../MOD1-CLIENTES/assets/fachada.webp";
 
-
-
 export default function ContactPage() {
   return (
     <Layout
-  title={`Contacto - ${siteData.name}`}
-  description="Contactate con FitnessClubEvolution para consultar por servicios, entrenamientos, rutinas y planes"
+  title={`Ubicación y horarios - ${siteData.name}`}
+  description="Ubicación, horarios y acceso a las instalaciones de FitnessClubEvolution en Salto"
 >
   <section className="bg-gradient-to-br from-background via-card to-background pb-16 pt-28 sm:pb-20 sm:pt-32">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="text-center max-w-3xl mx-auto">
         <h1 className="text-4xl font-black text-foreground sm:text-5xl md:text-6xl">
-          Contactanos
+          Ubicación y horarios
         </h1>
 
         <p className="mt-5 text-lg text-muted-foreground sm:text-xl">
-          Estamos para orientarte sobre servicios, entrenamientos, rutinas y planes.
+          Encontrá el gimnasio en Salto y conocé sus horarios de actividad.
         </p>
       </div>
     </div>
@@ -27,13 +24,13 @@ export default function ContactPage() {
 
   <section className="bg-card py-16 sm:py-20">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+      <div className="mx-auto max-w-5xl">
         <div>
           <h2 className="mb-8 text-2xl font-bold text-foreground sm:text-3xl">
-            Ponete en contacto
+            Información del gimnasio
           </h2>
 
-          <div className="space-y-6">
+          <div className="grid gap-6 md:grid-cols-2">
             {contactInfo.map((info) => (
               <div key={info.title} className="flex items-start gap-4">
                 <div className="bg-primary p-4 rounded-lg shrink-0">
@@ -100,9 +97,6 @@ export default function ContactPage() {
           </div>
         </div>
 
-        <div>
-          <ContactForm />
-        </div>
       </div>
     </div>
   </section>
@@ -155,84 +149,6 @@ export default function ContactPage() {
             Conocé las alternativas disponibles y consultá cuál se adapta mejor a tu
             disponibilidad y objetivos.
           </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section className="bg-card py-16 sm:py-20">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="rounded-2xl border border-border bg-background p-5 sm:p-8">
-          <div className="flex flex-col sm:flex-row items-start gap-6">
-            <div className="bg-primary/10 p-4 rounded-lg shrink-0">
-              <i className="ri-time-line text-4xl text-primary"></i>
-            </div>
-
-            <div>
-              <h3 className="text-2xl font-bold text-foreground mb-3">
-                Cómo podemos ayudarte
-              </h3>
-
-              <p className="text-muted-foreground mb-4 leading-relaxed">
-                Podés comunicarte con el gimnasio para resolver dudas y recibir orientación antes de comenzar.
-              </p>
-
-              <ul className="space-y-3">
-                <li className="flex items-start gap-3">
-                  <i className="ri-checkbox-circle-fill text-primary text-xl mt-0.5"></i>
-                  <div>
-                    <span className="text-foreground font-semibold">
-                      Información general:
-                    </span>
-                    <span className="text-muted-foreground">
-                      {" "}
-                      Consultá por actividades, servicios, planes y horarios disponibles.
-                    </span>
-                  </div>
-                </li>
-
-                <li className="flex items-start gap-3">
-                  <i className="ri-checkbox-circle-fill text-primary text-xl mt-0.5"></i>
-                  <div>
-                    <span className="text-foreground font-semibold">
-                      Orientación inicial:
-                    </span>
-                    <span className="text-muted-foreground">
-                      {" "}
-                      Contanos tu experiencia y tus objetivos para saber por dónde empezar.
-                    </span>
-                  </div>
-                </li>
-
-                <li className="flex items-start gap-3">
-                  <i className="ri-checkbox-circle-fill text-primary text-xl mt-0.5"></i>
-                  <div>
-                    <span className="text-foreground font-semibold">
-                      Entrenamientos y rutinas:
-                    </span>
-                    <span className="text-muted-foreground">
-                      {" "}
-                      Preguntá por modalidades, niveles y posibilidades de adaptación.
-                    </span>
-                  </div>
-                </li>
-
-                <li className="flex items-start gap-3">
-                  <i className="ri-checkbox-circle-fill text-primary text-xl mt-0.5"></i>
-                  <div>
-                    <span className="text-foreground font-semibold">
-                      Disponibilidad:
-                    </span>
-                    <span className="text-muted-foreground">
-                      {" "}
-                      Confirmá directamente con el gimnasio antes de reservar o asistir.
-                    </span>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </div>
         </div>
       </div>
     </div>

@@ -147,13 +147,6 @@ export default function ClassesPage() {
                       </ul>
                     </div>
 
-                    <a
-                      href="/contact"
-                      className="inline-flex items-center gap-2 bg-primary hover:bg-[#86c312] text-primary-foreground px-6 py-3 rounded-lg font-semibold transition-all"
-                    >
-                      Reservar esta clase
-                      <i className="ri-arrow-right-line"></i>
-                    </a>
                   </div>
                 </div>
               </div>
@@ -232,7 +225,7 @@ export default function ClassesPage() {
             </table>
 
             <p className="text-muted-foreground text-center mt-6 text-sm">
-              * Los horarios pueden variar. Contactanos para confirmar los horarios actualizados o reservar tu lugar.
+              * Los horarios pueden variar.
             </p>
           </div>
         </div>

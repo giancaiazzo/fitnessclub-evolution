@@ -161,23 +161,22 @@ export default function AboutPage() {
 
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
         {trainers.map((trainer) => {
-          const initials = trainer.name
-            .split(" ")
-            .map((part) => part[0])
-            .slice(0, 2)
-            .join("");
-
           return (
       <div
         key={trainer.name}
         className="min-w-0 rounded-2xl border border-border bg-background p-6 transition-all hover:-translate-y-1 hover:border-primary hover:shadow-xl hover:shadow-primary/10"
       >
               <div className="text-center mb-6">
-                <div
-                  className="mx-auto mb-4 flex h-28 w-28 items-center justify-center rounded-full border-4 border-primary/20 bg-gradient-to-br from-primary/25 to-primary/5 text-3xl font-black text-primary"
-                  aria-hidden="true"
-                >
-                  {initials}
+                <div className="mx-auto mb-6 aspect-[4/5] overflow-hidden rounded-xl border border-primary/20 bg-gradient-to-b from-card to-background">
+                  <img
+                    src={trainer.image}
+                    alt={trainer.name}
+                    width={768}
+                    height={960}
+                    className="h-full w-full object-cover object-top"
+                    loading="lazy"
+                    decoding="async"
+                  />
                 </div>
 
                 <h3 className="text-xl font-bold text-foreground mb-2">

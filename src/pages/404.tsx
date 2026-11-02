@@ -18,7 +18,7 @@ export default function NotFoundPage() {
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground sm:text-xl">
             La dirección que abriste no existe o fue modificada. Podés volver al
-            inicio o comunicarte con el gimnasio.
+            inicio para seguir navegando.
           </p>
 
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
@@ -29,13 +29,7 @@ export default function NotFoundPage() {
               Volver al inicio
               <i className="ri-home-line" aria-hidden="true" />
             </Link>
-            <Link
-              to="/contact"
-              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border-2 border-primary px-7 py-3.5 font-bold text-primary transition hover:bg-primary hover:text-primary-foreground"
-            >
-              Contactanos
-              <i className="ri-mail-line" aria-hidden="true" />
-            </Link>
+
           </div>
         </div>
       </section>

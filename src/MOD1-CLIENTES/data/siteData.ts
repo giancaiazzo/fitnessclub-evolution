@@ -2,6 +2,10 @@ import gymEquipmentImage from "../assets/mancuernas.webp";
 import mobilityTrainingImage from "../assets/zona-funcional.webp";
 import strengthTrainingImage from "../assets/pesos-libres.webp";
 import trainingSpaceImage from "../assets/zona-boxeo.webp";
+import rodrigoImage from "../assets/equipo/rodrigo.webp";
+import paolaImage from "../assets/equipo/paola.webp";
+import gabrielImage from "../assets/equipo/gabriel.webp";
+import benjaminImage from "../assets/equipo/benjamin.webp";
 
 export const siteData = {
   name: "FitnessClubEvolution",
@@ -63,7 +67,7 @@ export const navigation = [
   { name: "Ejercicios", href: "/exercises" },
   { name: "IMC", href: "/calc-imc" },
   { name: "Planes", href: "/pricing" },
-  { name: "Contacto", href: "/contact" },
+  { name: "Ubicación", href: "/ubicacion" },
   { name: "Tour virtual", href: "/tour-virtual" },
   { name: "Iniciar sesión", href: "/SignIn" },
 ];
@@ -375,12 +379,7 @@ export const successStories = [
 ];
 
 export const statistics = [
-  { number: "200+", label: "Clientes activos", icon: "ri-user-line" },
-  { number: "4", label: "Integrantes del equipo", icon: "ri-user-star-line" },
-  { number: "10+", label: "Actividades disponibles", icon: "ri-calendar-check-line" },
   { number: "2012", label: "Año de fundación", icon: "ri-award-line" },
-  { number: "98%", label: "Compromiso con el cliente", icon: "ri-heart-line" },
-  { number: "Salto", label: "Uruguay", icon: "ri-map-pin-line" },
 ];
 
 export const fullSchedule = {
@@ -432,6 +431,7 @@ export const fullSchedule = {
 export const trainers = [
   {
     name: "Rodrigo Guerrero",
+    image: rodrigoImage,
     role: "Entrenador principal",
     specialization: "Entrenamiento funcional, fuerza y acondicionamiento físico",
     experience: "Amplia experiencia",
@@ -441,6 +441,7 @@ export const trainers = [
   },
   {
     name: "Paola Muse",
+    image: paolaImage,
     role: "Entrenadora",
     specialization: "Salud, bienestar y acompañamiento personalizado",
     experience: "Amplia experiencia",
@@ -450,6 +451,7 @@ export const trainers = [
   },
   {
     name: "Gabriel Guerrero",
+    image: gabrielImage,
     role: "Entrenador",
     specialization: "Musculación, fuerza y entrenamiento guiado",
     experience: "Amplia experiencia",
@@ -459,6 +461,7 @@ export const trainers = [
   },
   {
     name: "Benjamín Guerrero",
+    image: benjaminImage,
     role: "Apoyo moral a los clientes",
     specialization: "Motivación, cercanía y buena energía",
     experience: "Parte de la familia FitnessClubEvolution",

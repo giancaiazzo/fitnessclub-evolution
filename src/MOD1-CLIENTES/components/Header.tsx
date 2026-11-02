@@ -6,7 +6,7 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navItems = navigation.filter(
-    (item) => item.href !== "/contact" && item.href !== "/SignIn"
+    (item) => item.href !== "/SignIn"
   );
 
   useEffect(() => {
@@ -52,14 +52,6 @@ export default function Header() {
               {item.name}
             </NavLink>
           ))}
-
-          <Link
-            to="/contact"
-            className="ml-1 inline-flex min-h-10 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg bg-primary px-3 py-2 text-center text-sm font-black text-primary-foreground shadow-md shadow-primary/20 transition hover:bg-[#b8ef45]"
-          >
-            Unirme ahora
-            <i className="ri-arrow-right-line" aria-hidden="true" />
-          </Link>
 
           <span className="mx-0.5 h-7 w-px bg-primary/25" aria-hidden="true" />
 
@@ -113,15 +105,7 @@ export default function Header() {
             </NavLink>
           ))}
 
-          <div className="grid gap-2 border-t border-border pt-3 sm:grid-cols-2">
-            <Link
-              to="/contact"
-              onClick={() => setIsMenuOpen(false)}
-              className="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-center font-black text-primary-foreground"
-            >
-              Unirme ahora
-              <i className="ri-arrow-right-line" aria-hidden="true" />
-            </Link>
+          <div className="grid gap-2 border-t border-border pt-3">
 
             <Link
               to="/SignIn"

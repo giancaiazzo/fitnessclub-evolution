@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import Layout from "../layouts/Layout";
 import heroGymImage from "../MOD1-CLIENTES/assets/sala-principal.webp";
 import { routines, siteData } from "../MOD1-CLIENTES/data/siteData";
@@ -12,28 +11,6 @@ import {
   formatearPrecioServicio,
   type Servicio,
 } from "../types/servicio";
-
-const sectionShortcuts = [
-  {
-    id: "servicios",
-    label: "Servicios",
-    detail: "Todo lo disponible para acompañar tu proceso",
-    icon: "ri-service-line",
-  },
-  {
-    id: "rutinas",
-    label: "Rutinas",
-    detail: "Planificaciones que se adaptan a cada persona",
-    icon: "ri-file-list-3-line",
-  },
-];
-
-function scrollToSection(sectionId: string) {
-  document.getElementById(sectionId)?.scrollIntoView({
-    behavior: "smooth",
-    block: "start",
-  });
-}
 
 export default function ServicesPage() {
   // Este estado contiene exactamente lo que existe en la tabla Servicios.
@@ -106,24 +83,6 @@ export default function ServicesPage() {
               que pueden ajustarse a tu nivel y tus objetivos.
             </p>
 
-            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row lg:justify-start">
-              <button
-                type="button"
-                onClick={() => scrollToSection("servicios")}
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 font-bold text-primary-foreground transition hover:bg-[#b8ef45]"
-              >
-                Explorar propuestas
-                <i className="ri-arrow-down-line" aria-hidden="true" />
-              </button>
-
-              <Link
-                to="/contact"
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-primary/40 bg-background/70 px-6 py-3 font-bold text-primary transition hover:bg-primary hover:text-primary-foreground"
-              >
-                Consultar disponibilidad
-                <i className="ri-chat-1-line" aria-hidden="true" />
-              </Link>
-            </div>
           </div>
 
           <div className="relative mx-auto w-full max-w-2xl lg:max-w-none">
@@ -140,50 +99,7 @@ export default function ServicesPage() {
               <div className="absolute inset-0 rounded-3xl bg-gradient-to-t from-background/80 via-transparent to-transparent" />
             </div>
 
-            <div className="absolute inset-x-3 bottom-3 grid grid-cols-2 gap-2 rounded-2xl border border-white/10 bg-background/85 p-3 backdrop-blur sm:inset-x-6 sm:bottom-6 sm:gap-4 sm:p-4">
-              <div className="text-center">
-                <strong className="block text-xl font-black text-primary sm:text-2xl">
-                  {cargandoServicios ? "—" : servicios.length}
-                </strong>
-                <span className="text-[0.68rem] text-muted-foreground sm:text-sm">
-                  servicios
-                </span>
-              </div>
-              <div className="border-l border-border text-center">
-                <strong className="block text-xl font-black text-primary sm:text-2xl">
-                  {routines.length}
-                </strong>
-                <span className="text-[0.68rem] text-muted-foreground sm:text-sm">
-                  rutinas base
-                </span>
-              </div>
-            </div>
           </div>
-        </div>
-      </section>
-
-      <section className="border-y border-border bg-card py-8 sm:py-10">
-        <div className="mx-auto grid max-w-5xl gap-3 px-4 sm:grid-cols-2 sm:px-6 lg:gap-5 lg:px-8">
-          {sectionShortcuts.map((shortcut) => (
-            <button
-              key={shortcut.id}
-              type="button"
-              onClick={() => scrollToSection(shortcut.id)}
-              className="group flex min-w-0 items-center gap-4 rounded-2xl border border-border bg-background p-4 text-left transition hover:-translate-y-0.5 hover:border-primary hover:shadow-lg hover:shadow-primary/10 sm:block sm:text-center lg:flex lg:text-left"
-            >
-              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-2xl text-primary transition group-hover:bg-primary group-hover:text-primary-foreground sm:mx-auto sm:mb-3 lg:mx-0 lg:mb-0">
-                <i className={shortcut.icon} aria-hidden="true" />
-              </span>
-              <span className="min-w-0">
-                <strong className="block text-lg text-foreground">
-                  {shortcut.label}
-                </strong>
-                <span className="mt-1 block text-sm leading-snug text-muted-foreground">
-                  {shortcut.detail}
-                </span>
-              </span>
-            </button>
-          ))}
         </div>
       </section>
 
@@ -317,24 +233,6 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      <section className="bg-gradient-to-r from-primary to-[#86c312] py-14 sm:py-16">
-        <div className="mx-auto max-w-4xl px-4 text-center sm:px-6">
-          <h2 className="text-3xl font-black text-primary-foreground sm:text-4xl">
-            ¿No sabés por dónde empezar?
-          </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-primary-foreground/85">
-            Contanos qué querés lograr y el equipo te orientará sobre los servicios
-            y las rutinas disponibles.
-          </p>
-          <Link
-            to="/contact"
-            className="mt-7 inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-background px-7 py-3 font-bold text-primary shadow-lg transition hover:bg-card"
-          >
-            Hablar con el gimnasio
-            <i className="ri-arrow-right-line" aria-hidden="true" />
-          </Link>
-        </div>
-      </section>
     </Layout>
   );
 }
@@ -378,14 +276,7 @@ function TarjetaServicio({ servicio }: { servicio: Servicio }) {
           {servicio.descripcion ||
             "Consultá al equipo para conocer todos los detalles de este servicio."}
         </p>
-        <Link
-          to="/contact"
-          className="mt-5 inline-flex min-h-11 items-center justify-between rounded-xl border border-primary/30 bg-primary/5 px-4 py-2.5 font-bold text-primary transition hover:bg-primary hover:text-primary-foreground"
-          aria-label={`Consultar por ${servicio.nombre}`}
-        >
-          Consultar
-          <i className="ri-arrow-right-line" aria-hidden="true" />
-        </Link>
+
       </div>
     </article>
   );

@@ -1,5 +1,4 @@
 import Layout from "../layouts/Layout";
-import { Link } from "react-router-dom";
 import { classes, fullSchedule, siteData } from "../MOD1-CLIENTES/data/siteData";
 
 type DayKey = keyof typeof fullSchedule;
@@ -133,13 +132,6 @@ export default function ClassesPage() {
                       </ul>
                     </div>
 
-                    <Link
-                      to="/contact"
-                      className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 font-semibold text-primary-foreground transition hover:bg-[#b8ef45] sm:w-auto"
-                    >
-                      Consultar disponibilidad
-                      <i className="ri-arrow-right-line"></i>
-                    </Link>
                   </div>
                 </div>
               </div>
