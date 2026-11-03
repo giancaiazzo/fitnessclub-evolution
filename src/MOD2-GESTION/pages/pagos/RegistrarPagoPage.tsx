@@ -74,6 +74,7 @@ type RegistrarPagoResponse = {
   message: string;
   pago: Pago;
   estadoCliente: EstadoPagoCliente;
+  advertenciaHikvision: string | null;
 };
 
 type FormularioPago = {
@@ -211,6 +212,7 @@ export default function RegistrarPagoPage() {
   const [registrando, setRegistrando] = useState(false);
   const [errorRegistro, setErrorRegistro] = useState("");
   const [mensajeExito, setMensajeExito] = useState("");
+  const [advertenciaHikvision, setAdvertenciaHikvision] = useState("");
   const cargaInicial = useRef(false);
 
   const cargarClientes = useCallback(async () => {
@@ -299,7 +301,6 @@ export default function RegistrarPagoPage() {
       if (!termino) return true;
 
       return [
-        item.idCliente.toString(),
         item.nombre,
         item.apellido,
         `${item.nombre} ${item.apellido}`,
@@ -315,6 +316,7 @@ export default function RegistrarPagoPage() {
     setHistorial([]);
     setErrorRegistro("");
     setMensajeExito("");
+    setAdvertenciaHikvision("");
 
     setFormulario(FORMULARIO_INICIAL);
 
@@ -342,6 +344,7 @@ export default function RegistrarPagoPage() {
     setHistorial([]);
     setErrorRegistro("");
     setMensajeExito("");
+    setAdvertenciaHikvision("");
   }
 
   async function registrarPago(event: FormEvent<HTMLFormElement>) {
@@ -349,6 +352,7 @@ export default function RegistrarPagoPage() {
     if (!cliente) return;
     setErrorRegistro("");
     setMensajeExito("");
+    setAdvertenciaHikvision("");
 
     const monto = Number(formulario.monto.replace(",", "."));
     if (!Number.isFinite(monto) || monto <= 0) {
@@ -391,6 +395,7 @@ export default function RegistrarPagoPage() {
       setMensajeExito(
         `Pago registrado. El nuevo vencimiento es el ${formatearFecha(resultado.pago.fechaVencimiento)}.`,
       );
+      setAdvertenciaHikvision(resultado.advertenciaHikvision ?? "");
     } catch (errorDesconocido) {
       setErrorRegistro(
         mensajeErrorDesconocido(errorDesconocido, "No se pudo registrar el pago."),
@@ -449,7 +454,7 @@ export default function RegistrarPagoPage() {
               value={busqueda}
               onChange={(event) => setBusqueda(event.target.value)}
               className={`${inputClassName} pl-11`}
-              placeholder="Nombre, apellido, documento o ID..."
+              placeholder="Nombre, apellido o documento..."
             />
           </label>
           <button
@@ -505,7 +510,7 @@ export default function RegistrarPagoPage() {
                         <div>
                           <p className="font-semibold text-white">{item.nombre} {item.apellido}</p>
                           <p className="mt-0.5 text-xs text-gray-500">
-                            CI {item.documento} · ID #{item.idCliente}
+                            CI {item.documento}
                           </p>
                         </div>
                       </div>
@@ -560,6 +565,9 @@ export default function RegistrarPagoPage() {
             <ResumenCliente cliente={cliente} estado={estadoPago} />
 
             {mensajeExito && <Alerta tipo="exito" dentroModal>{mensajeExito}</Alerta>}
+            {advertenciaHikvision && (
+              <Alerta tipo="advertencia" dentroModal>{advertenciaHikvision}</Alerta>
+            )}
             {errorRegistro && <Alerta tipo="error" dentroModal>{errorRegistro}</Alerta>}
 
             <form
@@ -919,7 +927,7 @@ function Alerta({
   dentroModal = false,
   children,
 }: {
-  tipo: "error" | "exito";
+  tipo: "error" | "exito" | "advertencia";
   dentroModal?: boolean;
   children: ReactNode;
 }) {
@@ -927,12 +935,16 @@ function Alerta({
     <div className={`${dentroModal ? "" : "mb-5"} flex items-center gap-3 rounded-2xl border px-4 py-3 text-sm font-semibold ${
       tipo === "exito"
         ? "border-lime-400/25 bg-lime-400/10 text-lime-200"
-        : "border-red-400/25 bg-red-400/10 text-red-200"
+        : tipo === "advertencia"
+          ? "border-amber-400/25 bg-amber-400/10 text-amber-200"
+          : "border-red-400/25 bg-red-400/10 text-red-200"
     }`}>
       <i className={`${
         tipo === "exito"
           ? "ri-checkbox-circle-line text-lime-400"
-          : "ri-error-warning-line text-red-400"
+          : tipo === "advertencia"
+            ? "ri-alert-line text-amber-400"
+            : "ri-error-warning-line text-red-400"
       } text-xl`} />
       {children}
     </div>

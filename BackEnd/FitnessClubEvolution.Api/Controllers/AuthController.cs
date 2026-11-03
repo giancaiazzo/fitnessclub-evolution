@@ -23,18 +23,18 @@ public class AuthController : ControllerBase
     private readonly AppDbContext _context;
     private readonly IPasswordHasher<Entrenador> _passwordHasher;
     private readonly IPasswordHasher<SolicitudRecuperacion> _recoveryHasher;
-    private readonly IN8nWebhookClient _n8nWebhookClient;
+    private readonly IRecoveryEmailSender _recoveryEmailSender;
 
     public AuthController(
         AppDbContext context,
         IPasswordHasher<Entrenador> passwordHasher,
         IPasswordHasher<SolicitudRecuperacion> recoveryHasher,
-        IN8nWebhookClient n8nWebhookClient)
+        IRecoveryEmailSender recoveryEmailSender)
     {
         _context = context;
         _passwordHasher = passwordHasher;
         _recoveryHasher = recoveryHasher;
-        _n8nWebhookClient = n8nWebhookClient;
+        _recoveryEmailSender = recoveryEmailSender;
     }
 
     /// <summary>
@@ -158,10 +158,9 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// MÓDULOS 2 Y 3: genera un código de un solo uso, guarda únicamente su hash
-    /// y llama al webhook de n8n para entregarlo mediante una plantilla de
-    /// autenticación de WhatsApp. La respuesta siempre es genérica para impedir
-    /// que terceros descubran qué usuarios existen.
+    /// MÓDULO 2: genera un código de un solo uso, guarda únicamente su hash y lo
+    /// envía al correo asociado a la cuenta. La respuesta siempre es genérica
+    /// para impedir que terceros descubran qué direcciones están registradas.
     /// </summary>
     [AllowAnonymous]
     [EnableRateLimiting("Recuperacion")]
@@ -172,12 +171,12 @@ public class AuthController : ControllerBase
     {
         var respuestaGenerica = new
         {
-            mensaje = "Si el usuario está activo y tiene un teléfono registrado, recibirá un código por WhatsApp."
+            mensaje = "Si el correo está asociado a una cuenta activa, recibirás un código para continuar."
         };
-        var nombreUsuarioNormalizado = NormalizarNombreUsuario(request.NombreUsuario);
+        var correoNormalizado = NormalizarCorreo(request.CorreoElectronico);
         var entrenador = await _context.Entrenadores.SingleOrDefaultAsync(
             item =>
-                item.NombreUsuarioNormalizado == nombreUsuarioNormalizado &&
+                item.CorreoElectronicoNormalizado == correoNormalizado &&
                 item.Estado,
             cancellationToken);
 
@@ -186,8 +185,7 @@ public class AuthController : ControllerBase
             return Accepted(respuestaGenerica);
         }
 
-        var telefono = NormalizarTelefono(entrenador.Telefono);
-        if (telefono is null)
+        if (string.IsNullOrWhiteSpace(entrenador.CorreoElectronico))
         {
             return Accepted(respuestaGenerica);
         }
@@ -221,19 +219,15 @@ public class AuthController : ControllerBase
         _context.SolicitudesRecuperacion.Add(solicitud);
         await _context.SaveChangesAsync(cancellationToken);
 
-        var resultado = await _n8nWebhookClient.EnviarRecuperacionContrasena(
-            new RecuperacionContrasenaWebhook(
-                solicitud.IdSolicitudRecuperacion,
-                telefono,
-                entrenador.NombreUsuario,
-                entrenador.Nombre,
-                codigo,
-                solicitud.FechaExpiracion),
+        var resultado = await _recoveryEmailSender.EnviarCodigoAsync(
+            entrenador.CorreoElectronico,
+            entrenador.Nombre,
+            codigo,
+            solicitud.FechaExpiracion,
             cancellationToken);
 
-        // No se guarda el código en Notificaciones. El resultado del webhook se
-        // registra en la propia solicitud mediante su estado; un fallo obliga a
-        // generar una solicitud nueva y evita reutilizar códigos no entregados.
+        // El resultado del envío se registra en la propia solicitud; un fallo
+        // obliga a generar otra y evita reutilizar códigos que no se entregaron.
         if (!resultado.Entregado)
         {
             solicitud.Estado = "ErrorEnvio";
@@ -255,10 +249,10 @@ public class AuthController : ControllerBase
         [FromBody] ConfirmarRecuperacionRequest request,
         CancellationToken cancellationToken)
     {
-        var nombreUsuarioNormalizado = NormalizarNombreUsuario(request.NombreUsuario);
+        var correoNormalizado = NormalizarCorreo(request.CorreoElectronico);
         var entrenador = await _context.Entrenadores.SingleOrDefaultAsync(
             item =>
-                item.NombreUsuarioNormalizado == nombreUsuarioNormalizado &&
+                item.CorreoElectronicoNormalizado == correoNormalizado &&
                 item.Estado,
             cancellationToken);
 
@@ -316,6 +310,14 @@ public class AuthController : ControllerBase
         solicitud.FechaUso = DateTime.UtcNow;
         await _context.SaveChangesAsync(cancellationToken);
 
+        if (!string.IsNullOrWhiteSpace(entrenador.CorreoElectronico))
+        {
+            await _recoveryEmailSender.EnviarConfirmacionAsync(
+                entrenador.CorreoElectronico,
+                entrenador.Nombre,
+                cancellationToken);
+        }
+
         return NoContent();
     }
 
@@ -356,27 +358,8 @@ public class AuthController : ControllerBase
         return valor.Trim().ToUpperInvariant();
     }
 
-    private static string? NormalizarTelefono(string? telefono)
-    {
-        if (string.IsNullOrWhiteSpace(telefono))
-        {
-            return null;
-        }
-
-        var digitos = new string(telefono.Where(char.IsDigit).ToArray());
-        if (digitos.Length == 9 && digitos.StartsWith('0'))
-        {
-            digitos = "598" + digitos[1..];
-        }
-        else if (digitos.Length == 8)
-        {
-            digitos = "598" + digitos;
-        }
-
-        return digitos.Length == 11 && digitos.StartsWith("598", StringComparison.Ordinal)
-            ? digitos
-            : null;
-    }
+    private static string NormalizarCorreo(string correoElectronico) =>
+        correoElectronico.Trim().ToUpperInvariant();
 }
 
 public sealed record LoginRequest(
@@ -394,14 +377,14 @@ public sealed record SesionResponse(
 
 public sealed class SolicitarRecuperacionRequest
 {
-    [Required, StringLength(60, MinimumLength = 2)]
-    public string NombreUsuario { get; set; } = string.Empty;
+    [Required, EmailAddress, StringLength(254)]
+    public string CorreoElectronico { get; set; } = string.Empty;
 }
 
 public sealed class ConfirmarRecuperacionRequest
 {
-    [Required, StringLength(60, MinimumLength = 2)]
-    public string NombreUsuario { get; set; } = string.Empty;
+    [Required, EmailAddress, StringLength(254)]
+    public string CorreoElectronico { get; set; } = string.Empty;
 
     [Required, RegularExpression("^[0-9]{6}$", ErrorMessage = "El código debe contener seis números.")]
     public string Codigo { get; set; } = string.Empty;

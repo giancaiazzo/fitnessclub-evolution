@@ -135,7 +135,7 @@ export default function SignInForm() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center justify-between gap-4">
             <label className="flex cursor-pointer items-center gap-3">
               <input
                 type="checkbox"
@@ -149,6 +149,13 @@ export default function SignInForm() {
                 Mantenerme conectado
               </span>
             </label>
+
+            <Link
+              to="/recuperar-contrasena"
+              className="text-sm font-medium text-lime-400 transition hover:text-lime-300"
+            >
+              ¿Olvidaste tu contraseña?
+            </Link>
           </div>
 
           {error && (

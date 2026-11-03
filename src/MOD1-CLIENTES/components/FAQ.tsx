@@ -1,5 +1,4 @@
 import { faqs } from "../data/siteData";
-import { Link } from "react-router-dom";
 
 export default function FAQ() {
   return (
@@ -38,19 +37,6 @@ export default function FAQ() {
       ))}
     </div>
 
-    <div className="mt-12 text-center">
-      <p className="mb-4 text-muted-foreground">
-        ¿Todavía tenés preguntas?
-      </p>
-
-      <Link
-        to="/contact"
-        className="inline-flex items-center gap-3 rounded-lg bg-primary px-8 py-4 text-lg font-bold text-primary-foreground transition-all hover:scale-105 hover:bg-[#86c312]"
-      >
-        Contactanos
-        <i className="ri-arrow-right-line" />
-      </Link>
-    </div>
   </div>
 </section>
   );

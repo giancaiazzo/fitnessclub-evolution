@@ -1,5 +1,4 @@
 import Layout from "../layouts/Layout";
-import { Link } from "react-router-dom";
 import { classes, fullSchedule, siteData } from "../MOD1-CLIENTES/data/siteData";
 
 type DayKey = keyof typeof fullSchedule;
@@ -11,26 +10,12 @@ const days: { key: DayKey; label: string }[] = [
   { key: "wednesday", label: "Miércoles" },
   { key: "thursday", label: "Jueves" },
   { key: "friday", label: "Viernes" },
-  { key: "saturday", label: "Sábado" },
-  { key: "sunday", label: "Domingo" },
 ];
 
 function convertirHoraAMinutos(time: string) {
-  const [rawTime, period] = time.split(" ");
-  const [rawHour, rawMinute] = rawTime.split(":");
-
-  let hour = Number(rawHour);
-  const minute = Number(rawMinute);
-
-  if (period === "PM" && hour !== 12) {
-    hour += 12;
-  }
-
-  if (period === "AM" && hour === 12) {
-    hour = 0;
-  }
-
-  return hour * 60 + minute;
+  const match = time.match(/^(\d{1,2}):(\d{2})/);
+  if (!match) return Number.MAX_SAFE_INTEGER;
+  return Number(match[1]) * 60 + Number(match[2]);
 }
 
 function obtenerHorariosOrdenados() {
@@ -147,13 +132,6 @@ export default function ClassesPage() {
                       </ul>
                     </div>
 
-                    <Link
-                      to="/contact"
-                      className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 font-semibold text-primary-foreground transition hover:bg-[#b8ef45] sm:w-auto"
-                    >
-                      Consultar disponibilidad
-                      <i className="ri-arrow-right-line"></i>
-                    </Link>
                   </div>
                 </div>
               </div>
@@ -266,12 +244,12 @@ export default function ClassesPage() {
             </table>
 
             <p className="mt-6 text-center text-sm text-muted-foreground">
-              * Los horarios pueden variar. Contactanos para confirmar los horarios actualizados o reservar tu lugar.
+              * CrossFit se dicta lunes, miércoles y viernes. La sala de musculación cuenta con acompañamiento de lunes a viernes.
             </p>
           </div>
 
           <p className="mt-5 text-center text-sm text-muted-foreground md:hidden">
-            Los horarios pueden variar. Contactanos para confirmar disponibilidad.
+            CrossFit se dicta lunes, miércoles y viernes. Confirmá disponibilidad antes de asistir.
           </p>
         </div>
       </section>

@@ -1,5 +1,4 @@
 import { pricingPlans } from "../data/siteData";
-import { Link } from "react-router-dom";
 
 interface PricingPlansProps {
   showHeading?: boolean;
@@ -60,17 +59,6 @@ export default function PricingPlans({ showHeading = true }: PricingPlansProps) 
             ))}
           </ul>
 
-          <Link
-            to="/contact"
-            className={`flex w-full items-center justify-center gap-3 rounded-lg px-8 py-4 text-lg font-bold transition-all ${
-              plan.popular
-                ? "bg-primary text-primary-foreground hover:bg-[#86c312]"
-                : "border border-border bg-card text-foreground hover:bg-secondary"
-            }`}
-          >
-            Empezar ahora
-            <i className="ri-arrow-right-line" />
-          </Link>
         </div>
       ))}
     </div>

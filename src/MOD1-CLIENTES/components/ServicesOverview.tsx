@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import gymEquipmentImage from "../assets/gym-equipment.webp";
-import mobilityTrainingImage from "../assets/mobility-training.webp";
-import strengthTrainingImage from "../assets/strength-training.webp";
+import gymEquipmentImage from "../assets/mancuernas.webp";
+import mobilityTrainingImage from "../assets/zona-funcional.webp";
+import strengthTrainingImage from "../assets/pesos-libres.webp";
 
 const categories = [
   {

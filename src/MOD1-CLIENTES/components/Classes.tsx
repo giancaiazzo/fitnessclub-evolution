@@ -43,13 +43,6 @@ export default function Classes() {
               <span>{classItem.duration}</span>
             </div>
 
-            <Link
-              to="/contact"
-              className="flex items-center gap-2 font-semibold text-primary hover:text-[#b8ef45] transition-colors"
-            >
-              Consultar
-              <i className="ri-arrow-right-line" />
-            </Link>
           </div>
         </div>
       ))}

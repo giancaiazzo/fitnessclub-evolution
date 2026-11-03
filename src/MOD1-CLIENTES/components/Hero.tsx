@@ -1,10 +1,8 @@
 import { Link } from "react-router-dom";
 import { siteData } from "../data/siteData";
-import heroGymImage from "../assets/hero-gym.webp";
+import heroGymImage from "../assets/sala-principal.webp";
 
 const heroStats = [
-  { value: "200+", label: "clientes activos" },
-  { value: "4", label: "entrenadores" },
   { value: "2012", label: "año de fundación" },
 ];
 
@@ -50,7 +48,7 @@ export default function Hero() {
               </Link>
             </div>
 
-            <dl className="mx-auto mt-10 grid max-w-xl grid-cols-3 divide-x divide-border rounded-2xl border border-border bg-card/75 px-2 py-4 backdrop-blur lg:mx-0">
+            <dl className="mx-auto mt-10 grid w-fit grid-cols-1 rounded-2xl border border-border bg-card/75 px-6 py-4 backdrop-blur lg:mx-0">
               {heroStats.map((stat) => (
                 <div key={stat.label} className="min-w-0 px-2 text-center sm:px-4">
                   <dt className="mt-1 text-[0.68rem] leading-tight text-muted-foreground sm:text-sm">
@@ -68,7 +66,7 @@ export default function Hero() {
             <div className="aspect-[4/3] overflow-hidden rounded-3xl border-2 border-border bg-card shadow-2xl shadow-black/30 lg:aspect-square">
               <img
                 src={heroGymImage}
-                alt="Sector de musculación de un gimnasio equipado"
+                alt="Sala principal de FitnessClubEvolution, con sus máquinas y pasillo central"
                 width={1400}
                 height={1000}
                 className="h-full w-full object-cover"

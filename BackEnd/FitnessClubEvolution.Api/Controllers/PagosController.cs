@@ -15,10 +15,14 @@ public class PagosController : ControllerBase
 {
     private const string PagoConfirmado = "Confirmado";
     private readonly AppDbContext _context;
+    private readonly IHikvisionClientAccessCoordinator _hikvisionAccess;
 
-    public PagosController(AppDbContext context)
+    public PagosController(
+        AppDbContext context,
+        IHikvisionClientAccessCoordinator hikvisionAccess)
     {
         _context = context;
+        _hikvisionAccess = hikvisionAccess;
     }
 
     // GET: api/pagos/12
@@ -180,6 +184,14 @@ public class PagosController : ControllerBase
         _context.Cuotas.Add(cuota);
         await _context.SaveChangesAsync(cancellationToken);
 
+        // El pago ya está confirmado antes de contactar el equipo físico. Si
+        // Hikvision está fuera de línea, se informa y la reconciliación diaria
+        // reintentará sin perder el cobro.
+        var sincronizacionHikvision = await _hikvisionAccess.SincronizarCliente(
+            cliente,
+            fechaVencimiento,
+            cancellationToken);
+
         var nombreCliente = $"{cliente.Nombre} {cliente.Apellido}";
         var nombreEntrenador = entrenador is null
             ? null
@@ -219,7 +231,11 @@ public class PagosController : ControllerBase
         var respuesta = new RegistrarPagoResponse
         {
             Pago = pago,
-            EstadoCliente = estadoCliente
+            EstadoCliente = estadoCliente,
+            AdvertenciaHikvision = sincronizacionHikvision.Linked &&
+                !sincronizacionHikvision.Success
+                    ? "El pago quedó registrado, pero el acceso Hikvision no pudo actualizarse. La reconciliación volverá a intentarlo."
+                    : null
         };
 
         return CreatedAtAction(nameof(ObtenerPagoPorId), new { id = cuota.IdCuota }, respuesta);

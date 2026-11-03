@@ -152,32 +152,31 @@ export default function AboutPage() {
   <section className="bg-card py-16 sm:py-20">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <h2 className="mb-4 text-center text-3xl font-black text-foreground sm:text-4xl">
-        Entrenadores profesionales
+        Nuestro equipo
       </h2>
 
       <p className="mx-auto mb-10 max-w-2xl text-center text-lg text-muted-foreground sm:mb-12 sm:text-xl">
-        Conocé a nuestro equipo de profesionales, comprometidos con tu progreso.
+        Conocé a quienes hacen de FitnessClubEvolution una comunidad cercana.
       </p>
 
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
         {trainers.map((trainer) => {
-          const initials = trainer.name
-            .split(" ")
-            .map((part) => part[0])
-            .slice(0, 2)
-            .join("");
-
           return (
       <div
         key={trainer.name}
         className="min-w-0 rounded-2xl border border-border bg-background p-6 transition-all hover:-translate-y-1 hover:border-primary hover:shadow-xl hover:shadow-primary/10"
       >
               <div className="text-center mb-6">
-                <div
-                  className="mx-auto mb-4 flex h-28 w-28 items-center justify-center rounded-full border-4 border-primary/20 bg-gradient-to-br from-primary/25 to-primary/5 text-3xl font-black text-primary"
-                  aria-hidden="true"
-                >
-                  {initials}
+                <div className="mx-auto mb-6 aspect-[4/5] overflow-hidden rounded-xl border border-primary/20 bg-gradient-to-b from-card to-background">
+                  <img
+                    src={trainer.image}
+                    alt={trainer.name}
+                    width={768}
+                    height={960}
+                    className="h-full w-full object-cover object-top"
+                    loading="lazy"
+                    decoding="async"
+                  />
                 </div>
 
                 <h3 className="text-xl font-bold text-foreground mb-2">
@@ -193,7 +192,7 @@ export default function AboutPage() {
                 </p>
 
                 <p className="text-muted-foreground/70 text-xs">
-                  {trainer.experience} de experiencia
+                  {trainer.experience}
                 </p>
               </div>
 

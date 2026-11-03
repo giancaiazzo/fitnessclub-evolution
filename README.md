@@ -101,10 +101,11 @@ encuentra documentado en [`DEPLOYMENT.md`](DEPLOYMENT.md).
 
 ## Módulo 3: bot y n8n
 
-La API interna para WhatsApp, cobranzas, rutinas, consentimiento y recuperación
-está protegida por una clave exclusiva entre backend y n8n. También incorpora
+La API interna para WhatsApp, cobranzas, rutinas y consentimiento está protegida
+por una clave exclusiva entre backend y n8n. La recuperación de los dos
+administradores se realiza por correo SMTP, sin depender de Meta. También incorpora
 deduplicación por ID de Meta y un outbox persistente para reintentos seguros.
-El mapa de endpoints, tablas, cinco workflows y pruebas se encuentra en
+El mapa de endpoints, tablas, workflows y pruebas se encuentra en
 [`BACKEND_MODULOS.md`](BACKEND_MODULOS.md).
 
 ## Estilos globales

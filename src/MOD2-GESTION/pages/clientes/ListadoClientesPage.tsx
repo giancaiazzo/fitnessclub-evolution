@@ -25,6 +25,11 @@ type Cliente = {
   estado: boolean;
   idRutina: number;
   rutinaNombre: string;
+  aceptaWhatsApp: boolean;
+  hikvisionEmployeeNo: string | null;
+  accesoHikvisionHabilitado: boolean | null;
+  fechaVencimientoAccesoHikvision: string | null;
+  ultimoErrorHikvision: string | null;
 };
 
 type RutinaOpcion = {
@@ -40,8 +45,10 @@ type FormularioEdicion = {
   telefono: string;
   fechaNacimiento: string;
   direccion: string;
+  hikvisionEmployeeNo: string;
   estado: boolean;
   idRutina: string;
+  aceptaWhatsApp: boolean;
 };
 
 const inputClassName =
@@ -165,13 +172,13 @@ export default function ListadoClientesPage() {
     if (!termino) return clientes;
     return clientes.filter((cliente) =>
       [
-        cliente.idCliente.toString(),
         cliente.nombre,
         cliente.apellido,
         `${cliente.nombre} ${cliente.apellido}`,
         cliente.documento,
         cliente.telefono,
         cliente.rutinaNombre,
+        cliente.hikvisionEmployeeNo ?? "",
       ].some((dato) => dato.toLocaleLowerCase("es-UY").includes(termino)),
     );
   }, [busqueda, clientes]);
@@ -187,8 +194,10 @@ export default function ListadoClientesPage() {
       telefono: telefonoLocal(cliente.telefono),
       fechaNacimiento: cliente.fechaNacimiento ?? "",
       direccion: cliente.direccion ?? "",
+      hikvisionEmployeeNo: cliente.hikvisionEmployeeNo ?? "",
       estado: cliente.estado,
       idRutina: cliente.idRutina.toString(),
+      aceptaWhatsApp: cliente.aceptaWhatsApp,
     });
   }
 
@@ -223,6 +232,7 @@ export default function ListadoClientesPage() {
           telefono: `598${edicion.telefono}`,
           fechaNacimiento: edicion.fechaNacimiento || null,
           direccion: edicion.direccion.trim() || null,
+          hikvisionEmployeeNo: edicion.hikvisionEmployeeNo.trim() || null,
           idRutina,
         }),
       });
@@ -319,7 +329,7 @@ export default function ListadoClientesPage() {
               value={busqueda}
               onChange={(event) => setBusqueda(event.target.value)}
               className={`${inputClassName} pl-11`}
-              placeholder="Nombre, rutina, documento, teléfono o ID..."
+              placeholder="Nombre, rutina, documento o teléfono..."
             />
           </label>
           <button
@@ -347,11 +357,10 @@ export default function ListadoClientesPage() {
           />
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[1120px] text-left">
+            <table className="w-full min-w-[1040px] text-left">
               <thead className="bg-black/20 text-xs uppercase tracking-wider text-gray-500">
                 <tr>
                   {[
-                    "ID",
                     "Cliente",
                     "Documento",
                     "Teléfono",
@@ -367,12 +376,21 @@ export default function ListadoClientesPage() {
               <tbody className="divide-y divide-white/[0.07]">
                 {clientesFiltrados.map((cliente) => (
                   <tr key={cliente.idCliente} className="transition hover:bg-white/[0.025]">
-                    <td className="px-5 py-4 text-sm font-black text-lime-400">#{cliente.idCliente}</td>
                     <td className="px-5 py-4">
                       <p className="font-semibold text-white">{cliente.nombre} {cliente.apellido}</p>
                       <p className="mt-0.5 max-w-52 truncate text-xs text-gray-500">
                         {cliente.direccion || "Sin dirección"}
                       </p>
+                      {cliente.hikvisionEmployeeNo && (
+                        <p className={`mt-1 text-xs ${cliente.ultimoErrorHikvision ? "text-amber-300" : "text-lime-300"}`}>
+                          <i className="ri-fingerprint-line mr-1" />
+                          Hikvision {cliente.hikvisionEmployeeNo} · {cliente.ultimoErrorHikvision
+                            ? "sincronización pendiente"
+                            : cliente.accesoHikvisionHabilitado
+                              ? "acceso habilitado"
+                              : "acceso bloqueado"}
+                        </p>
+                      )}
                     </td>
                     <td className="px-5 py-4 text-sm text-gray-300">{cliente.documento}</td>
                     <td className="px-5 py-4 text-sm text-gray-300">{formatearTelefono(cliente.telefono)}</td>
@@ -422,7 +440,10 @@ export default function ListadoClientesPage() {
       </section>
 
       {clienteEditar && edicion && (
-        <Modal titulo={`Modificar cliente #${clienteEditar.idCliente}`} onCerrar={() => !guardando && setClienteEditar(null)}>
+        <Modal
+          titulo={`Modificar cliente · ${clienteEditar.nombre} ${clienteEditar.apellido}`}
+          onCerrar={() => !guardando && setClienteEditar(null)}
+        >
           <form onSubmit={guardarEdicion}>
             <div className="grid gap-4 p-5 sm:grid-cols-2 sm:p-6">
               <InputEdicion etiqueta="Nombre" value={edicion.nombre} onChange={(valor) => setEdicion({ ...edicion, nombre: valor })} />
@@ -431,6 +452,32 @@ export default function ListadoClientesPage() {
               <InputEdicion etiqueta="Teléfono (+598)" value={edicion.telefono} onChange={(valor) => setEdicion({ ...edicion, telefono: soloDigitos(valor, 8) })} />
               <InputEdicion etiqueta="Fecha de nacimiento" type="date" value={edicion.fechaNacimiento} onChange={(valor) => setEdicion({ ...edicion, fechaNacimiento: valor })} />
               <InputEdicion etiqueta="Dirección" value={edicion.direccion} onChange={(valor) => setEdicion({ ...edicion, direccion: valor })} />
+              <label className="sm:col-span-2">
+                <span className="mb-2 block text-sm font-semibold text-gray-300">
+                  Código de acceso Hikvision
+                </span>
+                <input
+                  className={inputClassName}
+                  value={edicion.hikvisionEmployeeNo}
+                  onChange={(event) =>
+                    setEdicion({
+                      ...edicion,
+                      hikvisionEmployeeNo: event.target.value.slice(0, 32),
+                    })
+                  }
+                  maxLength={32}
+                  placeholder="Ej.: 02"
+                  disabled={guardando}
+                />
+                <span className="mt-1.5 block text-xs text-gray-500">
+                  Debe coincidir con el employeeNo de la persona enrolada en el controlador.
+                </span>
+                {clienteEditar.ultimoErrorHikvision && (
+                  <span className="mt-1.5 block text-xs text-amber-300">
+                    Última sincronización pendiente: {clienteEditar.ultimoErrorHikvision}
+                  </span>
+                )}
+              </label>
               <label className="sm:col-span-2">
                 <span className="mb-2 block text-sm font-semibold text-gray-300">
                   Rutina asignada
@@ -454,11 +501,35 @@ export default function ListadoClientesPage() {
                   ))}
                 </select>
                 <span className="mt-1.5 block text-xs text-gray-500">
-                  Al vincular n8n, un cambio de rutina será el evento que active el reenvío por WhatsApp.
+                  Al guardar una rutina diferente, se enviará automáticamente si el consentimiento está activo.
                 </span>
                 {errorRutinas && (
                   <span className="mt-2 block text-xs text-red-300">{errorRutinas}</span>
                 )}
+              </label>
+              <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-lime-400/20 bg-lime-400/[0.06] p-4 sm:col-span-2">
+                <input
+                  type="checkbox"
+                  checked={edicion.aceptaWhatsApp}
+                  onChange={(event) =>
+                    setEdicion({ ...edicion, aceptaWhatsApp: event.target.checked })
+                  }
+                  disabled={guardando}
+                  className="mt-1 h-5 w-5 shrink-0 accent-lime-400"
+                />
+                <span>
+                  <span className="block text-sm font-bold text-white">
+                    Consentimiento para comunicaciones por WhatsApp
+                  </span>
+                  <span className="mt-1 block text-sm leading-6 text-gray-300">
+                    Acepto recibir por WhatsApp mi rutina, avisos de vencimiento y
+                    comunicaciones operativas de FitnessClubEvolution. Puedo solicitar la
+                    baja respondiendo SALIR.
+                  </span>
+                  <span className="mt-1 block text-xs text-gray-500">
+                    Al desmarcarla, se detienen los futuros envíos automáticos.
+                  </span>
+                </span>
               </label>
               <label className="sm:col-span-2">
                 <span className="mb-2 block text-sm font-semibold text-gray-300">Estado</span>

@@ -77,15 +77,6 @@ export default function SuccessStories() {
       ))}
     </div>
 
-    <div className="mt-12 text-center">
-      <a
-        href="/contact"
-        className="inline-flex items-center gap-3 rounded-lg bg-primary px-8 py-4 text-lg font-bold text-primary-foreground transition-all hover:scale-105 hover:bg-[#86c312]"
-      >
-        Comenzá tu proceso
-        <i className="ri-arrow-right-line" />
-      </a>
-    </div>
   </div>
 </section>
   );

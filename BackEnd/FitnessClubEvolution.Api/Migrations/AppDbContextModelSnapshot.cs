@@ -35,6 +35,9 @@ namespace FitnessClubEvolution.Api.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(false);
 
+                    b.Property<bool?>("AccesoHikvisionHabilitado")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Apellido")
                         .IsRequired()
                         .HasColumnType("text");
@@ -55,11 +58,21 @@ namespace FitnessClubEvolution.Api.Migrations
                     b.Property<DateTime?>("FechaConsentimientoWhatsApp")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<DateTime?>("FechaUltimaSincronizacionHikvision")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateOnly?>("FechaNacimiento")
                         .HasColumnType("date");
 
                     b.Property<DateTime>("FechaRegistro")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateOnly?>("FechaVencimientoAccesoHikvision")
+                        .HasColumnType("date");
+
+                    b.Property<string>("HikvisionEmployeeNo")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
 
                     b.Property<int>("IdRutina")
                         .HasColumnType("integer");
@@ -72,11 +85,19 @@ namespace FitnessClubEvolution.Api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("UltimoErrorHikvision")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
                     b.HasKey("IdCliente");
 
                     b.HasIndex("Documento");
 
                     b.HasIndex("IdRutina");
+
+                    b.HasIndex("HikvisionEmployeeNo")
+                        .IsUnique()
+                        .HasFilter("\"HikvisionEmployeeNo\" IS NOT NULL");
 
                     b.HasIndex("Telefono");
 
@@ -229,6 +250,14 @@ namespace FitnessClubEvolution.Api.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
+                    b.Property<string>("CorreoElectronico")
+                        .HasMaxLength(254)
+                        .HasColumnType("character varying(254)");
+
+                    b.Property<string>("CorreoElectronicoNormalizado")
+                        .HasMaxLength(254)
+                        .HasColumnType("character varying(254)");
+
                     b.Property<bool>("Estado")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -268,6 +297,10 @@ namespace FitnessClubEvolution.Api.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("IdEntrenador");
+
+                    b.HasIndex("CorreoElectronicoNormalizado")
+                        .IsUnique()
+                        .HasFilter("\"CorreoElectronicoNormalizado\" IS NOT NULL");
 
                     b.HasIndex("NombreUsuarioNormalizado")
                         .IsUnique();

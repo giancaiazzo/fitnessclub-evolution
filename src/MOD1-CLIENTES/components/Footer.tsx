@@ -61,7 +61,7 @@ export default function Footer() {
           </div>
 
           <div className="min-w-0">
-            <h2 className="mb-4 text-lg font-bold text-foreground">Contacto</h2>
+            <h2 className="mb-4 text-lg font-bold text-foreground">Información</h2>
             <ul className="space-y-4 text-muted-foreground">
               <li className="flex items-start gap-3">
                 <i className="ri-map-pin-line mt-1 shrink-0 text-primary" aria-hidden="true" />

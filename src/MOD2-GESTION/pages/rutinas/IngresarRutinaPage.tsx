@@ -161,7 +161,7 @@ export default function IngresarRutinaPage() {
 
           <Campo
             etiqueta="Archivo de la rutina"
-            ayuda="Solo PDF, máximo 10 páginas y 10 MB. La cantidad de páginas se valida en el servidor."
+            ayuda="Solo PDF, máximo 10 páginas y 10 MB."
             requerido
           >
             <label className="group flex min-h-36 cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-lime-400/30 bg-lime-400/[0.04] p-6 text-center transition hover:border-lime-400/60 hover:bg-lime-400/[0.07]">

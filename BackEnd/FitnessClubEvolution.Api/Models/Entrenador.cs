@@ -13,6 +13,10 @@ namespace FitnessClubEvolution.Api.Models
 
         public string Telefono { get; set; } = string.Empty;
 
+        public string? CorreoElectronico { get; set; }
+
+        public string? CorreoElectronicoNormalizado { get; set; }
+
         public string NombreUsuario { get; set; } = string.Empty;
 
         public string NombreUsuarioNormalizado { get; set; } = string.Empty;

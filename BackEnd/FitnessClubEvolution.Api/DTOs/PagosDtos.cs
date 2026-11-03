@@ -48,6 +48,7 @@ public sealed class RegistrarPagoResponse
     public string Message { get; set; } = "Pago registrado correctamente.";
     public PagoResponse Pago { get; set; } = new();
     public EstadoPagoClienteResponse EstadoCliente { get; set; } = new();
+    public string? AdvertenciaHikvision { get; set; }
 }
 
 public sealed class EntrenadorPagoResponse
